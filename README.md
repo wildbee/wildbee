@@ -39,8 +39,10 @@ application. Wasn't that easy?
 TODO
 
 ### Versions Used
-Play framework: 2.2.1
-Slick: 1.0.1
+Play framework
+: 2.2.1
+Slick
+: 1.0.1
 
-[ETT]: https://github.com/liweinan/ett "ETT"
-[playframework]: http://www.playframework.com/ "Play framework"
+[ETT]: https://github.com/liweinan/ett (ETT)
+[playframework]: http://www.playframework.com/ (Play framework)
