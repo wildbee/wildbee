@@ -1,7 +1,7 @@
 Wildbee web application
 =====================================
-This project is a completely rewrite of [ETT] using Scala and the
-[playframework].
+This project is a completely rewrite of [ETT][ETT] using Scala and the
+[Play framework][playframework].
 
 This project's goal is to track package upgrades that will eventually end up
 in a release. Modules will be created to enhance the behaviors of the packages.
@@ -39,10 +39,8 @@ application. Wasn't that easy?
 TODO
 
 ### Versions Used
-Play framework
-: 2.2.1
-Slick
-: 1.0.1
+- Play framework: 2.2.1
+- Slick: 1.0.1
 
-[ETT]: https://github.com/liweinan/ett (ETT)
-[playframework]: http://www.playframework.com/ (Play framework)
+[ETT]: https://github.com/liweinan/ett
+[playframework]: http://www.playframework.com/
