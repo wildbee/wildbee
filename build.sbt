@@ -1,11 +1,13 @@
-name := "hahaha"
+name := "wildbee"
 
-version := "1.0-SNAPSHOT"
+version := "0.1-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   jdbc,
   anorm,
-  cache
-)     
+  cache,
+  "com.typesafe.slick" %% "slick" % "1.0.1",
+  "org.postgresql" % "postgresql" % "9.3-1100-jdbc4"
+)
 
 play.Project.playScalaSettings
