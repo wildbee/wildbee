@@ -1,6 +1,6 @@
 Wildbee web application
 =====================================
-This project is a completely rewrite of [ETT][ETT] using Scala and the
+This project is a complete rewrite of [ETT][ETT] using Scala and the
 [Play framework][playframework].
 
 This project's goal is to track package upgrades that will eventually end up
@@ -15,7 +15,8 @@ wget http://downloads.typesafe.com/play/2.2.1/play-2.2.1.zip
 unzip play-2.2.1.zip
 ```
 
-In your `~/.bashrc`, add this line:
+In your `~/.bashrc`, add this line so that we have access to the `play` command
+from the terminal:
 ```bash
 PATH=$HOME/play-2.2.1:$PATH
 ```
@@ -47,8 +48,7 @@ su - postgres
 sudo systemctl start postgresql.service
 ```
 
-To be able to create a database from your own user:
-- Add your username to postgres
+- Add the _wildbee_ user to postgres
 ```
 su -
 su - postgres
@@ -56,14 +56,15 @@ psql
 ```
 Inside of the psql terminal, type:
 ```
-create user <user> with password '1234';
-alter user <user> createdb;
+create user wildbee with password '1234';
+alter user wildbee createdb;
 ```
 
-- In a new terminal with you as <user>, type in a terminal:
+- Create the database that our web application will use:
 ```
-createdb <database_name>
+createdb wildbeehive -U wildbee
 ```
+_wildbeehive_ is the name of the database we will be using.
 
 - To be inside the database, type in the terminal:
 ```
