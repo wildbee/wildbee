@@ -3,9 +3,9 @@
 
 # --- !Ups
 
-create table "cocktails" ("ID" BIGINT NOT NULL,"NAME" VARCHAR(254) NOT NULL,"beauty" VARCHAR(254) NOT NULL);
+create table "users" ("ID" SERIAL NOT NULL PRIMARY KEY,"NAME" VARCHAR(254) NOT NULL,"EMAIL" VARCHAR(254) NOT NULL,"ADMIN" BOOLEAN DEFAULT false NOT NULL);
 
 # --- !Downs
 
-drop table "cocktails";
+drop table "users";
 

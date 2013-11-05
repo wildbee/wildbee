@@ -15,7 +15,7 @@ object Application extends Controller {
 
   def index = Action {
     database withSession {
-      Cocktails.insert(1, "haha", "hoho")
+      Users.insert("Dustino", "dcheung@redhat.com", false)
     }
     Ok(views.html.index("Your new application is ready, well maybe"))
   }
