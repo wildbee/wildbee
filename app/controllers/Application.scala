@@ -19,5 +19,15 @@ object Application extends Controller {
     }
     Ok(views.html.index("Your new application is ready, well maybe"))
   }
-
+  
+  def test = Action {
+    database withSession {
+      Tasks.create("Dustino")
+      val results = for (p <- Tasks) yield p
+      val tasks = results.list.toString
+      val query = results.selectStatement.toString
+      Ok(views.html.test("Testing Grounds", tasks, query))
+    }
+    
+  }
 }

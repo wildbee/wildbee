@@ -15,4 +15,5 @@ object Users extends Table[(Long, String, String, Boolean)]("users") {
              email: String,
              admin: Boolean)
            (implicit session: Session) = autoInc.insert(name, email, admin)
-}
+           
+  }
