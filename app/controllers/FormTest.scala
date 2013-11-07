@@ -15,9 +15,9 @@ import play.api.data._
 import play.api.data.Forms._
 
 case class User(
-  username: String,
-  realname: Option[String],
-  email: String
+  val username: String,
+  val realname: String,
+  val email: String
 )
 
 object FormTest extends Controller {
@@ -26,14 +26,18 @@ object FormTest extends Controller {
   val userForm = Form(
     mapping(
       "username" -> nonEmptyText(8),
-      "realname" -> optional(text),
+      "realname" -> nonEmptyText,
       "email" -> email)(User.apply)(User.unapply))
 
   def createUser() = Action { implicit request =>
-    userForm.bindFromRequest.fold(
-      formWithErrors => Redirect(routes.Application.index),
-      user => Redirect(routes.Application.test)
+    val user: User = userForm.bindFromRequest.fold(
+      formWithErrors => null,
+      user => user
       )
+    /*
+     * Users.insert(user.realname, user.email, false)
+     */
+    Ok("Haha " + user.realname)
   }
   def index() = Action {
     Ok(views.html.form(userForm))
