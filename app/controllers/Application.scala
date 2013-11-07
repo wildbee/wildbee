@@ -22,7 +22,7 @@ object Application extends Controller {
   
   def test = Action {
     database withSession {
-      Tasks.create(1)
+      Tasks.create(1, "New")
       val results = for (p <- Tasks) yield p
       val tasks = results.list.toString
       val query = results.selectStatement.toString
@@ -31,10 +31,9 @@ object Application extends Controller {
         t <- Tasks
         u <- t.ownerName
       } yield u
+      Tasks.update(3, "OLD")
       val ownerName = owners.list.toString
-      
       Ok(views.html.test("Testing Grounds", tasks, query, ownerName))
     }
-    
   }
 }
