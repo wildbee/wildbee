@@ -27,15 +27,15 @@ object TaskController extends Controller {
   def index = Action {
     database withSession {
       val results = for (p <- Tasks) yield p
-      val tasks = results.list.toString
+
+      val tasks = results.list
       
       val owners = for {
         t <- Tasks
         u <- t.ownerName
-      } yield u
-      
-      val ownerName = owners.list.toString
-      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, ownerName))
+      } yield u.name
+
+      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, owners.list))
     }
   }
   
@@ -57,18 +57,16 @@ object TaskController extends Controller {
         Redirect(routes.TaskController.index)
       }
     )  
-     
   }
   
 
-  
-   def deleteTask() = Action { implicit request =>
-     taskForm.bindFromRequest.fold(
-       errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
-       task => {
-         database withSession { Tasks.delete(task.ownerId) }
-         Redirect(routes.TaskController.index)
-       }
-     )
-   }
+  def deleteTask() = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
+      task => {
+        database withSession { Tasks.delete(task.ownerId) }
+        Redirect(routes.TaskController.index)
+      }
+    )
+  }
 }

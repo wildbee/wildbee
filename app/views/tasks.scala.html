@@ -1,6 +1,14 @@
-@(message: String, newForm: Form[Tasks], task: String, owner: String)
 
+@(message: String, 
+  newForm: Form[Tasks], 
+  tasks:   List[(Long, Long, String, java.sql.Timestamp, java.sql.Timestamp)], 
+  owner:   List[String])
 @import helper._
+
+@*
+TODO: Don't have this long List, should be able to define by Task type
+*@
+
 
 @main(message) {
 
@@ -33,9 +41,11 @@
 	   </form>
    }
 
-
-
-   <h2>@task</h2>
-   <h2>@owner</h2>
+   <h1> List of Tasks</h1>
+   @tasks.map { task => 
+       <h2>
+           || Task ID: @task._1 || Owner: @{owner(task._2.toInt)} || Status:  @task._3 || Last Updated: @task._4 ||
+       </h2>
+   }
 
 }
