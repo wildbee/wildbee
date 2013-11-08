@@ -36,8 +36,9 @@ object TaskController extends Controller {
       
       val owners = joins   map { _._1 }
       val statuses = joins map { _._2 }
-
-      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, owners.list, statuses.list ))
+      val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
+      
+      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, owners.list, statuses.list, availableStatuses))
     }
   }
   
@@ -78,8 +79,7 @@ object TaskController extends Controller {
     )
   }
   
-  def initStatuses() = Action { implicit request =>
-    //database withSession { Statuses.create }
+  def updateStatus() = Action { implicit request =>
     Redirect(routes.TaskController.index)
   }
 }

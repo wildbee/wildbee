@@ -2,7 +2,8 @@
   newForm: Form[Tasks], 
   tasks:   List[(Long, Long, String, java.sql.Timestamp, java.sql.Timestamp)], 
   owner:   List[String],
-  status:  List[String]
+  status:  List[String],
+  comboBox: List[String]
   )
 @import helper._
 
@@ -17,7 +18,7 @@ TODO: Don't have this long List, should be able to define by Task type
    <h2>Unintuitive Forms</h2>
    <table cellspacing="20">
    <td>
-   @form(action = routes.TaskController.createTask) {
+   @form(routes.TaskController.createTask) {
        @inputText(newForm("owner"))
        @inputText(newForm("task"))
 	   <form action="/createTask" method="POST">
@@ -28,7 +29,7 @@ TODO: Don't have this long List, should be able to define by Task type
    }
    </td>
    <td>
-   @form(action = routes.TaskController.deleteTask) {
+   @form(routes.TaskController.deleteTask) {
    	   @inputText(newForm("owner"))
    	   @inputText(newForm("task"))
 	   <form action="/deleteTask" method="POST">
@@ -39,7 +40,7 @@ TODO: Don't have this long List, should be able to define by Task type
    }
    </td>
    <td>
-   @form(action = routes.TaskController.updateTask) {
+   @form(routes.TaskController.updateTask) {
    	   @inputText(newForm("owner"))
    	   @inputText(newForm("task"))
 	   <form action="/tasks" method="POST">
@@ -54,8 +55,15 @@ TODO: Don't have this long List, should be able to define by Task type
    <h1> List of Tasks</h1>
    @tasks.map { task => 
        <h2>
-           || Task ID: @task._1 || Owner: @{owner(task._2.toInt -1)} || Task: @task._3 || Status: @{status(task._2.toInt -1)} || Last Updated: @task._5 ||
+            || Task ID: @task._1 || Owner: @{owner(task._2.toInt -1)} || Task: @task._3 || Status: @{status(task._1.toInt -1)} || Last Updated: @task._5 ||
        </h2>
+       @form(routes.TaskController.updateStatus) {
+	       <form action="/tasks" method="POST">
+			   <div class="form-actions">
+			       <button type="submit">Update Status</button>
+			   </div>
+		   </form>
+       }
    }
 
 }
