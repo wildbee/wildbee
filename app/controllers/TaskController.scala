@@ -19,11 +19,21 @@ object TaskController extends Controller {
   lazy val database = Database.forDataSource(DB.getDataSource())
   
   val taskForm = Form(
-  mapping(
-    "owner" -> of[Long],
-    "task" -> nonEmptyText
-  )(Tasks.apply)(Tasks.unapply))
-      
+	  mapping(
+	    "owner" -> of[Long],
+	    "task" -> nonEmptyText
+	)(Tasks.apply)(Tasks.unapply))
+  
+	/** Testing stuff */
+	
+	
+	val workForm = Form(
+	    mapping(
+	  "stage1" -> text,
+	  "stage2" -> text,
+	  "stage3" -> text
+	  )(Workflows.apply)(Workflows.unapply))
+	
   def index = Action {
     database withSession {
       val results = for (p <- Tasks) yield p
@@ -38,7 +48,7 @@ object TaskController extends Controller {
       val statuses = joins map { _._2 }
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
       
-      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, owners.list, statuses.list, availableStatuses))
+      Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
     }
   }
   

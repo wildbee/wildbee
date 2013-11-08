@@ -1,5 +1,6 @@
 @(message: String, 
   newForm: Form[Tasks], 
+  workForm: Form[Workflows],
   tasks:   List[(Long, Long, String, java.sql.Timestamp, java.sql.Timestamp)], 
   owner:   List[String],
   status:  List[String],
@@ -57,7 +58,15 @@ TODO: Don't have this long List, should be able to define by Task type
        <h2>
             || Task ID: @task._1 || Owner: @{owner(task._2.toInt -1)} || Task: @task._3 || Status: @{status(task._1.toInt -1)} || Last Updated: @task._5 ||
        </h2>
+       @*
+       Update Status button does nothing for now.
+       If you want to see example of status being updated please use the update a task button
+       *@
        @form(routes.TaskController.updateStatus) {
+           @select(workForm("stage1"), options(comboBox))
+           @select(workForm("stage2"), options(comboBox))
+           @select(workForm("stage3"), options(comboBox))
+           
 	       <form action="/tasks" method="POST">
 			   <div class="form-actions">
 			       <button type="submit">Update Status</button>

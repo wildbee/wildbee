@@ -11,9 +11,9 @@ object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") 
   def id           = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def ownerId      = column[Long]("owner")
   def task				 = column[String]("task", O.NotNull)
-  //def status       = column[String]("status") //TODO: Maybe use a type Status rather than a String?
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
+  
   def ownerName    = foreignKey("fk_owner", ownerId, Users)(_.id)
   def status       = foreignKey("fk_status", task, StatusStates)(_.task) 
   

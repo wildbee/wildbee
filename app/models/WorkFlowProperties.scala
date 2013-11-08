@@ -10,6 +10,7 @@ trait Status {
 	}
 }
 
+case class Workflows(stage1: String, stage2: String, stage3: String)
 object Workflows extends Table [(Long, String)]("workflows") with Status {
 	def id = column[Long]("uuid", O.PrimaryKey, O.AutoInc)
 	def task = column[String]("task")
@@ -18,9 +19,8 @@ object Workflows extends Table [(Long, String)]("workflows") with Status {
 	def * = id ~ task
 	def autoInc = task returning id
 	
-  def generateWorkflow(task: String) {
-		
-	}
+  def nextState() { println("Next State") }
+	
 }
 
 object StatusStates extends Table [(Long, String, String)]("allowed_statuses") with Status {
@@ -40,6 +40,7 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") w
 	def update(task: String)(implicit session: Session) = {
 	  val currentState = StatusStates filter (_.task === task)
 	  val self = for { s <- StatusStates if s.task === task } yield s.status
+	  Workflows.nextState
 	  currentState map ( _.status ) update(nextState(self.list.head))
 	}
 }
