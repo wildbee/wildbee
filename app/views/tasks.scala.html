@@ -44,7 +44,7 @@ TODO: Don't have this long List, should be able to define by Task type
    <h1> List of Tasks</h1>
    @tasks.map { task => 
        <h2>
-           || Task ID: @task._1 || Owner: @{owner(task._2.toInt)} || Status:  @task._3 || Last Updated: @task._4 ||
+           || Task ID: @task._1 || Owner: @{owner(task._2.toInt -1)} || Status:  @task._3 || Last Updated: @task._4 ||
        </h2>
    }
 

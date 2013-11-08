@@ -7,13 +7,13 @@ import java.util.Date
 case class Tasks(ownerId: Long, status: String)
                  
 //TODO: Make a controller for the Tasks
-object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("TASKS") {
-  def id           = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-  def ownerId      = column[Long]("OWNER")
-  def status       = column[String]("STATUS") //TODO: Maybe use a type Status rather than a String?
-  def creationTime = column[Timestamp]("CREATION_TIME", O.NotNull)
-  def lastUpdated  = column[Timestamp]("LAST_UPDATED", O.NotNull)
-  def ownerName    = foreignKey("fk_usr_location", ownerId, Users)(_.id)
+object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") {
+  def id           = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  def ownerId      = column[Long]("owner")
+  def status       = column[String]("status") //TODO: Maybe use a type Status rather than a String?
+  def creationTime = column[Timestamp]("creation_time", O.NotNull)
+  def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
+  def ownerName    = foreignKey("fk_owner", ownerId, Users)(_.id)
   
   def * =  id ~ ownerId ~ status ~ creationTime ~ lastUpdated
   def autoInc = ownerId ~ status ~ creationTime ~ lastUpdated returning id

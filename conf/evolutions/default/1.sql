@@ -3,15 +3,19 @@
 
 # --- !Ups
 
-create table "STATUSES" ("ID" SERIAL NOT NULL PRIMARY KEY,"STATUS" VARCHAR(254) NOT NULL);
-create table "TASKS" ("ID" SERIAL NOT NULL PRIMARY KEY,"OWNER" BIGINT NOT NULL,"STATUS" VARCHAR(254) NOT NULL,"CREATION_TIME" TIMESTAMP NOT NULL,"LAST_UPDATED" TIMESTAMP NOT NULL);
-create table "USERS" ("ID" SERIAL NOT NULL PRIMARY KEY,"NAME" VARCHAR(254) NOT NULL,"EMAIL" VARCHAR(254) NOT NULL,"ADMIN" BOOLEAN DEFAULT false NOT NULL);
-alter table "TASKS" add constraint "fk_usr_location" foreign key("OWNER") references "USERS"("ID") on update NO ACTION on delete NO ACTION;
+create table "allowed_statuses" ("uuid" SERIAL NOT NULL PRIMARY KEY,"task" VARCHAR(254) NOT NULL);
+create table "statuses" ("uuid" SERIAL NOT NULL PRIMARY KEY,"status" VARCHAR(254) NOT NULL);
+create table "tasks" ("id" SERIAL NOT NULL PRIMARY KEY,"owner" BIGINT NOT NULL,"status" VARCHAR(254) NOT NULL,"creation_time" TIMESTAMP NOT NULL,"last_updated" TIMESTAMP NOT NULL);
+create table "users" ("id" SERIAL NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL,"admin" BOOLEAN DEFAULT false NOT NULL);
+create table "workflows" ("uuid" SERIAL NOT NULL PRIMARY KEY,"task" VARCHAR(254) NOT NULL);
+alter table "tasks" add constraint "fk_owner" foreign key("owner") references "users"("id") on update NO ACTION on delete NO ACTION;
 
 # --- !Downs
 
-alter table "TASKS" drop constraint "fk_usr_location";
-drop table "STATUSES";
-drop table "TASKS";
-drop table "USERS";
+alter table "tasks" drop constraint "fk_owner";
+drop table "allowed_statuses";
+drop table "statuses";
+drop table "tasks";
+drop table "users";
+drop table "workflows";
 
