@@ -5,6 +5,8 @@ package helpers
  *
  */
 object UUIDGenerator {
+  // TODO: we shouldn't use SUN's base64 Encoder
+  // Use apache solution instead
   val encoder = new sun.misc.BASE64Encoder();
 
   def UUID: String = {
@@ -20,11 +22,10 @@ object UUIDGenerator {
   }
 
   def asByteArray(uuid: java.util.UUID): Array[Byte] = {
-    val msb = uuid.getMostSignificantBits
-    val lsb = uuid.getLeastSignificantBits
-    val buffer = new Array[Byte](16)
-    for (i <- 0 until 8) buffer(i) = (msb >>> 8 * (7 - i)).toByte
-    for (i <- 8 until 16) buffer(i) = (lsb >>> 8 * (7 - i)).toByte
-    buffer
+    val bytes = new Array[Byte](16)
+    val buffer = java.nio.ByteBuffer.wrap(bytes);
+    buffer.putLong(uuid.getMostSignificantBits)
+    buffer.putLong(uuid.getLeastSignificantBits)
+    buffer.array
   }
 }
