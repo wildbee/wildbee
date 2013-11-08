@@ -20,41 +20,5 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready, well maybe"))
   }
   
-  def tasks = Action {
-    database withSession {
-      
-      val results = for (p <- Tasks) yield p
-      val tasks = results.list.toString
-      val query = results.selectStatement.toString
-      
-      val owners = for {
-        t <- Tasks
-        u <- t.ownerName
-      } yield u
-      
-      val ownerName = owners.list.toString
-      Ok(views.html.tasks("Testing Grounds", tasks, ownerName))
-    }
-  }
-  
-  def updateTask() = Action { implicit request =>
-    database withSession {
-      Tasks.update(1, "Old")
-    }
-    Redirect(routes.Application.tasks)
-  }
-  
-  def createTask() = Action { implicit request =>
-    database withSession {
-      Tasks.create(1, "New")
-    }
-    Redirect(routes.Application.tasks)
-  }
-  
-   def deleteTask() = Action { implicit request =>
-    database withSession {
-      Tasks.delete(3)
-    }
-    Redirect(routes.Application.tasks)
-  }
+
 }
