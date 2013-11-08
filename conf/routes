@@ -10,6 +10,7 @@ GET     /tasks                      controllers.TaskController.index
 POST    /tasks                      controllers.TaskController.updateTask
 POST    /createTask                 controllers.TaskController.createTask
 POST    /deleteTask                 controllers.TaskController.deleteTask
+GET    /status                     controllers.TaskController.initStatuses
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /formtest                   controllers.FormTest.index
 POST    /formtest                   controllers.FormTest.createUser

@@ -2,7 +2,7 @@ package models
 
 import scala.slick.driver.PostgresDriver.simple._
 
-object Users extends Table[(Long, String, String, Boolean)]("users") {
+object Users extends Table[(Long, String, String, Boolean)]("USERS") {
   def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   def name = column[String]("NAME")
   def email = column[String]("EMAIL")

@@ -7,7 +7,7 @@ import java.util.Date
 case class Tasks(ownerId: Long, status: String)
                  
 //TODO: Make a controller for the Tasks
-object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") {
+object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("TASKS") {
   def id           = column[Long]("ID", O.PrimaryKey, O.AutoInc)
   def ownerId      = column[Long]("OWNER")
   def status       = column[String]("STATUS") //TODO: Maybe use a type Status rather than a String?

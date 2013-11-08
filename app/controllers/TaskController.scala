@@ -69,4 +69,9 @@ object TaskController extends Controller {
       }
     )
   }
+  
+  def initStatuses() = Action { implicit request =>
+    database withSession { Statuses.create }
+    Redirect(routes.TaskController.index)
+  }
 }
