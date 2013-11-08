@@ -21,29 +21,34 @@ object TaskController extends Controller {
   val taskForm = Form(
   mapping(
     "owner" -> of[Long],
-    "status" -> nonEmptyText
+    "task" -> nonEmptyText
   )(Tasks.apply)(Tasks.unapply))
       
   def index = Action {
     database withSession {
       val results = for (p <- Tasks) yield p
-
       val tasks = results.list
-      
-      val owners = for {
+      val joins = for {
         t <- Tasks
         u <- t.ownerName
-      } yield u.name
+        s <- t.status
+      } yield (u.name, s.status)
+      
+      val owners = joins   map { _._1 }
+      val statuses = joins map { _._2 }
 
-      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, owners.list))
+      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, owners.list, statuses.list ))
     }
   }
   
   def createTask() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
-      task => {
-        database withSession { Tasks.create(task.ownerId, task.status) }
+      t => {
+        database withSession { 
+          Tasks.create(t.ownerId, t.task) 
+          StatusStates.create(t.task)
+        }
         Redirect(routes.TaskController.index)
       }
     )    
@@ -52,8 +57,8 @@ object TaskController extends Controller {
   def updateTask() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
-      task => {
-        database withSession { Tasks.update(task.ownerId, task.status) }
+      t => {
+        database withSession { Tasks.update(t.ownerId) }
         Redirect(routes.TaskController.index)
       }
     )  
@@ -63,15 +68,15 @@ object TaskController extends Controller {
   def deleteTask() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
-      task => {
-        database withSession { Tasks.delete(task.ownerId) }
+      t => {
+        database withSession { Tasks.delete(t.ownerId) }
         Redirect(routes.TaskController.index)
       }
     )
   }
   
   def initStatuses() = Action { implicit request =>
-    database withSession { Statuses.create }
+    //database withSession { Statuses.create }
     Redirect(routes.TaskController.index)
   }
 }

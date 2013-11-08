@@ -1,8 +1,9 @@
-
 @(message: String, 
   newForm: Form[Tasks], 
   tasks:   List[(Long, Long, String, java.sql.Timestamp, java.sql.Timestamp)], 
-  owner:   List[String])
+  owner:   List[String],
+  status:  List[String]
+  )
 @import helper._
 
 @*
@@ -13,38 +14,47 @@ TODO: Don't have this long List, should be able to define by Task type
 @main(message) {
 
    <h1>ETT</h1>
+   <h2>Unintuitive Forms</h2>
+   <table cellspacing="20">
+   <td>
    @form(action = routes.TaskController.createTask) {
        @inputText(newForm("owner"))
-       @inputText(newForm("status"))
+       @inputText(newForm("task"))
 	   <form action="/createTask" method="POST">
 	       <div class="form-actions">
 		       <button type="submit">Create a Task</button>
 		   </div>
 	   </form>
    }
+   </td>
+   <td>
    @form(action = routes.TaskController.deleteTask) {
    	   @inputText(newForm("owner"))
-   	   @inputText(newForm("status"))
+   	   @inputText(newForm("task"))
 	   <form action="/deleteTask" method="POST">
 		   <div class="form-actions">
 		       <button type="submit">Delete a Task</button>
 		   </div>
 	   </form>
    }
+   </td>
+   <td>
    @form(action = routes.TaskController.updateTask) {
    	   @inputText(newForm("owner"))
-   	   @inputText(newForm("status"))
+   	   @inputText(newForm("task"))
 	   <form action="/tasks" method="POST">
 		   <div class="form-actions">
 		       <button type="submit">Update a Task</button>
 		   </div>
 	   </form>
    }
+   </td>
+   </table>
 
    <h1> List of Tasks</h1>
    @tasks.map { task => 
        <h2>
-           || Task ID: @task._1 || Owner: @{owner(task._2.toInt -1)} || Status:  @task._3 || Last Updated: @task._4 ||
+           || Task ID: @task._1 || Owner: @{owner(task._2.toInt -1)} || Task: @task._3 || Status: @{status(task._2.toInt -1)} || Last Updated: @task._5 ||
        </h2>
    }
 

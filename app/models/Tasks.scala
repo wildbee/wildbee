@@ -4,19 +4,21 @@ import scala.slick.driver.PostgresDriver.simple._
 import java.sql.Timestamp
 import java.util.Date
 
-case class Tasks(ownerId: Long, status: String)
+case class Tasks(ownerId: Long, task: String)
                  
 //TODO: Make a controller for the Tasks
 object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") {
   def id           = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def ownerId      = column[Long]("owner")
-  def status       = column[String]("status") //TODO: Maybe use a type Status rather than a String?
+  def task				 = column[String]("task", O.NotNull)
+  //def status       = column[String]("status") //TODO: Maybe use a type Status rather than a String?
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
   def ownerName    = foreignKey("fk_owner", ownerId, Users)(_.id)
+  def status       = foreignKey("fk_status", task, StatusStates)(_.task) 
   
-  def * =  id ~ ownerId ~ status ~ creationTime ~ lastUpdated
-  def autoInc = ownerId ~ status ~ creationTime ~ lastUpdated returning id
+  def * =  id ~ ownerId ~ task ~ creationTime ~ lastUpdated
+  def autoInc = ownerId ~ task ~ creationTime ~ lastUpdated returning id
   
   /** YYYY-MM-DD HH:MM:SS.MS */
   def currentTime = { 
@@ -24,13 +26,13 @@ object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") 
     new Timestamp(date.getTime())
   }
   
-  def create(owner: Long, status: String)(implicit session: Session) = {
-    autoInc.insert(owner, status, currentTime, currentTime)  
+  //TODO: Add validation to check if the owner exists
+  def create(owner: Long, task: String)(implicit session: Session) = {
+    autoInc.insert(owner, task, currentTime, currentTime)  
   } 
   
-  def update(taskId: Long, status: String)(implicit session: Session) = {
+  def update(taskId: Long)(implicit session: Session) = {
     val task = Tasks filter (_.id === taskId)
-    task map ( _.status      ) update(status)
     task map ( _.lastUpdated ) update(currentTime)
   }
   
