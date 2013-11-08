@@ -26,10 +26,11 @@ object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") 
     autoInc.insert(owner, status, currentTime, currentTime)  
   } 
   
-  def update(taskId: Long, status: String)(implicit session: Session) = { //Is this the best way?
-    Tasks.where(_.id === taskId) 	// Find row with matching task
-    .map(_.lastUpdated)				// Get column "lastUpdated"
-    .update(currentTime)			// Update with current time
+  def update(taskId: Long, status: String)(implicit session: Session) = {
+    val task = Tasks filter (_.id === taskId)
+    task map ( _.status      ) update(status)
+    task map ( _.lastUpdated ) update(currentTime)
+
   }
   
   def delete(taskId: Long)(implicit session: Session) = {

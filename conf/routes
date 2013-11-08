@@ -6,7 +6,10 @@
 GET     /                           controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /test                       controllers.Application.test
+GET     /tasks                      controllers.Application.tasks
+POST    /tasks                      controllers.Application.updateTask
+POST    /createTask                 controllers.Application.createTask
+POST    /deleteTask                 controllers.Application.deleteTask
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /formtest                   controllers.FormTest.index
 POST    /formtest                   controllers.FormTest.createUser

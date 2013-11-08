@@ -1,0 +1,26 @@
+@(message: String, task: String, owner: String)
+
+@import helper._
+
+@main(message) {
+
+   <h1>ETT</h1>
+   <form action="/tasks" method="POST">
+	   <div class="form-actions">
+	       <button type="submit">Mark Tasks as Old</button>
+	   </div>
+   </form>
+   <form action="/createTask" method="POST">
+	   <div class="form-actions">
+	       <button type="submit">Create a Task</button>
+	   </div>
+   </form>
+   <form action="/deleteTask" method="POST">
+	   <div class="form-actions">
+	       <button type="submit">Delete a Task</button>
+	   </div>
+   </form>
+   <h2>@task</h2>
+   <h2>@owner</h2>
+
+}

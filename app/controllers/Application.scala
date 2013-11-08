@@ -20,9 +20,9 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready, well maybe"))
   }
   
-  def test = Action {
+  def tasks = Action {
     database withSession {
-      Tasks.create(1, "New")
+      
       val results = for (p <- Tasks) yield p
       val tasks = results.list.toString
       val query = results.selectStatement.toString
@@ -31,9 +31,30 @@ object Application extends Controller {
         t <- Tasks
         u <- t.ownerName
       } yield u
-      Tasks.update(3, "OLD")
+      
       val ownerName = owners.list.toString
-      Ok(views.html.test("Testing Grounds", tasks, query, ownerName))
+      Ok(views.html.tasks("Testing Grounds", tasks, ownerName))
     }
+  }
+  
+  def updateTask() = Action { implicit request =>
+    database withSession {
+      Tasks.update(1, "Old")
+    }
+    Redirect(routes.Application.tasks)
+  }
+  
+  def createTask() = Action { implicit request =>
+    database withSession {
+      Tasks.create(1, "New")
+    }
+    Redirect(routes.Application.tasks)
+  }
+  
+   def deleteTask() = Action { implicit request =>
+    database withSession {
+      Tasks.delete(3)
+    }
+    Redirect(routes.Application.tasks)
   }
 }
