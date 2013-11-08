@@ -10,16 +10,24 @@ import play.api.Play.current
 import scala.slick.session.Database.threadLocalSession
 import scala.slick.driver.PostgresDriver.simple._
 
-//TODO: What are the naming conventions?
-//TODO: When do you decide to create a new controller?
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.format.Formats._ //To get a Long in a form
+
+
 object TaskController extends Controller {
   lazy val database = Database.forDataSource(DB.getDataSource())
   
+  val taskForm = Form(
+  mapping(
+    "owner" -> of[Long],
+    "status" -> nonEmptyText
+  )(Tasks.apply)(Tasks.unapply))
+      
   def index = Action {
     database withSession {
       val results = for (p <- Tasks) yield p
       val tasks = results.list.toString
-      val query = results.selectStatement.toString
       
       val owners = for {
         t <- Tasks
@@ -27,28 +35,40 @@ object TaskController extends Controller {
       } yield u
       
       val ownerName = owners.list.toString
-      Ok(views.html.tasks("Testing Grounds", tasks, ownerName))
+      Ok(views.html.tasks("Testing Grounds", taskForm, tasks, ownerName))
     }
-  }
-  
-  def updateTask() = Action { implicit request =>
-    database withSession {
-      Tasks.update(8, "Old")
-    }
-     Redirect(routes.TaskController.index)
   }
   
   def createTask() = Action { implicit request =>
-    database withSession {
-      Tasks.create(1, "New")
-    }
-    Redirect(routes.TaskController.index)
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
+      task => {
+        database withSession { Tasks.create(task.ownerId, task.status) }
+        Redirect(routes.TaskController.index)
+      }
+    )    
+  }
+    
+  def updateTask() = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
+      task => {
+        database withSession { Tasks.update(task.ownerId, task.status) }
+        Redirect(routes.TaskController.index)
+      }
+    )  
+     
   }
   
+
+  
    def deleteTask() = Action { implicit request =>
-    database withSession {
-      Tasks.delete(9)
-    }
-    Redirect(routes.TaskController.index)
-  }
+     taskForm.bindFromRequest.fold(
+       errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
+       task => {
+         database withSession { Tasks.delete(task.ownerId) }
+         Redirect(routes.TaskController.index)
+       }
+     )
+   }
 }
