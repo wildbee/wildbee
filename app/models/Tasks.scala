@@ -33,7 +33,7 @@ object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") 
   
   def update(taskId: Long)(implicit session: Session) = {
     val task = Tasks filter (_.id === taskId)
-    task map ( _.lastUpdated ) update(currentTime)
+    task map (_.lastUpdated) update(currentTime)
   }
   
   def delete(taskId: Long)(implicit session: Session) = {

@@ -58,7 +58,10 @@ object TaskController extends Controller {
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
-        database withSession { Tasks.update(t.ownerId) }
+        database withSession { 
+          Tasks.update(t.ownerId)
+          StatusStates.update(t.task) //TODO: Seems wrong should be interacing with workflows!
+        }
         Redirect(routes.TaskController.index)
       }
     )  

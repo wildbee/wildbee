@@ -4,6 +4,10 @@ import scala.slick.driver.PostgresDriver.simple._
 
 trait Status {
 	val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
+	def nextState (status: String) = { //This is a bad implementation CHANGE!
+		val idx = (availableStatuses.indexOf(status) + 1) % availableStatuses.size //UGLY
+		availableStatuses(idx) //The horror......
+	}
 }
 
 /** Use a trait instead
@@ -50,7 +54,11 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") w
 	  autoInc.insert(task, availableStatuses.head) //TODO: Not Good
 	}
 	
+	/** MORE UGLY SCALA CODE FOR FINDING YOUR OWN STATUS MUST BE A BETTER WAY 
+	 *  CHANGE LATER !!!*/
 	def update(task: String)(implicit session: Session) = {
 	  val currentState = StatusStates filter (_.task === task)
+	  val self = for { s <- StatusStates if s.task === task } yield s.status
+	  currentState map ( _.status ) update( nextState(self.list.head) )
 	}
 }
