@@ -11,5 +11,9 @@ POST    /tasks                      controllers.TaskController.updateTask
 POST    /createTask                 controllers.TaskController.createTask
 POST    /deleteTask                 controllers.TaskController.deleteTask
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
-GET     /formtest                   controllers.FormTest.index
-POST    /formtest                   controllers.FormTest.createUser
+
+GET     /users                      controllers.UsersController.index
+POST    /users                      controllers.UsersController.create
+PUT     /users                      controllers.UsersController.update
+GET     /users/new                  controllers.UsersController.newUser
+GET     /users/edit                 controllers.UsersController.edit

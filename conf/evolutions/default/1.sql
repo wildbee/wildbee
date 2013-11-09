@@ -4,8 +4,8 @@
 # --- !Ups
 
 create table "tasks" ("ID" SERIAL NOT NULL PRIMARY KEY,"OWNER" BIGINT NOT NULL,"STATUS" VARCHAR(254) NOT NULL,"CREATION_TIME" TIMESTAMP NOT NULL,"LAST_UPDATED" TIMESTAMP NOT NULL);
-create table "users" ("ID" SERIAL NOT NULL PRIMARY KEY,"NAME" VARCHAR(254) NOT NULL,"EMAIL" VARCHAR(254) NOT NULL,"ADMIN" BOOLEAN DEFAULT false NOT NULL);
-alter table "tasks" add constraint "fk_usr_location" foreign key("OWNER") references "users"("ID") on update NO ACTION on delete NO ACTION;
+create table "users" ("id" SERIAL NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL);
+alter table "tasks" add constraint "fk_usr_location" foreign key("OWNER") references "users"("id") on update NO ACTION on delete NO ACTION;
 
 # --- !Downs
 
