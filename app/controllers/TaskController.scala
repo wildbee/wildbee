@@ -46,9 +46,10 @@ object TaskController extends Controller {
       
       val owners = joins   map { _._1 }
       val statuses = joins map { _._2 }
+      println("Statuses :: " + statuses.list)
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
       
-      Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
+      Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list.reverse, statuses.list.reverse, availableStatuses))
     }
   }
   
@@ -59,6 +60,7 @@ object TaskController extends Controller {
         database withSession { 
           Tasks.create(t.ownerId, t.task) 
           StatusStates.create(t.task)
+          Workflows.create(t.task)
         }
         Redirect(routes.TaskController.index)
       }
@@ -71,7 +73,9 @@ object TaskController extends Controller {
       t => {
         database withSession { 
           Tasks.update(t.ownerId)
-          StatusStates.update(t.task) //TODO: Seems wrong should be interacing with workflows!
+          val task = Tasks.where { _.task === t.task }
+          val taskId = (task map { _.id }).list.head
+          StatusStates.update(taskId) //TODO: Seems wrong should be interacing with workflows!
         }
         Redirect(routes.TaskController.index)
       }
@@ -89,7 +93,16 @@ object TaskController extends Controller {
     )
   }
   
-  def updateStatus() = Action { implicit request =>
-    Redirect(routes.TaskController.index)
+  def updateWorkflow() = Action { implicit request =>
+    workForm.bindFromRequest.fold(
+      errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
+      w => {
+        println("Stage One: " + w.stage1)
+        println("Stage Two: " + w.stage2)
+        println("Stage Three: " + w.stage3)
+        Redirect(routes.TaskController.index)
+        }
+    )   
+   
   }
 }
