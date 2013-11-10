@@ -1,0 +1,4 @@
+@(q: List[(_, String, String)])
+@for(values <- q) {
+    <p>@values._1 - @values._2 - @values._3</p>
+}
