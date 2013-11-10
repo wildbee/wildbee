@@ -62,7 +62,7 @@ TODO: Don't have this long List, should be able to define by Task type
        Update Status button does nothing for now.
        If you want to see example of status being updated please use the update a task button
        *@
-       @form(routes.TaskController.updateWorkflow) {
+       @form(routes.TaskController.updateWorkflow(task._1)) {
            @select(workForm("stage1"), options(comboBox))
            @select(workForm("stage2"), options(comboBox))
            @select(workForm("stage3"), options(comboBox))

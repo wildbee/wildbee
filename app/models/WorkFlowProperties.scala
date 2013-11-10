@@ -2,33 +2,43 @@ package models
 
 import scala.slick.driver.PostgresDriver.simple._
 
-//Maybe status should be its own type
-trait Status {
+//TODO: Maybe status should be its own type
+/** Currently Unused
+trait Status { 
 	val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-	def nextState (status: String) = { //This is a bad implementation CHANGE!
-		val idx = (availableStatuses.indexOf(status) + 1) % availableStatuses.size //....
-		availableStatuses(idx) //The horror......
-	}
-}
+}*/
 
+/** Define the workflow for a task */
 case class Workflows(stage1: String, stage2: String, stage3: String)
-object Workflows extends Table [(Long, String)]("workflows") with Status {
-	def id = column[Long]("uuid", O.PrimaryKey, O.AutoInc)
-	def task = column[String]("task") //Should be using uuid
+object Workflows extends Table [(Long, String, String)]("workflows") {
+	def id          = column[Long]("uuid", O.PrimaryKey, O.AutoInc)
+	def task        = column[String]("task")
+	def logic       = column[String]("logic") //TODO: Do not store as a comma separated string?
 	def taskName    = foreignKey("fk_task", task, StatusStates)(_.task)
 	
-	def * = id ~ task
-	def autoInc = task returning id
+	def *       = id ~ task ~ logic
+	def autoInc = task ~ logic returning id
 	
-  def nextState() { println("Next State") }
+	def defineLogic(id: Long, state : String*)(implicit session: Session) = {
+	  val currentState = Workflows filter (_.id === id)
+	  currentState map ( _.logic ) update(state mkString ",")
+	}
 	
-	 def create(task: String)(implicit session: Session) = {
-    autoInc.insert(task)
+	//TODO: Find a better way to express this
+  def nextState(id: Long, state: String)(implicit session: Session) = { 
+    val logic = (for { w <- Workflows if w.id === id } yield w.logic).list.head.split(",")
+    val idx = (logic.indexOf(state) + 1) % logic.size
+    logic(idx)
+  }
+	
+	def create(task: String, state: String)(implicit session: Session) = {
+    autoInc.insert(task, state)
   }
 	
 }
 
-object StatusStates extends Table [(Long, String, String)]("allowed_statuses") with Status {
+/** Define the packages current state */ //TOOD: Tie this in with a package rather than a task
+object StatusStates extends Table [(Long, String, String)]("allowed_statuses") {
 	def id = column[Long]("uuid", O.PrimaryKey, O.AutoInc)
 	def task = column[String]("task")
 	def status = column[String]("status")
@@ -36,18 +46,14 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") w
 	def * = id ~ task ~ status
 	def autoInc = task ~ status returning id
 	
-	def create(task: String)(implicit session: Session) = {
-	  autoInc.insert(task, availableStatuses.head) //TODO: Change this is not good
+	def create(task: String, state: String)(implicit session: Session) = {
+	  autoInc.insert(task, state) //This is temporary
 	}
 	
-	/** There must be a better way to find your current status */
-	/** This is currently bugged, updated a task seems to update all tasks statuses */
-	def update(taskId: Long)(implicit session: Session) = {
-	  val currentState = StatusStates filter (_.id === taskId)
-	  val self = for { s <- StatusStates if s.id === taskId } yield s.status
-	  Workflows.nextState
-	  println("Task ID :: " + taskId)
-	  println("Current Status :: " + self.list.head)
-	  currentState map ( _.status ) update(nextState(self.list.head))
+	/** There should be a better way to find your current status */
+	def update(id: Long)(implicit session: Session) = {
+	  val currentState = StatusStates filter (_.id === id)
+	  val status = for { s <- StatusStates if s.id === id } yield s.status
+	  currentState map ( _.status ) update(Workflows.nextState(id, status.list.head))
 	}
 }

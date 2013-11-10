@@ -25,8 +25,6 @@ object TaskController extends Controller {
 	)(Tasks.apply)(Tasks.unapply))
   
 	/** Testing stuff */
-	
-	
 	val workForm = Form(
 	    mapping(
 	  "stage1" -> text,
@@ -47,8 +45,8 @@ object TaskController extends Controller {
       val owners = joins   map { _._1 }
       val statuses = joins map { _._2 }
       println("Statuses :: " + statuses.list)
-      val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
       
+      val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
       Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list.reverse, statuses.list.reverse, availableStatuses))
     }
   }
@@ -58,9 +56,10 @@ object TaskController extends Controller {
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
         database withSession { 
+          //TODO: Change this to use uuid, this looks fragile
           Tasks.create(t.ownerId, t.task) 
-          StatusStates.create(t.task)
-          Workflows.create(t.task)
+          StatusStates.create(t.task, "Open")
+          Workflows.create(t.task, "Open,In Progress,Closed")//Default workflow
         }
         Redirect(routes.TaskController.index)
       }
@@ -93,16 +92,16 @@ object TaskController extends Controller {
     )
   }
   
-  def updateWorkflow() = Action { implicit request =>
+  //TODO: Need some sort of validation
+  //If you change the work flow from A -> B -> C to A -> E -> F
+  //What happens if your package was in state B?
+  def updateWorkflow(id :Long) = Action { implicit request =>
     workForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       w => {
-        println("Stage One: " + w.stage1)
-        println("Stage Two: " + w.stage2)
-        println("Stage Three: " + w.stage3)
+        database withSession { Workflows.defineLogic(id, w.stage1, w.stage2, w.stage3) }
         Redirect(routes.TaskController.index)
-        }
+      }
     )   
-   
   }
 }
