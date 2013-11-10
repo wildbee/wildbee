@@ -1,0 +1,11 @@
+@(userForm: Form[User])
+@main("Product Form") {
+  @helper.form(action = routes.UsersController.create) {
+    @helper.textarea((userForm("name")))
+    @helper.inputText(userForm("email"))
+
+    <div class="form-actions">
+      <button type="submit">Create User</button>
+    </div>
+  }
+}

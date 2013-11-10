@@ -1,21 +1,20 @@
 package models
 
 import scala.slick.driver.PostgresDriver.simple._
+import java.util.UUID
 
-object Users extends Table[(Long, String, String)]("users") {
-  def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("NAME")
-  def email = column[String]("EMAIL")
+case class User(name: String, email: String)
 
-  // TODO: We'd better move it to SystemAdministrator and UserAdminstor tables
-  // def admin = column[Boolean]("ADMIN", O.Default[Boolean](false))
+object Users extends Table[(UUID, String, String)]("users") {
+  def uuid = column[UUID]("id", O.PrimaryKey)
+  def name = column[String]("name")
+  def email = column[String]("email")
 
-  def * =  id ~ name ~ email
+  def * =  uuid ~ name ~ email
+  private def autoUUID = uuid ~ name ~ email returning uuid
 
-  def autoInc = name ~ email returning id
+  def insert(name: String, email: String)
+            (implicit session: Session) = autoUUID.insert(UUID.randomUUID(), name, email)
 
-  def insert(name: String,
-             email: String
-            )
-           (implicit session: Session) = autoInc.insert(name, email)
+  def insert(u: User)(implicit session: Session) = autoUUID.insert(UUID.randomUUID(), u.name, u.email)
 }
