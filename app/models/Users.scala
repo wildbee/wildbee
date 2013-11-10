@@ -6,7 +6,7 @@ import java.util.UUID
 case class User(name: String, email: String)
 
 object Users extends Table[(UUID, String, String)]("users") {
-  def uuid = column[UUID]("id", O.PrimaryKey)
+  def uuid = column[UUID]("uuid", O.PrimaryKey)
   def name = column[String]("name")
   def email = column[String]("email")
 

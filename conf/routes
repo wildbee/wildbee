@@ -16,3 +16,5 @@ POST    /users/:uuid                controllers.UsersController.update(uuid: Str
 GET     /users/:uuid/edit           controllers.UsersController.edit(uuid: String)
 GET     /users/:uuid                controllers.UsersController.show(uuid: String)
 
+GET     /tasks/new                  controllers.TasksController.newTask
+POST    /tasks                      controllers.TasksController.create
