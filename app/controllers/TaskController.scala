@@ -44,7 +44,8 @@ object TaskController extends Controller {
       
       val owners = joins   map { _._1 }
       val statuses = joins map { _._2 }
-      println("Statuses :: " + statuses.list)
+      println("Statuses :: " + statuses.list.reverse)
+      println("Owners :: " + owners.list.reverse)
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
       Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list.reverse, statuses.list.reverse, availableStatuses))
@@ -86,7 +87,11 @@ object TaskController extends Controller {
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
       t => {
-        database withSession { Tasks.delete(t.ownerId) }
+        database withSession { 
+          Tasks.delete(t.ownerId) 
+          Workflows.delete(t.ownerId)
+          StatusStates.delete(t.ownerId)
+        }
         Redirect(routes.TaskController.index)
       }
     )

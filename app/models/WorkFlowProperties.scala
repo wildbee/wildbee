@@ -35,6 +35,10 @@ object Workflows extends Table [(Long, String, String)]("workflows") {
     autoInc.insert(task, state)
   }
 	
+	def delete(id: Long)(implicit session: Session) = {
+    Workflows where { _.id === id } delete
+  }
+	
 }
 
 /** Define the packages current state */ //TOOD: Tie this in with a package rather than a task
@@ -50,6 +54,9 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") {
 	  autoInc.insert(task, state) //This is temporary
 	}
 	
+	def delete(id: Long)(implicit session: Session) = {
+    StatusStates where { _.id === id } delete
+  }
 	/** There should be a better way to find your current status */
 	def update(id: Long)(implicit session: Session) = {
 	  val currentState = StatusStates filter (_.id === id)
