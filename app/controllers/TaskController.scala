@@ -26,10 +26,8 @@ object TaskController extends Controller {
   
 	/** Testing stuff */
 	val workForm = Form(
-	    mapping(
-	  "stage1" -> text,
-	  "stage2" -> text,
-	  "stage3" -> text
+	  mapping(
+	    "stage" -> list(text)
 	  )(Workflows.apply)(Workflows.unapply))
 	
   def index = Action {
@@ -104,7 +102,7 @@ object TaskController extends Controller {
     workForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       w => {
-        database withSession { Workflows.defineLogic(id, w.stage1, w.stage2, w.stage3) }
+        database withSession { Workflows.defineLogic(id, w.stage) }
         Redirect(routes.TaskController.index)
       }
     )   

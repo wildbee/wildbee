@@ -9,7 +9,7 @@ trait Status {
 }*/
 
 /** Define the workflow for a task */
-case class Workflows(stage1: String, stage2: String, stage3: String)
+case class Workflows(stage: List[String])
 object Workflows extends Table [(Long, String, String)]("workflows") {
 	def id          = column[Long]("uuid", O.PrimaryKey, O.AutoInc)
 	def task        = column[String]("task")
@@ -19,15 +19,15 @@ object Workflows extends Table [(Long, String, String)]("workflows") {
 	def *       = id ~ task ~ logic
 	def autoInc = task ~ logic returning id
 	
-	def defineLogic(id: Long, state : String*)(implicit session: Session) = {
+	def defineLogic(id: Long, state : List[String])(implicit session: Session) = {
 	  val currentState = Workflows filter (_.id === id)
 	  val logic = state mkString ","
 	  currentState map ( _.logic ) update (logic)
-	  println("STATE " + state(0))
+	  println("STATE " + state.head)
 	  println("logic :: " + logic)
 	  //If current state not defined in logic set state to first state in logic
 	  if (!logic.contains(StatusStates.currentStatus(id))){
-	    StatusStates.update(id, state(0))
+	    StatusStates.update(id, state.head)
 	  }
 	}
 	
