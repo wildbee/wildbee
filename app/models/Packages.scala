@@ -17,7 +17,7 @@ Date updated
 OS version
  */
 
-object Packages extends Table[(
+object Package extends Table[(
   UUID, // id 
   String, // name
   UUID, // creator id
@@ -27,17 +27,17 @@ object Packages extends Table[(
   String, // OS version
   Timestamp, // date created
   Timestamp // date updated
-  )]("PACKAGES") {
+  )]("package") {
   
-  def id = column[UUID]("ID", O.PrimaryKey)
-  def name = column[String]("NAME")
-  def creator = column[UUID]("CREATOR_ID")
-  def assignee = column[UUID]("ASSIGNEE_ID")
-  def ccList = column[String]("CC_LIST")
-  def status = column[String]("STATUS")
-  def osVersion = column[String]("OS_VERSION")
-  def creationTime = column[Timestamp]("CREATION_TIME",O.NotNull)
-  def lastUpdated = column[Timestamp]("LAST_UPDATED",O.NotNull)
+  def id = column[UUID]("id", O.PrimaryKey)
+  def name = column[String]("name")
+  def creator = column[UUID]("creator_id")
+  def assignee = column[UUID]("assignee_id")
+  def ccList = column[String]("cc_list")
+  def status = column[String]("status")
+  def osVersion = column[String]("os_version")
+  def creationTime = column[Timestamp]("creation_time",O.NotNull)
+  def lastUpdated = column[Timestamp]("last_updated",O.NotNull)
   //def task = column[Task]("TASK_ID")
   // A package belongs to only one task: 			
   //def belongsToTask = foreignKey("TASK_FK", task, Task)(_.id)
