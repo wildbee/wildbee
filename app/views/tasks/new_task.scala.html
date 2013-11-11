@@ -3,7 +3,7 @@
   @helper.form(action = routes.TasksController.create) {
     @helper.textarea((taskForm("name")))
     @helper.select(
-        taskForm("owner_uuid"),
+        taskForm("owner_id"),
         helper.options(users)
     )
 

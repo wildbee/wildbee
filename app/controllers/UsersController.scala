@@ -25,13 +25,18 @@ object UsersController extends Controller {
       "name" -> nonEmptyText,
       "email" -> email)(User.apply)(User.unapply))
 
+  val query_email = for {
+    email <- Parameters[String]
+    u <- Users if u.email is email
+  } yield u
+
   def create = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => Ok("Are you crazy?"),
       user => {
         database withSession {
-          val uuid = Users.insert(user)
-          Redirect(routes.UsersController.show(uuid.toString))
+          val email = Users.insert(user)
+          Redirect(routes.UsersController.show(email))
         }
       }
     )
@@ -48,48 +53,39 @@ object UsersController extends Controller {
     Ok(views.html.users.new_user(userForm))
   }
 
-  def edit(uuid_str: String) = Action {
-    val uuid = UUID.fromString(uuid_str)
+  def edit(email: String) = Action {
 
     database withSession {
-      val q = for {
-        uuid <- Parameters[UUID]
-        u <- Users if u.uuid is uuid
-      } yield u
-      val user = q(uuid).first
+      val user = query_email(email).first
       val filledForm = userForm.fill(User(user._2, user._3))
-      Ok(views.html.users.edit_user(uuid_str, user, filledForm))
+      Ok(views.html.users.edit_user(user, filledForm))
     }
   }
 
-  def update(uuid_str: String) = Action { implicit request =>
+  def update(email: String) = Action { implicit request =>
     userForm.bindFromRequest.fold(
       formWithErrors => Ok("Are you crazy?"),
       user => {
         database withSession {
-          val uuid = UUID.fromString(uuid_str)
           val q = for {
-            u <- Users if u.uuid === uuid
+            u <- Users if u.email === email
           } yield u
-          q.update(uuid, user.name, user.email)
+
+          q.update(q.first._1, user.name, user.email)
           q.updateStatement
           q.updateInvoker
-          Redirect(routes.UsersController.show(uuid_str))
+          Redirect(routes.UsersController.show(user.email))
         }
       }
     )
   }
 
-  def show(uuid_str: String) = Action {
-    val uuid = UUID.fromString(uuid_str)
+  def show(email: String) = Action {
 
     database withSession {
-      val q = for {
-        uuid <- Parameters[UUID]
-        u <- Users if u.uuid is uuid
-      } yield u
+      val q = query_email(email).first
 
-      Ok(views.html.users.show(q(uuid).first))
+      Ok(views.html.users.show(q))
     }
   }
 }

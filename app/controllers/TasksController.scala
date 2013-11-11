@@ -23,7 +23,7 @@ object TasksController extends Controller {
   val taskForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "owner_uuid" -> nonEmptyText)(Task.apply)(Task.unapply))
+      "owner_id" -> nonEmptyText)(Task.apply)(Task.unapply))
 
   def create = Action { implicit request =>
     taskForm.bindFromRequest.fold(

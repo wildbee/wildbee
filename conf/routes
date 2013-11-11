@@ -10,11 +10,11 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
 GET     /users                      controllers.UsersController.index
-POST    /users                      controllers.UsersController.create
-GET     /users/new                  controllers.UsersController.newUser
-POST    /users/:uuid                controllers.UsersController.update(uuid: String)
-GET     /users/:uuid/edit           controllers.UsersController.edit(uuid: String)
-GET     /users/:uuid                controllers.UsersController.show(uuid: String)
+POST    /user                       controllers.UsersController.create
+GET     /user/new                   controllers.UsersController.newUser
+POST    /user/:email                controllers.UsersController.update(email: String)
+GET     /user/:email/edit           controllers.UsersController.edit(email: String)
+GET     /user/:email                controllers.UsersController.show(email: String)
 
-GET     /tasks/new                  controllers.TasksController.newTask
-POST    /tasks                      controllers.TasksController.create
+GET     /task/new                   controllers.TasksController.newTask
+POST    /task                       controllers.TasksController.create

@@ -1,7 +1,7 @@
-@(uuid_str: String, q: (_, String, String), userForm: Form[User])
+@(q: (_, String, String), userForm: Form[User])
 
 @main("Product Form") {
-@helper.form(action = routes.UsersController.update(q._1.toString)) {
+@helper.form(action = routes.UsersController.update(q._3.toString)) {
 @helper.textarea(userForm("name"))
 @helper.inputText(userForm("email"))
 

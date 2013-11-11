@@ -2,19 +2,26 @@ package models
 
 import scala.slick.driver.PostgresDriver.simple._
 import java.util.UUID
+import helpers.UUIDGenerator
 
 case class User(name: String, email: String)
 
-object Users extends Table[(UUID, String, String)]("users") {
-  def uuid = column[UUID]("uuid", O.PrimaryKey)
+/**
+ * Entity model for wildbee_user
+ *
+ * Note: cannot name the table as simply 'user' since it conflicts
+ * with the 'user' table already created in the database by default
+ */
+object Users extends Table[(UUID, String, String)]("wildbee_user") {
+  def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def email = column[String]("email")
 
-  def * =  uuid ~ name ~ email
-  private def autoUUID = uuid ~ name ~ email returning uuid
+  def * =  id ~ name ~ email
+  def autoEmail = id ~ name ~ email returning email
 
   def insert(name: String, email: String)
-            (implicit session: Session) = autoUUID.insert(UUID.randomUUID(), name, email)
+            (implicit session: Session) = autoEmail.insert(UUID.randomUUID(), name, email)
 
-  def insert(u: User)(implicit session: Session) = autoUUID.insert(UUID.randomUUID(), u.name, u.email)
+  def insert(u: User)(implicit session: Session) = autoEmail.insert(UUIDGenerator.getUUID, u.name, u.email)
 }
