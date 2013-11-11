@@ -14,7 +14,7 @@ For example, show page should use following URL:
 
 And list page will use plural form:
 
-    /packages/resteasy
+    /packages
 
 ## Coding Guides ##
 
@@ -62,6 +62,7 @@ Try to use 'val' only:
 ### Using plural form for join table, and singular form for class table ###
 
 For example, user table should be named 'user' instead of 'users', and the join table between task and user should be named 'task_users' instead of 'task_user'.
+
 
 
 
