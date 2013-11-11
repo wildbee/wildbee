@@ -48,7 +48,7 @@ object TaskController extends Controller {
       println("Owners :: " + owners.list.reverse)
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-      Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list.reverse, statuses.list.reverse, availableStatuses))
+      Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
     }
   }
   
