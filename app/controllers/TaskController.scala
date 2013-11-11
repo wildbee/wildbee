@@ -42,8 +42,6 @@ object TaskController extends Controller {
       
       val owners = joins   map { _._1 }
       val statuses = joins map { _._2 }
-      println("Statuses :: " + statuses.list.reverse)
-      println("Owners :: " + owners.list.reverse)
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
       Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
@@ -73,7 +71,7 @@ object TaskController extends Controller {
           Tasks.update(t.ownerId)
           val task = Tasks.where { _.task === t.task }
           val taskId = (task map { _.id }).list.head
-          StatusStates.update(taskId) //TODO: Seems wrong should be interacing with workflows!
+          StatusStates.update(taskId)
         }
         Redirect(routes.TaskController.index)
       }
@@ -95,9 +93,6 @@ object TaskController extends Controller {
     )
   }
   
-  //TODO: Need some sort of validation
-  //If you change the work flow from A -> B -> C to A -> E -> F
-  //What happens if your package was in state B?
   def updateWorkflow(id :Long) = Action { implicit request =>
     workForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
