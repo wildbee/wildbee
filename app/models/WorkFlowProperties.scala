@@ -21,7 +21,14 @@ object Workflows extends Table [(Long, String, String)]("workflows") {
 	
 	def defineLogic(id: Long, state : String*)(implicit session: Session) = {
 	  val currentState = Workflows filter (_.id === id)
-	  currentState map ( _.logic ) update(state mkString ",")
+	  val logic = state mkString ","
+	  currentState map ( _.logic ) update (logic)
+	  println("STATE " + state(0))
+	  println("logic :: " + logic)
+	  //If current state not defined in logic set state to first state in logic
+	  if (!logic.contains(StatusStates.currentStatus(id))){
+	    StatusStates.update(id, state(0))
+	  }
 	}
 	
 	//TODO: Find a better way to express this
@@ -50,6 +57,11 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") {
 	def * = id ~ task ~ status
 	def autoInc = task ~ status returning id
 	
+	def currentStatus(id: Long)(implicit session: Session) = {
+	  val status = for { s <- StatusStates if s.id === id } yield s.status
+	  status.list.head
+	}
+	
 	def create(task: String, state: String)(implicit session: Session) = {
 	  autoInc.insert(task, state) //This is temporary
 	}
@@ -57,10 +69,13 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") {
 	def delete(id: Long)(implicit session: Session) = {
     StatusStates where { _.id === id } delete
   }
+	
 	/** There should be a better way to find your current status */
-	def update(id: Long)(implicit session: Session) = {
+	def update(id: Long, state: String = "")(implicit session: Session) = {
 	  val currentState = StatusStates filter (_.id === id)
-	  val status = for { s <- StatusStates if s.id === id } yield s.status
-	  currentState map ( _.status ) update(Workflows.nextState(id, status.list.head))
+	  val nextState = 
+	    if(state == "") Workflows.nextState(id, currentStatus(id)) 
+	    else state
+	  currentState map ( _.status ) update (nextState)
 	}
 }
