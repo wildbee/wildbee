@@ -1,0 +1,14 @@
+@(packForm: Form[Package])
+@main("Add a Package") {
+  	@helper.form(action = routes.PackagesController.create) {
+    @helper.textarea((packForm("name")))
+    @helper.textarea((packForm("creator")))
+    @helper.textarea((packForm("assignee")))
+    @helper.textarea((packForm("ccList")))
+    @helper.textarea((packForm("status")))
+    @helper.textarea((packForm("osVersion")))
+    <div class="form-actions">
+      <button type="submit">Add Package</button>
+    </div>
+  }
+}

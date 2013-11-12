@@ -28,4 +28,8 @@ object UUIDGenerator {
     buffer.putLong(uuid.getLeastSignificantBits)
     buffer.array
   }
+
+  def fromString(suuid: String): java.util.UUID = {
+    java.util.UUID.fromString(suuid)
+  }
 }

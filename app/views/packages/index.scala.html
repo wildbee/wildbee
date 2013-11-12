@@ -1,0 +1,9 @@
+@(packs: List[(_, String, _, _, String, String, String, _, _)])
+ 
+<h1>Packages</h1>
+
+<ul> 
+@packs.map { p =>
+  <li>name: @p._1</li>
+} 
+</ul>
