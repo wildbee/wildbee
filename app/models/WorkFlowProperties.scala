@@ -59,6 +59,9 @@ object Workflows extends Table [(Long, Long, String, String)]("workflows") {
       .map (_.id)               //Find get the task id
       .list.head                //Convert Column[Int] into an Int
     
+    if (!stateTable.contains(PackageStatuses.currentStatus(taskId)))
+      PackageStatuses.update(taskId, stateTable.head)       //Default to first workflow state if package in a state not defined in workflow
+      
     delete(taskId)              //Delete previous task workflow if any
 	  stateTransistions map { case(state, nextState) => autoInc.insert(taskId, state, nextState) }
   }
