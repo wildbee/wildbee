@@ -7,6 +7,6 @@ package helpers
  *
  */
 object Config {
-  private val _pkGenerator = UUIDPrimaryKeyGenerator
+  private val _pkGenerator = DefaultPrimaryKeyGenerator
   def pkGenerator = _pkGenerator
 }

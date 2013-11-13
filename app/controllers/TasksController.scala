@@ -3,8 +3,6 @@ package controllers
 import play.api._
 import play.api.mvc._
 
-import helpers.UUIDGenerator
-
 import models._
 import play.api.db.DB
 import play.api.Play.current
@@ -14,8 +12,6 @@ import scala.slick.driver.PostgresDriver.simple._
 // for forms
 import play.api.data._
 import play.api.data.Forms._
-
-import java.util.UUID
 
 object TasksController extends Controller {
   lazy val database = Database.forDataSource(DB.getDataSource())
