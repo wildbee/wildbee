@@ -59,9 +59,9 @@ Try to use 'val' only:
 
 ## Table naming guide ##
 
-### Using plural form for join table, and singular form for class table ###
+### Using plural form and underscore for tables ###
 
-For example, user table should be named 'user' instead of 'users', and the join table between task and user should be named 'task_users' instead of 'task_user'.
+For example, user table should be named 'users', and the join table between task and user should be named 'task_users'.
 
 
 
