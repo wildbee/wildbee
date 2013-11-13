@@ -16,6 +16,7 @@ object Users extends Table[(UUID, String, String)]("users") {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def email = column[String]("email")
+  def uniqueEmail = index("idx_email", email, unique = true)
 
   def * =  id ~ name ~ email
   def autoEmail = id ~ name ~ email returning email
