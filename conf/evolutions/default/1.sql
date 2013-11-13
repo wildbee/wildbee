@@ -3,13 +3,13 @@
 
 # --- !Ups
 
-create table "task" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"owner_id" UUID NOT NULL);
-create table "wildbee_user" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL);
-alter table "task" add constraint "owner_fk" foreign key("owner_id") references "wildbee_user"("id") on update NO ACTION on delete NO ACTION;
+create table "tasks" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"owner_id" UUID NOT NULL);
+create table "users" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL);
+alter table "tasks" add constraint "owner_fk" foreign key("owner_id") references "users"("id") on update NO ACTION on delete NO ACTION;
 
 # --- !Downs
 
-alter table "task" drop constraint "owner_fk";
-drop table "task";
-drop table "wildbee_user";
+alter table "tasks" drop constraint "owner_fk";
+drop table "tasks";
+drop table "users";
 
