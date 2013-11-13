@@ -1,8 +1,8 @@
 package models
 
 import scala.slick.driver.PostgresDriver.simple._
+import helpers._
 import java.util.UUID
-import helpers.UUIDGenerator
 
 case class Task(name: String, owner: String)
 
@@ -16,5 +16,5 @@ object Tasks extends Table[(UUID, String, UUID)]("task") {
   private def autoId = id ~ name ~ owner returning id
 
   def insert(name: String, owner: String)
-            (implicit session: Session) = autoId.insert(UUIDGenerator.getUUID, name, UUID.fromString(owner))
+            (implicit session: Session) = autoId.insert(Config.pkGenerator.newKey, name, Config.pkGenerator.fromString(owner))
 }

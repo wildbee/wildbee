@@ -2,7 +2,7 @@ package models
 
 import scala.slick.driver.PostgresDriver.simple._
 import java.util.UUID
-import helpers.UUIDGenerator
+import helpers._
 
 case class User(name: String, email: String)
 
@@ -21,7 +21,7 @@ object Users extends Table[(UUID, String, String)]("wildbee_user") {
   def autoEmail = id ~ name ~ email returning email
 
   def insert(name: String, email: String)
-            (implicit session: Session) = autoEmail.insert(UUID.randomUUID(), name, email)
+            (implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, name, email)
 
-  def insert(u: User)(implicit session: Session) = autoEmail.insert(UUIDGenerator.getUUID, u.name, u.email)
+  def insert(u: User)(implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, u.name, u.email)
 }
