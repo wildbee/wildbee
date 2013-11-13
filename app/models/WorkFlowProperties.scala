@@ -2,7 +2,11 @@ package models
 
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.libs.json._
+
+import helpers._
+
 import java.util.Random
+import java.util.UUID
 
 //TODO: Maybe status should be its own type
 /** Currently Unused
@@ -12,17 +16,21 @@ trait Status {
 
 /** Define the workflow for a task */
 case class Workflows(stage: List[String])
-object Workflows extends Table [(Long, Long, String, String)]("workflows") {
-	def id            = column[Long]("id", O.PrimaryKey, O.AutoInc)
-	def taskId        = column[Long]("task_id")
+object Workflows extends Table [(UUID, UUID, String, String)]("workflows") {
+	def id            = column[UUID]("id", O.PrimaryKey)
+	def taskId        = column[UUID]("task_id")
 	def presentState  = column[String]("state")
 	def futureState   = column[String]("next_state")
 	
 	def *       = id ~ taskId ~ presentState ~ futureState
-	def autoInc = taskId ~ presentState ~ futureState returning id
+	def autoId  = id ~ taskId ~ presentState ~ futureState returning id
 	
-	
-  def nextState(id: Long, state: String)(implicit session: Session) = { 
+  def getTaskId(task: String)(implicit session: Session) = Tasks
+	      .filter(_.name === task ) //Find the corresponding task from Task table
+	      .map (_.id)               //Find get the task id
+	      .list.head                //Convert Column[Int] into an Int
+	      
+  def nextState(id: UUID, state: String)(implicit session: Session) = { 
     val transistions = Workflows
       .filter( _.taskId === id )
       .map (w => (w.presentState, w.futureState))
@@ -55,50 +63,57 @@ object Workflows extends Table [(Long, Long, String, String)]("workflows") {
 	  val shiftedStateTable = stateTable.tail ::: List(stateTable.head) //O(n) can we do better?
     val stateTransistions = stateTable zip shiftedStateTable
 	  val taskId = Tasks
-      .filter(_.task === task ) //Find the corresponding task from Task table
+      .filter(_.name === task ) //Find the corresponding task from Task table
       .map (_.id)               //Find get the task id
       .list.head                //Convert Column[Int] into an Int
     
     if (!stateTable.contains(PackageStatuses.currentStatus(taskId)))
-      PackageStatuses.update(taskId, stateTable.head)       //Default to first workflow state if package in a state not defined in workflow
+      PackageStatuses.update(task, stateTable.head)       //Default to first workflow state if package in a state not defined in workflow
       
-    delete(taskId)              //Delete previous task workflow if any
-	  stateTransistions map { case(state, nextState) => autoInc.insert(taskId, state, nextState) }
+    delete(task)              //Delete previous task workflow if any
+	  stateTransistions map { case(state, nextState) => autoId.insert(Config.pkGenerator.newKey, taskId, state, nextState) }
   }
 	
-	def delete(taskId: Long)(implicit session: Session) = {
-    Workflows filter { _.taskId === taskId } delete
+	def delete(task: String)(implicit session: Session) = {
+    Workflows filter { _.taskId === getTaskId(task) } delete
   }
 	
 }
 
 /** Define the packages current state */ //TOOD: Tie this in with a package rather than a task
-object PackageStatuses extends Table [(Long, String, String)]("allowed_statuses") {
-	def id     = column[Long]("id", O.PrimaryKey, O.AutoInc)
+object PackageStatuses extends Table [(UUID, UUID, String, String)]("allowed_statuses") {
+	def id     = column[UUID]("id", O.PrimaryKey)
+	def taskId = column[UUID]("task_id")
 	def task   = column[String]("task")
 	def status = column[String]("status")
 	
-	def *       = id ~ task ~ status
-	def autoInc = task ~ status returning id
+  def getTaskId(task: String)(implicit session: Session)  = Tasks
+      .filter(_.name === task ) //Find the corresponding task from Task table
+      .map (_.id)               //Find get the task id
+      .list.head                //Convert Column[Int] into an Int
+	      
+	def *       = id ~ taskId ~ task ~ status
+	def autoId  = id ~ taskId ~ task ~ status returning id
 	
-	def currentStatus(id: Long)(implicit session: Session) = {
-	  val status = for { s <- PackageStatuses if s.id === id } yield s.status
+	def currentStatus(id: UUID)(implicit session: Session) = {
+	  val status = for { s <- PackageStatuses if s.taskId === id } yield s.status
 	  status.list.head
 	}
 	
 	def create(task: String, state: String)(implicit session: Session) = {
-	  autoInc.insert(task, state) //This is temporary
+	  autoId.insert(Config.pkGenerator.newKey, getTaskId(task), task, state) //This is temporary
 	}
 	
-	def delete(id: Long)(implicit session: Session) = {
-    PackageStatuses where { _.id === id } delete
+	def delete(task: String)(implicit session: Session) = {
+    PackageStatuses where { _.id === getTaskId(task)  } delete
   }
 	
 	/** There should be a better way to find your current status */
-	def update(id: Long, state: String = "")(implicit session: Session) = {
-	  val currentState = PackageStatuses filter (_.id === id)
+	def update(task: String, state: String = "")(implicit session: Session) = {
+	  val taskId = getTaskId(task)
+	  val currentState = PackageStatuses filter (_.taskId === taskId)
 	  val nextState = state match {
-	    case ""   => Workflows.nextState(id, currentStatus(id))
+	    case ""   => Workflows.nextState(taskId, currentStatus(taskId))
 	    case _    => state
 	  }
 	  currentState map ( _.status ) update (nextState)

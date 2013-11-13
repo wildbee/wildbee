@@ -1,7 +1,7 @@
 @(message: String, 
-  newForm: Form[Tasks], 
+  newForm: Form[Task], 
   workForm: Form[Workflows],
-  tasks:   List[(Long, Long, String, java.sql.Timestamp, java.sql.Timestamp)], 
+  tasks:   List[(java.util.UUID, String, String, java.sql.Timestamp, java.sql.Timestamp)], 
   owner:   List[String],
   status:  List[String],
   comboBox: List[String]
@@ -19,10 +19,10 @@ TODO: Don't have this long List, should be able to define by Task type
    <h2>Unintuitive Forms</h2>
    <table cellspacing="20">
    <td>
-   @form(routes.TaskController.createTask) {
+   @form(routes.TaskController.create) {
+       @inputText(newForm("name"))
        @inputText(newForm("owner"))
-       @inputText(newForm("task"))
-	   <form action="/createTask" method="POST">
+	   <form action="/task/new" method="POST">
 	       <div class="form-actions">
 		       <button type="submit">Create a Task</button>
 		   </div>
@@ -31,8 +31,8 @@ TODO: Don't have this long List, should be able to define by Task type
    </td>
    <td>
    @form(routes.TaskController.deleteTask) {
+   	   @inputText(newForm("name"))
    	   @inputText(newForm("owner"))
-   	   @inputText(newForm("task"))
 	   <form action="/deleteTask" method="POST">
 		   <div class="form-actions">
 		       <button type="submit">Delete a Task</button>
@@ -42,8 +42,8 @@ TODO: Don't have this long List, should be able to define by Task type
    </td>
    <td>
    @form(routes.TaskController.updateTask) {
+   	   @inputText(newForm("name"))
    	   @inputText(newForm("owner"))
-   	   @inputText(newForm("task"))
 	   <form action="/tasks" method="POST">
 		   <div class="form-actions">
 		       <button type="submit">Update a Task</button>
@@ -58,10 +58,6 @@ TODO: Don't have this long List, should be able to define by Task type
        <h2>
             || Task ID: @task._1 || Owner: @{owner(idx)} || Task: @task._3 || Status: @{status(idx)} || Last Updated: @task._5 ||
        </h2>
-       @*
-       Update Status button does nothing for now.
-       If you want to see example of status being updated please use the update a task button
-       *@
        @form(routes.TaskController.updateWorkflow(task._3)) {
            @select(workForm("stage[0]"), options(comboBox))
            @select(workForm("stage[1]"), options(comboBox))
@@ -77,3 +73,22 @@ TODO: Don't have this long List, should be able to define by Task type
    }
 
 }
+
+	
+	
+@*
+@(taskForm: Form[Task], users: Map[String, String])
+@main("Product Form") {
+  @helper.form(action = routes.TaskController.createTask) {
+    @helper.textarea((taskForm("name")))
+    @helper.select(
+        taskForm("owner"),
+        helper.options(users)
+    )
+
+    <div class="form-actions">
+      <button type="submit">Create Task</button>
+    </div>
+  }
+}
+*@

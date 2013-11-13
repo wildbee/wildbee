@@ -31,7 +31,7 @@ object UsersController extends Controller {
       formWithErrors => Ok("Are you crazy?"),
       user => {
         database withSession {
-          val email = Users.insert(user)
+          val email = Users.insert(user.name, user.email)
           Redirect(routes.UsersController.show(email))
         }
       }
@@ -50,7 +50,6 @@ object UsersController extends Controller {
   }
 
   def edit(email: String) = Action {
-
     database withSession {
       val user = query_email(email).first
       val filledForm = userForm.fill(User(user._2, user._3))
@@ -77,10 +76,8 @@ object UsersController extends Controller {
   }
 
   def show(email: String) = Action {
-
     database withSession {
       val q = query_email(email).first
-
       Ok(views.html.users.show(q))
     }
   }

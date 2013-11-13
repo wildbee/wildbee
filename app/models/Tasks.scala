@@ -7,22 +7,26 @@ import java.util.UUID
 import java.sql.Timestamp
 import java.util.Date
 
-case class Tasks(name: String, owner: String)
+case class Task(name: String, owner: String)
                  
-//TODO: Make a controller for the Tasks
-object Tasks extends Table[(UUID, UUID, String, Timestamp, Timestamp)]("tasks") {
+object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks") {
   def id           = column[UUID]("id", O.PrimaryKey)
-  def owner        = column[UUID]("owner_id")
+  def ownerName    = column[String]("owner")
   def name				 = column[String]("name")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
   
-  def ownerName     = foreignKey("owner_fk", owner, Users)(_.id)
-  def status        = foreignKey("fk_status", task, PackageStatuses)(_.task) 
+  def owner         = foreignKey("owner_fk", ownerName, Users)(_.name)
+  def status        = foreignKey("fk_status", name, PackageStatuses)(_.task) 
   
-  def * =  id ~ owner ~ name ~ creationTime ~ lastUpdated
-  def autoId = id ~ owner ~ name ~ creationTime ~ lastUpdated returning id
+  def *      = id ~ ownerName ~ name ~ creationTime ~ lastUpdated
+  def autoId = id ~ ownerName ~ name ~ creationTime ~ lastUpdated returning id
 
+  def getUserId(user: String)(implicit session: Session) = Users
+      .filter(_.name === user ) //Find the corresponding task from Task table
+      .map (_.id)               //Find get the task id
+      .list.head                //Convert Column[Int] into an Int
+	      
   /** YYYY-MM-DD HH:MM:SS.MS */
   def currentTime = { 
     def date = new java.util.Date()
@@ -30,19 +34,17 @@ object Tasks extends Table[(UUID, UUID, String, Timestamp, Timestamp)]("tasks") 
   }
   
   //TODO: Add validation to check if the owner exists
-  def create(task: String, owner: String)(implicit session: Session) = {
-    autoId.insert(Config.pkGenerator.newKey, Config.pkGenerator.fromString(owner), task, currentTime, currentTime)  
+  def create(task: String, owner: String)(implicit session: Session) = {	
+    autoId.insert(Config.pkGenerator.newKey, owner, task, currentTime, currentTime)  
   } 
 
   
   def update(owner: String)(implicit session: Session) = {
-    val id = Config.pkGenerator.fromString(owner)
-    val task = Tasks filter (_.id === id)
+    val task = Tasks filter (_.id === getUserId(owner))
     task map (_.lastUpdated) update(currentTime)
   }
   
   def delete(task: String)(implicit session: Session) = {
-    val id = Config.pkGenerator.fromString(task)
-    Tasks where { _.id === id } delete
+    Tasks where { _.name === task } delete
   }
 }

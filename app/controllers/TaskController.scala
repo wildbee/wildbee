@@ -20,9 +20,9 @@ object TaskController extends Controller {
   
   val taskForm = Form(
 	  mapping(
-	    "owner" -> of[Long],
-	    "task" -> nonEmptyText
-	)(Tasks.apply)(Tasks.unapply))
+	    "name" -> nonEmptyText,
+	    "owner" -> nonEmptyText
+	)(Task.apply)(Task.unapply))
   
 	val workForm = Form(
 	  mapping(
@@ -35,7 +35,7 @@ object TaskController extends Controller {
       val tasks = results.list
       val joins = for {
         t <- Tasks
-        u <- t.ownerName
+        u <- t.owner
         s <- t.status
       } yield (u.name, s.status)
       
@@ -43,18 +43,43 @@ object TaskController extends Controller {
       val statuses = joins map { _._2 }
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-      Ok(views.html.tasks("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
+      Ok(views.html.tasks.New("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
     }
   }
-  
-  def createTask() = Action { implicit request =>
+  /*
+def create = Action { implicit request =>
+    taskForm.bindFromRequest.fold(
+      formWithErrors => Ok("Are you crazy?"),
+      task => {
+        database withSession {
+          Tasks.create(task.name, task.owner)
+          Ok("hello")
+        }
+      }
+    )
+  }
+
+  def newTask() = Action {
+    database withSession {
+      //val q = Query(Users).list
+      //val x = for (c <- q) yield c._1.toString
+      //val y = for (c <- q) yield c._2
+      //Ok(views.html.tasks.new_task(taskForm, (x zip y).toMap))
+      Ok("New Task")
+    }
+  }
+
+
+}*/
+
+  def create() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
         database withSession { 
-          Tasks.create(t.ownerId, t.task) 
-          PackageStatuses.create(t.task, "Open")                        //Move to package
-          Workflows.create(t.task, List("Open","In Progress","Closed")) //Default workflow
+          Tasks.create(t.name, t.owner) 
+          PackageStatuses.create(t.name, "Open")                        //Move to package
+          Workflows.create(t.name, List("Open","In Progress","Closed")) //Default workflow
         }
         Redirect(routes.TaskController.index)
       }
@@ -67,10 +92,10 @@ object TaskController extends Controller {
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
         database withSession { 
-          Tasks.update(t.ownerId)
-          val task = Tasks.where { _.task === t.task }
+          Tasks.update(t.owner)
+          val task = Tasks.where { _.name === t.name }
           val taskId = (task map { _.id }).list.head
-          PackageStatuses.update(taskId)
+          PackageStatuses.update(t.name)
         }
         Redirect(routes.TaskController.index)
       }
@@ -82,9 +107,9 @@ object TaskController extends Controller {
       errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
       t => {
         database withSession { 
-          Tasks.delete(t.ownerId) 
-          Workflows.delete(t.ownerId)
-          PackageStatuses.delete(t.ownerId)
+          PackageStatuses.delete(t.name) //Should be a package thing
+          Workflows.delete(t.name)
+          Tasks.delete(t.name) 
         }
         Redirect(routes.TaskController.index)
       }

@@ -4,21 +4,24 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /tasks                      controllers.TaskController.index
-POST    /tasks                      controllers.TaskController.updateTask
-GET     /task/new                   controllers.TasksController.createTask
-POST    /task                       controllers.TasksController.create
-POST    /createTask                 controllers.TaskController.createTask
-POST    /deleteTask                 controllers.TaskController.deleteTask
 GET     /status/:task               controllers.TaskController.updateWorkflow(task: String)
 
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+POST    /task/new                   controllers.TaskController.create
+
+POST    /tasks                      controllers.TaskController.updateTask
+POST    /taskd/deleteTask           controllers.TaskController.deleteTask
+
+
+
 
 GET     /users                      controllers.UsersController.index
-POST    /user                       controllers.UsersController.create
 GET     /user/new                   controllers.UsersController.newUser
-POST    /user/:email                controllers.UsersController.update(email: String)
-GET     /user/:email/edit           controllers.UsersController.edit(email: String)
 GET     /user/:email                controllers.UsersController.show(email: String)
+GET     /user/:email/edit           controllers.UsersController.edit(email: String)
+
+POST    /user                       controllers.UsersController.create
+POST    /user/:email                controllers.UsersController.update(email: String)
