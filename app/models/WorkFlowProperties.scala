@@ -12,32 +12,31 @@ trait Status {
 
 /** Define the workflow for a task */
 case class Workflows(stage: List[String])
-object Workflows extends Table [(Long, String, String)]("workflows") {
-	def id          = column[Long]("id", O.PrimaryKey, O.AutoInc)
-	def task        = column[String]("task")
-	def logic       = column[String]("logic") //TODO: Do not store as a comma separated string?
-	def taskName    = foreignKey("fk_task", task, StatusStates)(_.task)
+object Workflows extends Table [(Long, Long, String, String)]("workflows") {
+	def id            = column[Long]("id", O.PrimaryKey, O.AutoInc)
+	def taskId        = column[Long]("task_id")
+	def presentState  = column[String]("state")
+	def futureState   = column[String]("next_state")
 	
-	def *       = id ~ task ~ logic
-	def autoInc = task ~ logic returning id
+	def *       = id ~ taskId ~ presentState ~ futureState
+	def autoInc = taskId ~ presentState ~ futureState returning id
 	
-	def defineLogic(id: Long, state : List[String])(implicit session: Session) = {
-	  val currentState = Workflows filter (_.id === id)
-	  //Implementation can probably be improved
-	  val statePairs = for ( i <- 0 until state.size) yield(state(i), state((i + 1)% state.size)) 
-	  val jsonLogic = Json.toJson(statePairs.groupBy(_._1).map { case (k,v) => (k,v.map(_._2))})
-	  val logic = state mkString ","
-	  currentState map ( _.logic ) update (Json.stringify(jsonLogic))
-	}
 	
-	//TODO: Find a better way to express this
   def nextState(id: Long, state: String)(implicit session: Session) = { 
-    val jsonLogic = (for { w <- Workflows if w.id === id } yield w.logic).list.head
-    val logic = Json.fromJson[Map[String, List[String]]](Json.parse(jsonLogic)).get
-    val choices = logic(state)
+    val transistions = Workflows
+      .filter( _.taskId === id )
+      .map (w => (w.presentState, w.futureState))
+      .list
+    
+    val transistionMapping = transistions
+      .groupBy(_._1)                              //A -> List((A,B),(A,C))
+      .map { case (k,v) => (k,v.map(_._2)) }      //A -> List(B, C)
+
+    val choices = transistionMapping(state)
     /** Temporary ***************************************
      *  When you have logic like A -> (B,C), randomly pick which state to move into next
      *  For testing, not sure how conflicts should be resolved
+     *  You would instead give user ability to choose next state from available states
      */
     println("=========")
     println("Possible Outcomes")
@@ -51,27 +50,36 @@ object Workflows extends Table [(Long, String, String)]("workflows") {
     /** Temporary * ****************************************/
   }
 	
-	def create(task: String, state: String)(implicit session: Session) = {
-    autoInc.insert(task, state)
+	/** In this case update is just re-creating the workflow */
+	def create(task: String, stateTable: List[String])(implicit session: Session) = {   
+	  val shiftedStateTable = stateTable.tail ::: List(stateTable.head) //O(n) can we do better?
+    val stateTransistions = stateTable zip shiftedStateTable
+	  val taskId = Tasks
+      .filter(_.task === task ) //Find the corresponding task from Task table
+      .map (_.id)               //Find get the task id
+      .list.head                //Convert Column[Int] into an Int
+    
+    delete(taskId)              //Delete previous task workflow if any
+	  stateTransistions map { case(state, nextState) => autoInc.insert(taskId, state, nextState) }
   }
 	
-	def delete(id: Long)(implicit session: Session) = {
-    Workflows where { _.id === id } delete
+	def delete(taskId: Long)(implicit session: Session) = {
+    Workflows filter { _.taskId === taskId } delete
   }
 	
 }
 
 /** Define the packages current state */ //TOOD: Tie this in with a package rather than a task
-object StatusStates extends Table [(Long, String, String)]("allowed_statuses") {
-	def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-	def task = column[String]("task")
+object PackageStatuses extends Table [(Long, String, String)]("allowed_statuses") {
+	def id     = column[Long]("id", O.PrimaryKey, O.AutoInc)
+	def task   = column[String]("task")
 	def status = column[String]("status")
 	
-	def * = id ~ task ~ status
+	def *       = id ~ task ~ status
 	def autoInc = task ~ status returning id
 	
 	def currentStatus(id: Long)(implicit session: Session) = {
-	  val status = for { s <- StatusStates if s.id === id } yield s.status
+	  val status = for { s <- PackageStatuses if s.id === id } yield s.status
 	  status.list.head
 	}
 	
@@ -80,12 +88,12 @@ object StatusStates extends Table [(Long, String, String)]("allowed_statuses") {
 	}
 	
 	def delete(id: Long)(implicit session: Session) = {
-    StatusStates where { _.id === id } delete
+    PackageStatuses where { _.id === id } delete
   }
 	
 	/** There should be a better way to find your current status */
 	def update(id: Long, state: String = "")(implicit session: Session) = {
-	  val currentState = StatusStates filter (_.id === id)
+	  val currentState = PackageStatuses filter (_.id === id)
 	  val nextState = state match {
 	    case ""   => Workflows.nextState(id, currentStatus(id))
 	    case _    => state

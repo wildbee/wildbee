@@ -12,7 +12,7 @@ import scala.slick.driver.PostgresDriver.simple._
 
 import play.api.data._
 import play.api.data.Forms._
-import play.api.data.format.Formats._ //To get a Long in a form
+import play.api.data.format.Formats._
 
 
 object TaskController extends Controller {
@@ -24,7 +24,6 @@ object TaskController extends Controller {
 	    "task" -> nonEmptyText
 	)(Tasks.apply)(Tasks.unapply))
   
-	/** Testing stuff */
 	val workForm = Form(
 	  mapping(
 	    "stage" -> list(text)
@@ -53,16 +52,16 @@ object TaskController extends Controller {
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
         database withSession { 
-          //TODO: Change this to use uuid, this looks fragile
           Tasks.create(t.ownerId, t.task) 
-          StatusStates.create(t.task, "Open")
-          Workflows.create(t.task, "Open,In Progress,Closed")//Default workflow
+          PackageStatuses.create(t.task, "Open")                        //Move to package
+          Workflows.create(t.task, List("Open","In Progress","Closed")) //Default workflow
         }
         Redirect(routes.TaskController.index)
       }
     )    
   }
     
+  /** Move to packages, this updates the a package's status */
   def updateTask() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
@@ -71,13 +70,12 @@ object TaskController extends Controller {
           Tasks.update(t.ownerId)
           val task = Tasks.where { _.task === t.task }
           val taskId = (task map { _.id }).list.head
-          StatusStates.update(taskId)
+          PackageStatuses.update(taskId)
         }
         Redirect(routes.TaskController.index)
       }
     )  
   }
-  
 
   def deleteTask() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
@@ -86,18 +84,18 @@ object TaskController extends Controller {
         database withSession { 
           Tasks.delete(t.ownerId) 
           Workflows.delete(t.ownerId)
-          StatusStates.delete(t.ownerId)
+          PackageStatuses.delete(t.ownerId)
         }
         Redirect(routes.TaskController.index)
       }
     )
   }
   
-  def updateWorkflow(id :Long) = Action { implicit request =>
+  def updateWorkflow(task :String) = Action { implicit request =>
     workForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       w => {
-        database withSession { Workflows.defineLogic(id, w.stage) }
+        database withSession { Workflows.create(task, w.stage) }
         Redirect(routes.TaskController.index)
       }
     )   

@@ -9,13 +9,13 @@ case class Tasks(ownerId: Long, task: String)
 //TODO: Make a controller for the Tasks
 object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") {
   def id           = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  def ownerId      = column[Long]("owner")
+  def ownerId      = column[Long]("owner_id")
   def task				 = column[String]("task", O.NotNull)
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
   
   def ownerName    = foreignKey("fk_owner", ownerId, Users)(_.id)
-  def status       = foreignKey("fk_status", task, StatusStates)(_.task) 
+  def status       = foreignKey("fk_status", task, PackageStatuses)(_.task) 
   
   def * =  id ~ ownerId ~ task ~ creationTime ~ lastUpdated
   def autoInc = ownerId ~ task ~ creationTime ~ lastUpdated returning id
@@ -31,8 +31,8 @@ object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") 
     autoInc.insert(owner, task, currentTime, currentTime)  
   } 
   
-  def update(taskId: Long)(implicit session: Session) = {
-    val task = Tasks filter (_.id === taskId)
+  def update(id: Long)(implicit session: Session) = {
+    val task = Tasks filter (_.id === id)
     task map (_.lastUpdated) update(currentTime)
   }
   
