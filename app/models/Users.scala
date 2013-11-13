@@ -1,21 +1,27 @@
 package models
 
 import scala.slick.driver.PostgresDriver.simple._
+import java.util.UUID
+import helpers._
 
-object Users extends Table[(Long, String, String)]("users") {
-  def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-  def name = column[String]("NAME")
-  def email = column[String]("EMAIL")
+case class User(name: String, email: String)
 
-  // TODO: We'd better move it to SystemAdministrator and UserAdminstor tables
-  // def admin = column[Boolean]("ADMIN", O.Default[Boolean](false))
+/**
+ * Entity model for wildbee_user
+ *
+ * Note: cannot name the table as simply 'user' since it conflicts
+ * with the 'user' table already created in the database by default
+ */
+object Users extends Table[(UUID, String, String)]("wildbee_user") {
+  def id = column[UUID]("id", O.PrimaryKey)
+  def name = column[String]("name")
+  def email = column[String]("email")
 
   def * =  id ~ name ~ email
+  def autoEmail = id ~ name ~ email returning email
 
-  def autoInc = name ~ email returning id
+  def insert(name: String, email: String)
+            (implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, name, email)
 
-  def insert(name: String,
-             email: String
-            )
-           (implicit session: Session) = autoInc.insert(name, email)
+  def insert(u: User)(implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, u.name, u.email)
 }

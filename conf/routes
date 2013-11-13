@@ -17,3 +17,14 @@ POST	/package					controllers.PackagesController.create
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+
+GET     /users                      controllers.UsersController.index
+POST    /user                       controllers.UsersController.create
+GET     /user/new                   controllers.UsersController.newUser
+POST    /user/:email                controllers.UsersController.update(email: String)
+GET     /user/:email/edit           controllers.UsersController.edit(email: String)
+GET     /user/:email                controllers.UsersController.show(email: String)
+
+GET     /task/new                   controllers.TasksController.newTask
+POST    /task                       controllers.TasksController.create
