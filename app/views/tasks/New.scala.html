@@ -33,22 +33,18 @@ TODO: Don't have this long List, should be able to define by Task type
    @form(routes.TaskController.deleteTask) {
    	   @inputText(newForm("name"))
    	   @inputText(newForm("owner"))
-	   <form action="/deleteTask" method="POST">
-		   <div class="form-actions">
-		       <button type="submit">Delete a Task</button>
-		   </div>
-	   </form>
+	   <div class="form-actions">
+	       <button type="submit">Delete a Task</button>
+	   </div>
    }
    </td>
    <td>
    @form(routes.TaskController.updateTask) {
    	   @inputText(newForm("name"))
    	   @inputText(newForm("owner"))
-	   <form action="/tasks" method="POST">
-		   <div class="form-actions">
-		       <button type="submit">Update a Task</button>
-		   </div>
-	   </form>
+	   <div class="form-actions">
+	       <button type="submit">Update a Task</button>
+	   </div>
    }
    </td>
    </table>
@@ -63,32 +59,11 @@ TODO: Don't have this long List, should be able to define by Task type
            @select(workForm("stage[1]"), options(comboBox))
            @select(workForm("stage[2]"), options(comboBox))
            @select(workForm("stage[3]"), options(comboBox))
-           
-	       <form action="/tasks" method="POST">
-			   <div class="form-actions">
-			       <button type="submit">Update Status</button>
-			   </div>
-		   </form>
+
+		   <div class="form-actions">
+		       <button type="submit">Update Status</button>
+		   </div>
        }
    }
 
 }
-
-	
-	
-@*
-@(taskForm: Form[Task], users: Map[String, String])
-@main("Product Form") {
-  @helper.form(action = routes.TaskController.createTask) {
-    @helper.textarea((taskForm("name")))
-    @helper.select(
-        taskForm("owner"),
-        helper.options(users)
-    )
-
-    <div class="form-actions">
-      <button type="submit">Create Task</button>
-    </div>
-  }
-}
-*@

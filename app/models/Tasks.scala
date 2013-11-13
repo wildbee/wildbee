@@ -21,11 +21,11 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   
   def *      = id ~ ownerName ~ name ~ creationTime ~ lastUpdated
   def autoId = id ~ ownerName ~ name ~ creationTime ~ lastUpdated returning id
-
-  def getUserId(user: String)(implicit session: Session) = Users
-      .filter(_.name === user ) //Find the corresponding task from Task table
+	      
+  def getTaskId(name: String)(implicit session: Session) = Tasks
+      .filter(_.name === name ) //Find the corresponding task from Task table
       .map (_.id)               //Find get the task id
-      .list.head                //Convert Column[Int] into an Int
+      .list.head                //Convert Column[UUID] into an UUID
 	      
   /** YYYY-MM-DD HH:MM:SS.MS */
   def currentTime = { 
@@ -40,7 +40,7 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
 
   
   def update(owner: String)(implicit session: Session) = {
-    val task = Tasks filter (_.id === getUserId(owner))
+    val task = Tasks filter (_.id === Users.getUserId(owner))
     task map (_.lastUpdated) update(currentTime)
   }
   

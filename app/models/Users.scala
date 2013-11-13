@@ -19,6 +19,10 @@ object Users extends Table[(UUID, String, String)]("users") {
   def * =  id ~ name ~ email
   def autoEmail = id ~ name ~ email returning email
   
+  def getUserId(name: String)(implicit session: Session) = Users
+      .filter(_.name === name ) //Find the corresponding user from Users table
+      .map (_.id)               //Find get the user id
+      .list.head                //Convert Column[UUID] into an UUID
 
   def insert(name: String, email: String)(implicit session: Session) = {
     autoEmail.insert(Config.pkGenerator.newKey, name, email)

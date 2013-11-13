@@ -46,31 +46,6 @@ object TaskController extends Controller {
       Ok(views.html.tasks.New("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
     }
   }
-  /*
-def create = Action { implicit request =>
-    taskForm.bindFromRequest.fold(
-      formWithErrors => Ok("Are you crazy?"),
-      task => {
-        database withSession {
-          Tasks.create(task.name, task.owner)
-          Ok("hello")
-        }
-      }
-    )
-  }
-
-  def newTask() = Action {
-    database withSession {
-      //val q = Query(Users).list
-      //val x = for (c <- q) yield c._1.toString
-      //val y = for (c <- q) yield c._2
-      //Ok(views.html.tasks.new_task(taskForm, (x zip y).toMap))
-      Ok("New Task")
-    }
-  }
-
-
-}*/
 
   def create() = Action { implicit request =>
     taskForm.bindFromRequest.fold(
@@ -118,7 +93,7 @@ def create = Action { implicit request =>
   
   def updateWorkflow(task :String) = Action { implicit request =>
     workForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
+      errors => BadRequest(views.html.index("Error Updating :: " + errors)),
       w => {
         database withSession { Workflows.create(task, w.stage) }
         Redirect(routes.TaskController.index)

@@ -15,9 +15,6 @@ POST    /task/new                   controllers.TaskController.create
 POST    /tasks                      controllers.TaskController.updateTask
 POST    /taskd/deleteTask           controllers.TaskController.deleteTask
 
-
-
-
 GET     /users                      controllers.UsersController.index
 GET     /user/new                   controllers.UsersController.newUser
 GET     /user/:email                controllers.UsersController.show(email: String)
