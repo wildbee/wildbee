@@ -4,19 +4,21 @@ import scala.slick.driver.PostgresDriver.simple._
 import java.sql.Timestamp
 import java.util.Date
 
-case class Tasks(ownerId: Long, status: String)
+case class Tasks(ownerId: Long, task: String)
                  
 //TODO: Make a controller for the Tasks
 object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") {
-  def id           = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-  def ownerId      = column[Long]("OWNER")
-  def status       = column[String]("STATUS") //TODO: Maybe use a type Status rather than a String?
-  def creationTime = column[Timestamp]("CREATION_TIME", O.NotNull)
-  def lastUpdated  = column[Timestamp]("LAST_UPDATED", O.NotNull)
-  def ownerName    = foreignKey("fk_usr_location", ownerId, Users)(_.id)
+  def id           = column[Long]("id", O.PrimaryKey, O.AutoInc)
+  def ownerId      = column[Long]("owner_id")
+  def task				 = column[String]("task", O.NotNull)
+  def creationTime = column[Timestamp]("creation_time", O.NotNull)
+  def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
   
-  def * =  id ~ ownerId ~ status ~ creationTime ~ lastUpdated
-  def autoInc = ownerId ~ status ~ creationTime ~ lastUpdated returning id
+  def ownerName    = foreignKey("fk_owner", ownerId, Users)(_.id)
+  def status       = foreignKey("fk_status", task, PackageStatuses)(_.task) 
+  
+  def * =  id ~ ownerId ~ task ~ creationTime ~ lastUpdated
+  def autoInc = ownerId ~ task ~ creationTime ~ lastUpdated returning id
   
   /** YYYY-MM-DD HH:MM:SS.MS */
   def currentTime = { 
@@ -24,14 +26,14 @@ object Tasks extends Table[(Long, Long, String, Timestamp, Timestamp)]("tasks") 
     new Timestamp(date.getTime())
   }
   
-  def create(owner: Long, status: String)(implicit session: Session) = {
-    autoInc.insert(owner, status, currentTime, currentTime)  
+  //TODO: Add validation to check if the owner exists
+  def create(owner: Long, task: String)(implicit session: Session) = {
+    autoInc.insert(owner, task, currentTime, currentTime)  
   } 
   
-  def update(taskId: Long, status: String)(implicit session: Session) = {
-    val task = Tasks filter (_.id === taskId)
-    task map ( _.status      ) update(status)
-    task map ( _.lastUpdated ) update(currentTime)
+  def update(id: Long)(implicit session: Session) = {
+    val task = Tasks filter (_.id === id)
+    task map (_.lastUpdated) update(currentTime)
   }
   
   def delete(taskId: Long)(implicit session: Session) = {

@@ -1,8 +1,11 @@
-
 @(message: String, 
   newForm: Form[Tasks], 
+  workForm: Form[Workflows],
   tasks:   List[(Long, Long, String, java.sql.Timestamp, java.sql.Timestamp)], 
-  owner:   List[String])
+  owner:   List[String],
+  status:  List[String],
+  comboBox: List[String]
+  )
 @import helper._
 
 @*
@@ -13,39 +16,64 @@ TODO: Don't have this long List, should be able to define by Task type
 @main(message) {
 
    <h1>ETT</h1>
-   @form(action = routes.TaskController.createTask) {
+   <h2>Unintuitive Forms</h2>
+   <table cellspacing="20">
+   <td>
+   @form(routes.TaskController.createTask) {
        @inputText(newForm("owner"))
-       @inputText(newForm("status"))
+       @inputText(newForm("task"))
 	   <form action="/createTask" method="POST">
 	       <div class="form-actions">
 		       <button type="submit">Create a Task</button>
 		   </div>
 	   </form>
    }
-   @form(action = routes.TaskController.deleteTask) {
+   </td>
+   <td>
+   @form(routes.TaskController.deleteTask) {
    	   @inputText(newForm("owner"))
-   	   @inputText(newForm("status"))
+   	   @inputText(newForm("task"))
 	   <form action="/deleteTask" method="POST">
 		   <div class="form-actions">
 		       <button type="submit">Delete a Task</button>
 		   </div>
 	   </form>
    }
-   @form(action = routes.TaskController.updateTask) {
+   </td>
+   <td>
+   @form(routes.TaskController.updateTask) {
    	   @inputText(newForm("owner"))
-   	   @inputText(newForm("status"))
+   	   @inputText(newForm("task"))
 	   <form action="/tasks" method="POST">
 		   <div class="form-actions">
 		       <button type="submit">Update a Task</button>
 		   </div>
 	   </form>
    }
+   </td>
+   </table>
 
    <h1> List of Tasks</h1>
-   @tasks.map { task => 
+   @for( (task,idx) <- tasks.view.zipWithIndex) {
        <h2>
-           || Task ID: @task._1 || Owner: @{owner(task._2.toInt)} || Status:  @task._3 || Last Updated: @task._4 ||
+            || Task ID: @task._1 || Owner: @{owner(idx)} || Task: @task._3 || Status: @{status(idx)} || Last Updated: @task._5 ||
        </h2>
+       @*
+       Update Status button does nothing for now.
+       If you want to see example of status being updated please use the update a task button
+       *@
+       @form(routes.TaskController.updateWorkflow(task._3)) {
+           @select(workForm("stage[0]"), options(comboBox))
+           @select(workForm("stage[1]"), options(comboBox))
+           @select(workForm("stage[2]"), options(comboBox))
+           @select(workForm("stage[3]"), options(comboBox))
+           
+	       <form action="/tasks" method="POST">
+			   <div class="form-actions">
+			       <button type="submit">Update Status</button>
+			   </div>
+		   </form>
+       }
    }
 
 }

@@ -14,11 +14,6 @@ object Application extends Controller {
   lazy val database = Database.forDataSource(DB.getDataSource())
 
   def index = Action {
-    database withSession {
-      Users.insert("Dustino", "dcheung@redhat.com", false)
-    }
     Ok(views.html.index("Your new application is ready, well maybe"))
   }
-  
-
 }

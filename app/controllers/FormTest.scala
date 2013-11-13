@@ -34,9 +34,9 @@ object FormTest extends Controller {
       formWithErrors => null,
       user => user
       )
-    /*
-     * Users.insert(user.realname, user.email, false)
-     */
+    database withSession {
+     Users.insert(user.realname, user.email, false)
+    }
     Ok("Haha " + user.realname)
   }
   def index() = Action {
