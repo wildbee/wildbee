@@ -12,10 +12,11 @@ case class User(name: String, email: String)
  * Note: cannot name the table as simply 'user' since it conflicts
  * with the 'user' table already created in the database by default
  */
-object Users extends Table[(UUID, String, String)]("wildbee_user") {
+object Users extends Table[(UUID, String, String)]("users") {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def email = column[String]("email")
+  def uniqueEmail = index("idx_email", email, unique = true)
 
   def * =  id ~ name ~ email
   def autoEmail = id ~ name ~ email returning email
