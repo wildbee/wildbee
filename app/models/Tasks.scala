@@ -15,6 +15,7 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   def name				 = column[String]("name")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
+  def uniqueName   = index("idx_name", name, unique = true)
   
   def owner         = foreignKey("owner_fk", ownerName, Users)(_.name)
   def status        = foreignKey("fk_status", name, PackageStatuses)(_.task) 
