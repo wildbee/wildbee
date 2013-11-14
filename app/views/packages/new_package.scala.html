@@ -1,14 +1,29 @@
 @(packForm: Form[Package])
 @main("Add a Package") {
   	@helper.form(action = routes.PackagesController.create) {
-    @helper.textarea((packForm("name")))
-    @helper.textarea((packForm("creator")))
-    @helper.textarea((packForm("assignee")))
-    @helper.textarea((packForm("ccList")))
-    @helper.textarea((packForm("status")))
-    @helper.textarea((packForm("osVersion")))
+    @helper.inputText((packForm("name")))
+    @helper.inputText((packForm("task")))
+    @helper.inputText((packForm("creator")))
+    @helper.inputText((packForm("assignee")))
+    @helper.inputText((packForm("ccList")))
+    @helper.inputText((packForm("status")))
+    @helper.inputText((packForm("osVersion")))
     <div class="form-actions">
       <button type="submit">Add Package</button>
     </div>
+    
   }
+ @if(packForm.hasErrors) {
+    <div class="alert alert-error">
+        <a class="close" data-dismiss="alert">
+		Errors:
+        </a>
+        @if(packForm.errors.size > 0) {
+            @for(e <- packForm.errors) {
+            	<br>
+            		@e.key : @e.message
+            }
+        } else {No error returned.}
+    </div>
+}
 }

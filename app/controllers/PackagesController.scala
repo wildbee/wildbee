@@ -10,7 +10,7 @@ import scala.slick.driver.PostgresDriver.simple._
 import play.api.data._
 import play.api.data.Forms._
 import java.util.UUID
-import helpers.UUIDGenerator
+import helpers._
 
 object PackagesController extends Controller {
   lazy val database = Database.forDataSource(DB.getDataSource())
@@ -18,11 +18,12 @@ object PackagesController extends Controller {
   val packageForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "creator_id" -> nonEmptyText,
-      "assignee_id" -> nonEmptyText,
-      "cc_list" -> text,
+      "task" -> nonEmptyText,
+      "creator" -> nonEmptyText,
+      "assignee" -> nonEmptyText,
+      "ccList" -> text,
       "status" -> nonEmptyText,
-      "os_version" -> nonEmptyText)(Package.apply)(Package.unapply))
+      "osVersion" -> nonEmptyText)(Package.apply)(Package.unapply))
 
   def index = Action {
     database withSession {
@@ -35,36 +36,26 @@ object PackagesController extends Controller {
     Ok(views.html.packages.new_package(packageForm))
   }
 
-  /**
-   * def create = Action { implicit request =>
-   * packageForm.bindFromRequest.fold(
-   * formWithErrors => Ok("Does not compute."),
-   * pack => {
-   * database withSession {
-   * val uuid = UUID.randomUUID()
-   * Packages.insertNew(uuid, pack)
-   * Redirect(routes.PackagesController.show(uuid.toString))
-   * }
-   * })
-   * }*
-   */
+  def create = Action { implicit request =>
+    packageForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.packages.new_package(formWithErrors)),
+      pack => {
+        database withSession {
+          val uuid = Packages.insert(pack)
+          Redirect(routes.PackagesController.show(uuid.toString))
+        }
+      })
+  }
 
-  def create = TODO
+  def show(id: String) = Action {
+    val uuid = Config.pkGenerator.fromString(id)
 
-  /**
-   * def show(id: String) = Action {
-   * val uuid = UUID.fromString(id)
-   *
-   * database withSession {
-   * // This must return a single pack item:
-   * val pack = Packages.filter(p => p.id === uuid)
-   *
-   * Ok(views.html.packages.show(pack))
-   * }
-   * }*
-   */
+    database withSession {
+      val pack = Query(Packages).where(_.id === uuid).first
 
-  def show(id: String) = TODO
+      Ok(views.html.packages.show(pack))
+    }
+  }
 
   def edit(id: String) = TODO
 
