@@ -20,12 +20,12 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   def status        = foreignKey("fk_status", name, PackageStatuses)(_.task) 
   
   def *      = id ~ ownerName ~ name ~ creationTime ~ lastUpdated
-  def autoId = id ~ ownerName ~ name ~ creationTime ~ lastUpdated returning id
+  def autoId = id ~ ownerName ~ name ~ creationTime ~ lastUpdated returning name
 	      
   def getTaskId(name: String)(implicit session: Session) = Tasks
       .filter(_.name === name ) //Find the corresponding task from Task table
       .map (_.id)               //Find get the task id
-      .list.head                //Convert Column[UUID] into an UUID
+      .first                   //Convert Column[UUID] into an UUID
 	      
   /** YYYY-MM-DD HH:MM:SS.MS */
   def currentTime = { 
@@ -39,8 +39,8 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   } 
 
   
-  def update(owner: String)(implicit session: Session) = {
-    val task = Tasks filter (_.id === Users.getUserId(owner))
+  def update(name: String)(implicit session: Session) = {
+    val task = Tasks filter (_.name === name)
     task map (_.lastUpdated) update(currentTime)
   }
   

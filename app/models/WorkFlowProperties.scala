@@ -60,7 +60,7 @@ object Workflows extends Table [(UUID, UUID, String, String)]("workflows") {
 	  val taskId = Tasks
       .filter(_.name === task ) //Find the corresponding task from Task table
       .map (_.id)               //Find get the task id
-      .list.head                //Convert Column[Int] into an Int
+      .first                //Convert Column[Int] into an Int
     
     if (!stateTable.contains(PackageStatuses.currentStatus(taskId)))
       PackageStatuses.update(task, stateTable.head)       //Default to first workflow state if package in a state not defined in workflow
@@ -87,7 +87,7 @@ object PackageStatuses extends Table [(UUID, UUID, String, String)]("allowed_sta
 	
 	def currentStatus(id: UUID)(implicit session: Session) = {
 	  val status = for { s <- PackageStatuses if s.taskId === id } yield s.status
-	  status.list.head
+	  status.first
 	}
 	
 	def create(task: String, state: String)(implicit session: Session) = {

@@ -15,7 +15,7 @@ import play.api.data.Forms._
 import play.api.data.format.Formats._
 
 
-object TaskController extends Controller {
+object TasksController extends Controller {
   lazy val database = Database.forDataSource(DB.getDataSource())
   
   val taskForm = Form(
@@ -43,7 +43,24 @@ object TaskController extends Controller {
       val statuses = joins map { _._2 }
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-      Ok(views.html.tasks.New("Testing Grounds", taskForm, workForm, tasks, owners.list, statuses.list, availableStatuses))
+      Ok(views.html.tasks.Index("Current Tasks", tasks, owners.list, statuses.list))
+    }
+  }
+  
+  def newTask = Action {
+      database withSession {
+      val results = for (p <- Tasks) yield p
+      val tasks = results.list
+      val joins = for {
+        t <- Tasks
+        u <- t.owner
+        s <- t.status
+      } yield (u.name, s.status)
+      
+      val owners = joins   map { _._1 }
+      val statuses = joins map { _._2 }
+      
+      Ok(views.html.tasks.New("Testing Grounds", taskForm, tasks, owners.list, statuses.list))
     }
   }
 
@@ -52,51 +69,52 @@ object TaskController extends Controller {
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
         database withSession { 
-          Tasks.create(t.name, t.owner) 
+           val task = Tasks.create(t.name, t.owner) 
           PackageStatuses.create(t.name, "Open")                        //Move to package
           Workflows.create(t.name, List("Open","In Progress","Closed")) //Default workflow
+          Redirect(routes.TasksController.show(task))
         }
-        Redirect(routes.TaskController.index)
       }
     )    
   }
+  
+  def show(name: String) = Action {
+    database withSession {
+      val task   = for { t <- Tasks if t.name === name } yield t 
+      val status = for { t <- task 
+                         s <- t.status } yield s.status
+      val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
+      Ok(views.html.tasks.Show("Task View", workForm, availableStatuses, task.first, status.first))
+    }
+  }
     
   /** Move to packages, this updates the a package's status */
-  def updateTask() = Action { implicit request =>
-    taskForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
-      t => {
-        database withSession { 
-          Tasks.update(t.owner)
-          val task = Tasks.where { _.name === t.name }
-          val taskId = (task map { _.id }).list.head
-          PackageStatuses.update(t.name)
-        }
-        Redirect(routes.TaskController.index)
-      }
-    )  
+  def update(name: String) = Action { implicit request =>
+    database withSession { 
+      Tasks.update(name)
+      val task = Tasks.where { _.name === name }
+      PackageStatuses.update(name)
+    }
+    Redirect(routes.TasksController.show(name))
   }
 
-  def deleteTask() = Action { implicit request =>
-    taskForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.index("Error Deleting Task :: " + errors)),
-      t => {
-        database withSession { 
-          PackageStatuses.delete(t.name) //Should be a package thing
-          Workflows.delete(t.name)
-          Tasks.delete(t.name) 
-        }
-        Redirect(routes.TaskController.index)
-      }
-    )
-  }
   
-  def updateWorkflow(task :String) = Action { implicit request =>
+
+  def delete(name: String) = Action { implicit request =>
+    database withSession { 
+      PackageStatuses.delete(name) //Should be a package thing
+      Workflows.delete(name)
+      Tasks.delete(name) 
+    }
+    Redirect(routes.TasksController.index)
+ }
+  
+  def updateWorkflow(name :String) = Action { implicit request =>
     workForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Updating :: " + errors)),
       w => {
-        database withSession { Workflows.create(task, w.stage) }
-        Redirect(routes.TaskController.index)
+        database withSession { Workflows.create(name, w.stage) }
+        Redirect(routes.TasksController.show(name))
       }
     )   
   }
