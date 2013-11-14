@@ -1,15 +1,6 @@
 @(message: String, 
-  newForm: Form[Task], 
-  tasks:   List[(java.util.UUID, String, String, java.sql.Timestamp, java.sql.Timestamp)], 
-  owner:   List[String],
-  status:  List[String]
-  )
+  newForm: Form[Task])
 @import helper._
-
-@*
-TODO: Don't have this long List, should be able to define by Task type
-*@
-
 
 @main(message) {
 

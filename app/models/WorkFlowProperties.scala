@@ -36,6 +36,7 @@ object Workflows extends Table [(UUID, UUID, String, String)]("workflows") {
       .map { case (k,v) => (k,v.map(_._2)) }      //A -> List(B, C)
 
     val choices = transistionMapping(state)
+    
     /** Temporary ***************************************
      *  When you have logic like A -> (B,C), randomly pick which state to move into next
      *  For testing, not sure how conflicts should be resolved
@@ -44,8 +45,9 @@ object Workflows extends Table [(UUID, UUID, String, String)]("workflows") {
     println("=========")
     println("Possible Outcomes")
     println("==========")
-    choices map println
+    choices map (println)
     println("==========")
+    
     val rand = new Random(System.currentTimeMillis())
     val idx = rand.nextInt(choices.length)
     println("Randomly Outcome => " + choices(idx))
@@ -58,14 +60,14 @@ object Workflows extends Table [(UUID, UUID, String, String)]("workflows") {
 	  val shiftedStateTable = stateTable.tail ::: List(stateTable.head) //O(n) can we do better?
     val stateTransistions = stateTable zip shiftedStateTable
 	  val taskId = Tasks
-      .filter(_.name === task ) //Find the corresponding task from Task table
-      .map (_.id)               //Find get the task id
-      .first                //Convert Column[Int] into an Int
+      .filter(_.name === task) //Find the corresponding task from Task table
+      .map (_.id)              //Find get the task id
+      .first                   //Convert Column[Int] into an Int
     
     if (!stateTable.contains(PackageStatuses.currentStatus(taskId)))
       PackageStatuses.update(task, stateTable.head)       //Default to first workflow state if package in a state not defined in workflow
       
-    delete(task)              //Delete previous task workflow if any
+    delete(task)
 	  stateTransistions map { case(state, nextState) => autoId.insert(Config.pkGenerator.newKey, taskId, state, nextState) }
   }
 	

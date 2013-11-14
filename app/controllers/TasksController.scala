@@ -27,41 +27,27 @@ object TasksController extends Controller {
 	val workForm = Form(
 	  mapping(
 	    "stage" -> list(text)
-	  )(Workflows.apply)(Workflows.unapply))
+	)(Workflows.apply)(Workflows.unapply))
 	
   def index = Action {
     database withSession {
-      val results = for (p <- Tasks) yield p
-      val tasks = results.list
+      val tasks = for (t <- Tasks) yield t
       val joins = for {
         t <- Tasks
         u <- t.owner
         s <- t.status
       } yield (u.name, s.status)
       
-      val owners = joins   map { _._1 }
+      val owners   = joins map { _._1 }
       val statuses = joins map { _._2 }
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-      Ok(views.html.tasks.Index("Current Tasks", tasks, owners.list, statuses.list))
+      Ok(views.html.tasks.Index("Current Tasks", tasks.list, owners.list, statuses.list))
     }
   }
   
   def newTask = Action {
-      database withSession {
-      val results = for (p <- Tasks) yield p
-      val tasks = results.list
-      val joins = for {
-        t <- Tasks
-        u <- t.owner
-        s <- t.status
-      } yield (u.name, s.status)
-      
-      val owners = joins   map { _._1 }
-      val statuses = joins map { _._2 }
-      
-      Ok(views.html.tasks.New("Testing Grounds", taskForm, tasks, owners.list, statuses.list))
-    }
+      Ok(views.html.tasks.New("New Task Form", taskForm))
   }
 
   def create() = Action { implicit request =>
@@ -69,11 +55,11 @@ object TasksController extends Controller {
       errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
       t => {
         database withSession { 
-           val task = Tasks.create(t.name, t.owner) 
+          Tasks.create(t.name, t.owner) 
           PackageStatuses.create(t.name, "Open")                        //Move to package
           Workflows.create(t.name, List("Open","In Progress","Closed")) //Default workflow
-          Redirect(routes.TasksController.show(task))
         }
+        Redirect(routes.TasksController.show(t.name))
       }
     )    
   }
@@ -98,12 +84,10 @@ object TasksController extends Controller {
     Redirect(routes.TasksController.show(name))
   }
 
-  
-
   def delete(name: String) = Action { implicit request =>
     database withSession { 
       PackageStatuses.delete(name) //Should be a package thing
-      Workflows.delete(name)
+      Workflows.delete(name)       //Delete data dependent on a task first
       Tasks.delete(name) 
     }
     Redirect(routes.TasksController.index)
@@ -112,10 +96,8 @@ object TasksController extends Controller {
   def updateWorkflow(name :String) = Action { implicit request =>
     workForm.bindFromRequest.fold(
       errors => BadRequest(views.html.index("Error Updating :: " + errors)),
-      w => {
-        database withSession { Workflows.create(name, w.stage) }
-        Redirect(routes.TasksController.show(name))
-      }
+      w      => database withSession { Workflows.create(name, w.stage) }
     )   
+    Redirect(routes.TasksController.show(name))
   }
 }
