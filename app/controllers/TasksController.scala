@@ -38,7 +38,7 @@ object TasksController extends Controller {
       val q = Query(Users).list
       val x = for (c <- q) yield c._1.toString
       val y = for (c <- q) yield c._2
-      Ok(views.html.tasks.new_task(taskForm, (x zip y).toMap))
+      Ok(views.html.tasks.newTask(taskForm, (x zip y).toMap))
     }
   }
 
