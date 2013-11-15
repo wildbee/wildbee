@@ -1,4 +1,4 @@
-@(taskForm: Form[Task], users: Map[String, String])
+@(taskForm: Form[NewTask], users: Map[String, String] = Users.getUserMap)
 @main("Product Form") {
   @helper.form(action = routes.TasksController.create) {
     @helper.textarea((taskForm("name")))
@@ -8,7 +8,7 @@
     )
 
     <div class="form-actions">
-      <button type="submit">Create Task</button>
+        <button type="submit">Create Task</button>
     </div>
   }
 }

@@ -1,9 +1,9 @@
 @(packForm: Form[NewPackage],
-	users: Map[String,String] = Packages.getUserMap,
-	tasks: Map[String,String] = Packages.getTaskMap
+	users: Map[String,String] = Users.getUserMap,
+	tasks: Map[String,String] = Tasks.getTaskMap
 )
-<table>
 @main("Add a Package") {
+<table>
   	@helper.form(action = routes.PackagesController.create) {
 	<tr>
     <td>@helper.inputText((packForm("name")))</td>
@@ -46,5 +46,5 @@
     <td>
     </tr>
 }
-}
 </table>
+}

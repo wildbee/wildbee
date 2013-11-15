@@ -1,0 +1,47 @@
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="@routes.Application.index">Wildbee</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@routes.UsersController.newUser">Create User</a></li>
+                        <li><a href="@routes.UsersController.index">View Users</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tasks<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        @for(task <- Tasks.findAll) {
+                        <li><a href="#">@task.name</a></li>
+                        }
+                        <li class="divider"></li>
+                        <li><a href="@routes.TasksController.newTask">Create Task</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Packages<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="@routes.PackagesController.newPackage">Create Package</a></li>
+                        <li><a href="@routes.PackagesController.index">Show Packages</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-right" action="", method="POST">
+                <div class="form-group">
+                    <input type="text" placeholder="Email" class="form-control" name="email">
+                </div>
+                <button type="submit" class="btn btn-success">Sign in (Doesn't work!)</button>
+            </form>
+        </div>
+    </div>
+</div>
