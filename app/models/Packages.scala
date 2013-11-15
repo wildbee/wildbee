@@ -25,7 +25,7 @@ String, // Status: String for now, must switch to Status once ready.
 String, // OS version
 Timestamp, // date created
 Timestamp // date updated
-)]("package") {
+)]("packages") {
 
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
