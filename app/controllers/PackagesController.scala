@@ -26,10 +26,7 @@ object PackagesController extends Controller {
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
   def index = Action {
-    database withSession {
-      val packs = Query(Packages).list
-      Ok(views.html.packages.index(packs))
-    }
+    Ok(views.html.packages.index(Packages.findAll))
   }
 
   def newPackage = Action {
@@ -48,12 +45,7 @@ object PackagesController extends Controller {
   }
 
   def show(id: String) = Action {
-    val uuid = Config.pkGenerator.fromString(id)
-
-    database withSession {
-      val pack = Query(Packages).where(_.id === uuid).first
-      Ok(views.html.packages.show(pack))
-    }
+    Ok(views.html.packages.show(Packages.findById(id)))
   }
 
   def edit(id: String) = TODO

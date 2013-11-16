@@ -9,6 +9,13 @@ import java.util.Date
 import java.util.UUID
 import helpers._
 
+/**
+ * Traits that can be commonly used by all
+ * database table objects.
+ * Could go in a different file, and we could
+ * add generalized queries to this once we figure
+ * out how.
+ */
 trait queriable {
 
   def currentTimestamp: Timestamp = {
@@ -16,6 +23,11 @@ trait queriable {
   }
 }
 
+/**
+ * This class is for creating new packages:
+ * It only has some of the columns, and all
+ * as strings.
+ */
 case class NewPackage(
   name: String,
   task: String,
@@ -25,6 +37,9 @@ case class NewPackage(
   status: String,
   osVersion: String)
 
+/**
+ * This is the main case class that we will map projections to.
+ */
 case class Package(
   id: UUID,
   name: String,
@@ -37,6 +52,10 @@ case class Package(
   created: java.sql.Timestamp,
   updated: java.sql.Timestamp)
 
+/**
+ * The Packages table will be of type Table[Package] so that
+ * we can map our projections to the Package case class.
+ */
 object Packages extends Table[Package]("packages") with queriable {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
@@ -52,23 +71,26 @@ object Packages extends Table[Package]("packages") with queriable {
   def createdBy = foreignKey("creator_fk", creator, Users)(_.id)
   def assignedTo = foreignKey("assignee_fk", assignee, Users)(_.id)
 
+  /**
+   * The default projection is mapped to the Package case class.
+   */
   def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated <> (Package, Package.unapply _))
 
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
 
-  def findAll = {
-    DB.withSession { implicit session: Session =>
+  def findAll: List[Package] = DB.withSession {
+    implicit session: Session =>
       val all = Query(this).list
-    }
+      return all
   }
 
-  def findById(id: String) = {
-    val uuid = Config.pkGenerator.fromString(id)
-    DB.withSession { implicit session: Session =>
+  def findById(id: String): Package = DB.withSession {
+    implicit session: Session =>
+      val uuid = Config.pkGenerator.fromString(id)
       val row = Query(this).where(_.id === uuid).first
-    }
+      return row
   }
 
   def insert(p: NewPackage)(implicit session: Session) = autoId.insert(
