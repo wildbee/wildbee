@@ -1,9 +1,14 @@
-@(packs: List[(_, String, _, _, _, String, String, String, _, _)])
+@(packs: List[Package],
+	names: List[String]=List("id","name", "task","creator","assignee",
+		"cc list", "status", "os version","creation time", 
+		"last updated"))
  
 <h1>Packages</h1>
 
-<ul> 
-@packs.map { p =>
-  <li>name: @p._1</li>
+@packs.map { pack =>
+	<ul>
+	name: @pack.name <br> 
+	creator: @pack.creator <br>
+	task: @pack.task <br>
+	</ul>
 } 
-</ul>

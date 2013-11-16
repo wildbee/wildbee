@@ -1,4 +1,4 @@
-@(packForm: Form[Package])
+@(packForm: Form[NewPackage])
 @main("Add a Package") {
   	@helper.form(action = routes.PackagesController.create) {
     @helper.inputText((packForm("name")))

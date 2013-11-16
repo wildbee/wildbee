@@ -1,11 +1,12 @@
-@(pack: (_, String, _, _, _, _, String, String, _, _), 
-	names: List[String] = 
-	List("id", "name", "task", "creator", "assignee", "cc list", "status", "os version", "creation time", "last updated")) 
-
-<h1>@pack._2</h1>
+@(pack: Package,
+	names: List[String]=List("id","name", "task","creator","assignee",
+		"cc list", "status", "os version","creation time", 
+		"last updated")) 
+ 
+<h1>@pack.name</h1>
 @for((name, ele) <- (names zip pack.productIterator.toList)) {
-	<ul>
-	@name : @ele.toString
+	<ul> 
+ 		@name : @ele.toString
 	</ul>
-}  
+}
 

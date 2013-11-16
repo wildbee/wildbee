@@ -23,7 +23,7 @@ object PackagesController extends Controller {
       "assignee" -> nonEmptyText,
       "ccList" -> text,
       "status" -> nonEmptyText,
-      "osVersion" -> nonEmptyText)(Package.apply)(Package.unapply))
+      "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
   def index = Action {
     database withSession {
@@ -52,7 +52,6 @@ object PackagesController extends Controller {
 
     database withSession {
       val pack = Query(Packages).where(_.id === uuid).first
-
       Ok(views.html.packages.show(pack))
     }
   }

@@ -1,12 +1,22 @@
 package models
 
-import scala.slick.driver.PostgresDriver.simple._
+import play.api.Play.current
+import play.api.db.slick.Config.driver.simple._
+import play.api.db.slick.DB
+import scala.slick.session.Session
 import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
 
-case class Package(
+trait queriable {
+
+  def currentTimestamp: Timestamp = {
+    new Timestamp((new Date()).getTime())
+  }
+}
+
+case class NewPackage(
   name: String,
   task: String,
   creator: String,
@@ -15,18 +25,19 @@ case class Package(
   status: String,
   osVersion: String)
 
-object Packages extends Table[(UUID, // id 
-String, // name
-UUID, // task id
-UUID, // creator id
-UUID, // assignee id
-String, // cc-list: List of strings for cc emails?
-String, // Status: String for now, must switch to Status once ready.
-String, // OS version
-Timestamp, // date created
-Timestamp // date updated
-)]("packages") {
+case class Package(
+  id: UUID,
+  name: String,
+  task: UUID,
+  creator: UUID,
+  assignee: UUID,
+  ccList: String = "None",
+  status: String,
+  osVersion: String,
+  created: java.sql.Timestamp,
+  updated: java.sql.Timestamp)
 
+object Packages extends Table[Package]("packages") with queriable {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def task = column[UUID]("task_id")
@@ -41,13 +52,26 @@ Timestamp // date updated
   def createdBy = foreignKey("creator_fk", creator, Users)(_.id)
   def assignedTo = foreignKey("assignee_fk", assignee, Users)(_.id)
 
-  def * = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ creationTime ~ lastUpdated
+  def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
+    status ~ osVersion ~ creationTime ~ lastUpdated <> (Package, Package.unapply _))
 
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
 
-  def insert(p: Package)(implicit session: Session) = autoId.insert(
+  def findAll = {
+    DB.withSession { implicit session: Session =>
+      val all = Query(this).list
+    }
+  }
+
+  def findById(id: String) = {
+    val uuid = Config.pkGenerator.fromString(id)
+    DB.withSession { implicit session: Session =>
+      val row = Query(this).where(_.id === uuid).first
+    }
+  }
+
+  def insert(p: NewPackage)(implicit session: Session) = autoId.insert(
     Config.pkGenerator.newKey,
     p.name,
     Config.pkGenerator.fromString(p.task),
@@ -56,7 +80,7 @@ Timestamp // date updated
     p.ccList,
     p.status,
     p.osVersion,
-    new Timestamp((new Date()).getTime()),
-    new Timestamp((new Date()).getTime()))
+    currentTimestamp,
+    currentTimestamp)
 
 }
