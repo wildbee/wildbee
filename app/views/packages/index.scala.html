@@ -1,11 +1,14 @@
-@(packs: List[Package])
+@(packs: List[Package], packForm: Form[NewPackage])
  
 <h1>Packages</h1>
-
+<ul>
+@newPackage(packForm)
+</ul>
 @packs.map { pack =>
 	<ul>
 	name: @pack.name <br> 
 	creator: @pack.creator <br>
 	task: @pack.task <br>
 	</ul>
-} 
+}
+ 

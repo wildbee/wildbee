@@ -26,16 +26,16 @@ object PackagesController extends Controller {
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
   def index = Action {
-    Ok(views.html.packages.index(Packages.findAll))
+    Ok(views.html.packages.index(Packages.findAll, packageForm))
   }
 
   def newPackage = Action {
-    Ok(views.html.packages.new_package(packageForm))
+    Ok(views.html.packages.newPackage(packageForm))
   }
 
   def create = Action { implicit request =>
     packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.new_package(formWithErrors)),
+      formWithErrors => BadRequest(views.html.packages.newPackage(formWithErrors)),
       pack => {
         database withSession {
           val uuid = Packages.insert(pack)

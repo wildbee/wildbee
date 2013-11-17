@@ -16,11 +16,12 @@ import helpers._
  * add generalized queries to this once we figure
  * out how.
  */
-trait queriable {
+trait Queriable {
 
   def currentTimestamp: Timestamp = {
     new Timestamp((new Date()).getTime())
   }
+
 }
 
 /**
@@ -56,7 +57,7 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with queriable {
+object Packages extends Table[Package]("packages") with Queriable {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def task = column[UUID]("task_id")
@@ -104,5 +105,19 @@ object Packages extends Table[Package]("packages") with queriable {
     p.osVersion,
     currentTimestamp,
     currentTimestamp)
+
+  /**
+   * These two following helpers should be generalized and made
+   * traits since they will be used by many models.
+   */
+  def getUserMap: Map[String, String] = DB.withSession {
+    implicit session: Session =>
+      Query(Users).list.map(u => (u._1.toString, u._2)).toMap
+  }
+
+  def getTaskMap: Map[String, String] = DB.withSession {
+    implicit session: Session =>
+      Query(Tasks).list.map(t => (t._1.toString, t._2)).toMap
+  }
 
 }
