@@ -18,11 +18,10 @@ object Users extends Table[(UUID, String, String)]("users") {
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
 
-  def * =  id ~ name ~ email
+  def * = id ~ name ~ email
   def autoEmail = id ~ name ~ email returning email
 
-  def insert(name: String, email: String)
-            (implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, name, email)
+  def insert(name: String, email: String)(implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, name, email)
 
   def insert(u: User)(implicit session: Session) = autoEmail.insert(Config.pkGenerator.newKey, u.name, u.email)
 }

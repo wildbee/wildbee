@@ -37,8 +37,8 @@ object PackagesController extends Controller {
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.newPackage(formWithErrors)),
       pack => {
-          val uuid = Packages.insert(pack)
-          Redirect(routes.PackagesController.show(uuid.toString))
+        val uuid = Packages.insert(pack)
+        Redirect(routes.PackagesController.show(uuid.toString))
       })
   }
 
