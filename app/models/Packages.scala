@@ -94,7 +94,9 @@ object Packages extends Table[Package]("packages") with Queriable {
       return row
   }
 
-  def insert(p: NewPackage)(implicit session: Session) = autoId.insert(
+  def insert(p: NewPackage) = DB.withSession {
+    implicit session: Session =>
+    autoId.insert(
     Config.pkGenerator.newKey,
     p.name,
     Config.pkGenerator.fromString(p.task),
@@ -105,6 +107,7 @@ object Packages extends Table[Package]("packages") with Queriable {
     p.osVersion,
     currentTimestamp,
     currentTimestamp)
+  }
 
   /**
    * These two following helpers should be generalized and made

@@ -37,10 +37,8 @@ object PackagesController extends Controller {
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.newPackage(formWithErrors)),
       pack => {
-        database withSession {
           val uuid = Packages.insert(pack)
           Redirect(routes.PackagesController.show(uuid.toString))
-        }
       })
   }
 
