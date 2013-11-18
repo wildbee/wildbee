@@ -17,6 +17,10 @@ import helpers._
  * out how.
  */
 trait Queriable {
+  
+  def uuid(id: String): UUID = {
+    Config.pkGenerator.fromString(id)
+  } 
 
   def currentTimestamp: Timestamp = {
     new Timestamp((new Date()).getTime())
@@ -83,15 +87,12 @@ object Packages extends Table[Package]("packages") with Queriable {
 
   def findAll: List[Package] = DB.withSession {
     implicit session: Session =>
-      val all = Query(this).list
-      return all
+      Query(this).list
   }
 
   def findById(id: String): Package = DB.withSession {
-    implicit session: Session =>
-      val uuid = Config.pkGenerator.fromString(id)
-      val row = Query(this).where(_.id === uuid).first
-      return row
+    implicit session: Session => 
+      Query(this).where(_.id === uuid(id)).first
   }
 
   def insert(p: NewPackage) = DB.withSession {
@@ -99,9 +100,9 @@ object Packages extends Table[Package]("packages") with Queriable {
     autoId.insert(
     Config.pkGenerator.newKey,
     p.name,
-    Config.pkGenerator.fromString(p.task),
-    Config.pkGenerator.fromString(p.creator),
-    Config.pkGenerator.fromString(p.assignee),
+    uuid(p.task),
+    uuid(p.creator),
+    uuid(p.assignee),
     p.ccList,
     p.status,
     p.osVersion,
