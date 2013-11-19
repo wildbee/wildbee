@@ -38,7 +38,6 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   def create(task: String, owner: String)(implicit session: Session) = {	
     autoId.insert(Config.pkGenerator.newKey, owner, task, currentTime, currentTime)  
   } 
-
   
   def update(name: String)(implicit session: Session) = {
     val task = Tasks filter (_.name === name)

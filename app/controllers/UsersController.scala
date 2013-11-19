@@ -21,7 +21,7 @@ object UsersController extends Controller {
       "name" -> nonEmptyText,
       "email" -> email)(User.apply)(User.unapply))
 
-  val query_email = for {
+  val queryEmail = for {
     email <- Parameters[String]
     u <- Users if u.email is email
   } yield u
@@ -46,14 +46,14 @@ object UsersController extends Controller {
   }
 
   def newUser() = Action {
-    Ok(views.html.users.new_user(userForm))
+    Ok(views.html.users.newUser(userForm))
   }
 
   def edit(email: String) = Action {
     database withSession {
-      val user = query_email(email).first
+      val user = queryEmail(email).first
       val filledForm = userForm.fill(User(user._2, user._3))
-      Ok(views.html.users.edit_user(user, filledForm))
+      Ok(views.html.users.editUser(user, filledForm))
     }
   }
 
@@ -77,7 +77,7 @@ object UsersController extends Controller {
 
   def show(email: String) = Action {
     database withSession {
-      val q = query_email(email).first
+      val q = queryEmail(email).first
       Ok(views.html.users.show(q))
     }
   }

@@ -7,6 +7,16 @@ GET     /                           controllers.Application.index
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
+# Packages
+GET		/packages					controllers.PackagesController.index
+GET		/package/new				controllers.PackagesController.newPackage
+GET		/package/:id				controllers.PackagesController.show(id: String)
+GET		/package/:id/edit			controllers.PackagesController.edit(id: String)
+POST	/package/:id				controllers.PackagesController.update(id: String)
+POST	/package					controllers.PackagesController.create
+
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /tasks                      controllers.TasksController.index
 GET     /task/new                   controllers.TasksController.newTask
