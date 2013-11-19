@@ -110,18 +110,4 @@ object Packages extends Table[Package]("packages") with Queriable {
     currentTimestamp)
   }
 
-  /**
-   * These two following helpers should be generalized and made
-   * traits since they will be used by many models.
-   */
-  def getUserMap: Map[String, String] = DB.withSession {
-    implicit session: Session =>
-      Query(Users).list.map(u => (u._1.toString, u._2)).toMap
-  }
-
-  def getTaskMap: Map[String, String] = DB.withSession {
-    implicit session: Session =>
-      Query(Tasks).list.map(t => (t._1.toString, t._2)).toMap
-  }
-
 }

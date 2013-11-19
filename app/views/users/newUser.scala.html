@@ -1,4 +1,4 @@
-@(userForm: Form[User])
+@(userForm: Form[NewUser])
 @main("Product Form") {
   @helper.form(action = routes.UsersController.create) {
     @helper.textarea((userForm("name")))
