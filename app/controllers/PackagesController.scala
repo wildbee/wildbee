@@ -30,12 +30,12 @@ object PackagesController extends Controller {
   }
 
   def newPackage = Action {
-    Ok(views.html.packages.newPackage(packageForm))
+    Ok(views.html.packages.new_entity(packageForm))
   }
 
   def create = Action { implicit request =>
     packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.newPackage(formWithErrors)),
+      formWithErrors => BadRequest(views.html.packages.new_entity(formWithErrors)),
       pack => {
         val uuid = Packages.insert(pack)
         Redirect(routes.PackagesController.show(uuid.toString))
@@ -46,8 +46,21 @@ object PackagesController extends Controller {
     Ok(views.html.packages.show(Packages.findById(id)))
   }
 
-  def edit(id: String) = TODO
+  def edit(id: String) = Action { implicit request =>
+    val pack = Packages.findById(id)
+    val filledForm = packageForm.fill(Packages.packageForUpdate(pack))
 
-  def update(id: String) = TODO
+    Ok(views.html.packages.edit(filledForm, pack))
+  }
+
+  def update(id: String) = Action { implicit request =>
+    val oldPack = Packages.findById(id)
+    packageForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack)),
+      updatedPack => {
+        Packages.updatePackage(oldPack.id, updatedPack, oldPack)
+        Redirect(routes.PackagesController.show(oldPack.id.toString))
+      })
+  }
 
 }

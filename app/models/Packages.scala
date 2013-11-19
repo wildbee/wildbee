@@ -89,6 +89,31 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
     insertWithId(newId, p)
   }
 
+  def packageForUpdate(p: Package): NewPackage = NewPackage(
+    p.name,
+    p.task.toString,
+    p.creator.toString,
+    p.assignee.toString,
+    p.ccList,
+    p.status,
+    p.osVersion)
+
+  def updatePackage(id: UUID, p: NewPackage, o: Package) = DB.withSession {
+
+    implicit session: Session =>
+      update(id, Package(
+        id,
+        p.name,
+        uuid(p.task),
+        uuid(p.creator),
+        uuid(p.assignee),
+        p.ccList,
+        p.status,
+        p.osVersion,
+        o.created,
+        currentTimestamp))
+  }
+
   //  def findAll: List[Package] = DB.withSession {
   //    implicit session: Session =>
   //      Query(Packages).list
