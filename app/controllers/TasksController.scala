@@ -47,7 +47,12 @@ object TasksController extends Controller {
   }
   
   def newTask = Action {
-      Ok(views.html.tasks.New("New Task Form", taskForm))
+    database withSession {
+      //I can't see a way to use Query here without then referring to a name via ._#
+      val users = (Users map (_.name)).list
+      Ok(views.html.tasks.New("New Task Form", taskForm, users))
+    }
+      
   }
 
   def create() = Action { implicit request =>
@@ -66,6 +71,9 @@ object TasksController extends Controller {
   
   def show(name: String) = Action {
     database withSession {
+      // To get a Task using the query below seems more elegant
+      // val task   = Query(Tasks) where (_.name === name ) first
+      // But than how would you get the status? without something like task._#
       val task   = for { t <- Tasks if t.name === name } yield t 
       val status = for { t <- task 
                          s <- t.status } yield s.status
@@ -78,7 +86,6 @@ object TasksController extends Controller {
   def update(name: String) = Action { implicit request =>
     database withSession { 
       Tasks.update(name)
-      val task = Tasks.where { _.name === name }
       PackageStatuses.update(name)
     }
     Redirect(routes.TasksController.show(name))

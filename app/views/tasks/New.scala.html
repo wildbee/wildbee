@@ -1,17 +1,20 @@
 @(message: String, 
-  newForm: Form[Task])
+  taskForm: Form[Task],
+  users: List[String]
+  )
 @import helper._
 
 @main(message) {
 
    <h1>Task Creation</h1>
    @form(routes.TasksController.create) {
-       @inputText(newForm("name"))
-       @inputText(newForm("owner"))
-	   <form action="/task/new" method="POST">
-	       <div class="form-actions">
-		       <button type="submit">Create a Task</button>
-		   </div>
-	   </form>
+       @inputText(taskForm("name"))
+       @helper.select(
+        taskForm("owner"),
+        helper.options(users)
+    )
+       <div class="form-actions">
+	       <button type="submit">Create a Task</button>
+	   </div>
    }
 }

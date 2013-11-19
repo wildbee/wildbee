@@ -121,7 +121,7 @@ object Packages extends Table[Package]("packages") with Queriable {
 
   def getTaskMap: Map[String, String] = DB.withSession {
     implicit session: Session =>
-      Query(Tasks).list.map(t => (t._1.toString, t._2)).toMap
+      Query(Tasks).list.map(t => (t._1.toString, t._3)).toMap
   }
 
 }
