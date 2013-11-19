@@ -21,12 +21,16 @@ object TasksController extends Controller {
         formWithErrors => BadRequest(views.html.tasks.newTask(formWithErrors)),
         newTask => {
           Tasks.insert(newTask.name, newTask.owner)
-          Ok("hello")
+          Redirect(routes.TasksController.show(newTask.name))
         }
       )
   }
 
   def newTask() = Action {
     Ok(views.html.tasks.newTask(taskForm))
+  }
+
+  def show(taskName: String) = Action {
+    Ok(views.html.tasks.show(Tasks.findByTask(taskName)))
   }
 }

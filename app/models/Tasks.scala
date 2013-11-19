@@ -36,4 +36,10 @@ object Tasks extends Table[Task]("tasks") {
     implicit session: Session =>
       Query(Tasks).list.map(t => (t.id.toString, t.name)).toMap
   }
+
+  def findByTask(taskName: String): Task = DB.withSession {
+    implicit session: Session =>
+      Query(Tasks).where(_.name === taskName).first
+  }
+
 }
