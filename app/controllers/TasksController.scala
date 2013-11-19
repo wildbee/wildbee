@@ -42,7 +42,7 @@ object TasksController extends Controller {
       val statuses = joins map { _._2 }
       
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-      Ok(views.html.tasks.Index("Current Tasks", tasks.list, owners.list, statuses.list))
+      Ok(views.html.tasks.index("Current Tasks", tasks.list, owners.list, statuses.list))
     }
   }
   
@@ -50,7 +50,7 @@ object TasksController extends Controller {
     database withSession {
       //I can't see a way to use Query here without then referring to a name via ._#
       val users = (Users map (_.name)).list
-      Ok(views.html.tasks.New("New Task Form", taskForm, users))
+      Ok(views.html.tasks.new_entity("New Task Form", taskForm, users))
     }
       
   }
@@ -78,7 +78,7 @@ object TasksController extends Controller {
       val status = for { t <- task 
                          s <- t.status } yield s.status
       val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-      Ok(views.html.tasks.Show("Task View", workForm, availableStatuses, task.first, status.first))
+      Ok(views.html.tasks.show("Task View", workForm, availableStatuses, task.first, status.first))
     }
   }
     
