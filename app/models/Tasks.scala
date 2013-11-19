@@ -24,7 +24,7 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   def autoId = id ~ ownerName ~ name ~ creationTime ~ lastUpdated returning name
 	      
   def getTaskId(name: String)(implicit session: Session) = Tasks
-      .filter(_.name === name)  //Find the corresponding task from Task table
+      .filter (_.name === name) //Find the corresponding task from Task table
       .map (_.id)               //Find get the task id
       .first                    //Convert Column[UUID] into an UUID
 	      
@@ -45,6 +45,6 @@ object Tasks extends Table[(UUID, String, String, Timestamp, Timestamp)]("tasks"
   }
   
   def delete(task: String)(implicit session: Session) = {
-    Tasks where { _.name === task } delete
+    Tasks where ( _.name === task ) delete
   }
 }
