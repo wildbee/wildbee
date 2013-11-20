@@ -19,9 +19,11 @@ trait Queriable[T <: AnyRef { val id: UUID }] {
 
   def id: Column[UUID]
 
+  def name: Column[String]
+
   def * : scala.slick.lifted.ColumnBase[T]
 
-  //def noID = * returning id
+  def returnID = * returning id
 
   def findAll: List[T] = DB.withSession {
     implicit session: Session =>
@@ -33,11 +35,22 @@ trait Queriable[T <: AnyRef { val id: UUID }] {
       Query(this).where(_.id === uuid(id)).first
   }
 
-  //  def insert(item: T) = {
-  //    DB.withSession { implicit session =>
-  //      noID.insert(entity)
-  //    }
+  //  def findMappedById(id: String): Y = DB.withSession {
+  //    implicit session: Session =>
+  //      tableToQuery(this).filter(_.id === uuid(id)).map(item => mappedEntity).first
   //  }
+
+  /**
+   * To use this generalized insert trait, you need to pass
+   * the correct case class T into it. That means that the model
+   * needs to implement its own mapping from user inputs to
+   * case class.
+   */
+  def insert(item: T) = {
+    DB.withSession { implicit session: Session =>
+      returnID.insert(item)
+    }
+  }
 
   def update(id: UUID, item: T) = DB.withSession {
     implicit session: Session =>

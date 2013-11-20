@@ -1,11 +1,11 @@
 @(packForm: Form[NewPackage],
-	pack: Package,
+	id: String,
 	users: Map[String,String] = Packages.getUserMap,
 	tasks: Map[String,String] = Packages.getTaskMap
 )
 <table>
 @main("Update a Package") {
-  	@helper.form(action = routes.PackagesController.update(pack.id.toString)) {
+  	@helper.form(action = routes.PackagesController.update(id)) {
 	<tr>
     <td>@helper.inputText((packForm("name")))</td>
     

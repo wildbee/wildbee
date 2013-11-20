@@ -47,16 +47,15 @@ object PackagesController extends Controller {
   }
 
   def edit(id: String) = Action { implicit request =>
-    val pack = Packages.findById(id)
-    val filledForm = packageForm.fill(Packages.packageForUpdate(pack))
-
-    Ok(views.html.packages.edit(filledForm, pack))
+    val pack = Packages.packageForUpdate(id)
+    val filledForm = packageForm.fill(pack)
+    Ok(views.html.packages.edit(filledForm, id))
   }
 
   def update(id: String) = Action { implicit request =>
     val oldPack = Packages.findById(id)
     packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack)),
+      formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
         Packages.updatePackage(oldPack.id, updatedPack, oldPack)
         Redirect(routes.PackagesController.show(oldPack.id.toString))

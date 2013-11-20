@@ -64,55 +64,56 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
 
+  def mappedEntity = (name ~ task.toString ~ creator.toString.toString ~ assignee.toString ~ ccList ~ status ~
+    osVersion <> (NewPackage, NewPackage.unapply _))
+
   /**
    * Call this if you want to explicitly set your own id.
    */
-  def insertWithId(id: UUID, p: NewPackage) = DB.withSession {
-    implicit session: Session =>
-      autoId.insert(
-        id,
-        p.name,
-        uuid(p.task),
-        uuid(p.creator),
-        uuid(p.assignee),
-        p.ccList,
-        p.status,
-        p.osVersion,
-        currentTimestamp,
-        currentTimestamp)
-  }
+  def insertWithId(id: UUID, p: NewPackage): UUID =
+    Packages.insert(Package(
+      id,
+      p.name,
+      uuid(p.task),
+      uuid(p.creator),
+      uuid(p.assignee),
+      p.ccList,
+      p.status,
+      p.osVersion,
+      currentTimestamp,
+      currentTimestamp))
 
   /**
    * Call this to auto-create id.
    */
-  def insert(p: NewPackage) = {
+  def insert(p: NewPackage): UUID = {
     insertWithId(newId, p)
   }
 
-  def packageForUpdate(p: Package): NewPackage = NewPackage(
-    p.name,
-    p.task.toString,
-    p.creator.toString,
-    p.assignee.toString,
-    p.ccList,
-    p.status,
-    p.osVersion)
-
-  def updatePackage(id: UUID, p: NewPackage, o: Package) = DB.withSession {
-
-    implicit session: Session =>
-      update(id, Package(
-        id,
-        p.name,
-        uuid(p.task),
-        uuid(p.creator),
-        uuid(p.assignee),
-        p.ccList,
-        p.status,
-        p.osVersion,
-        o.created,
-        currentTimestamp))
+  def packageForUpdate(id: String): NewPackage = {
+    val p = findById(id)
+    NewPackage(
+      p.name,
+      p.task.toString,
+      p.creator.toString,
+      p.assignee.toString,
+      p.ccList,
+      p.status,
+      p.osVersion)
   }
+
+  def updatePackage(id: UUID, p: NewPackage, o: Package) =
+    update(id, Package(
+      id,
+      p.name,
+      uuid(p.task),
+      uuid(p.creator),
+      uuid(p.assignee),
+      p.ccList,
+      p.status,
+      p.osVersion,
+      o.created,
+      currentTimestamp))
 
   //  def findAll: List[Package] = DB.withSession {
   //    implicit session: Session =>
