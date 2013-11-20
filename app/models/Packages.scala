@@ -17,10 +17,10 @@ import helpers._
  * out how.
  */
 trait Queriable {
-  
+
   def uuid(id: String): UUID = {
     Config.pkGenerator.fromString(id)
-  } 
+  }
 
   def currentTimestamp: Timestamp = {
     new Timestamp((new Date()).getTime())
@@ -34,28 +34,28 @@ trait Queriable {
  * as strings.
  */
 case class NewPackage(
-  name: String,
-  task: String,
-  creator: String,
-  assignee: String,
-  ccList: String = "None",
-  status: String,
-  osVersion: String)
+                       name: String,
+                       task: String,
+                       creator: String,
+                       assignee: String,
+                       ccList: String = "None",
+                       status: String,
+                       osVersion: String)
 
 /**
  * This is the main case class that we will map projections to.
  */
 case class Package(
-  id: UUID,
-  name: String,
-  task: UUID,
-  creator: UUID,
-  assignee: UUID,
-  ccList: String = "None",
-  status: String,
-  osVersion: String,
-  created: java.sql.Timestamp,
-  updated: java.sql.Timestamp)
+                    id: UUID,
+                    name: String,
+                    task: UUID,
+                    creator: UUID,
+                    assignee: UUID,
+                    ccList: String = "None",
+                    status: String,
+                    osVersion: String,
+                    created: java.sql.Timestamp,
+                    updated: java.sql.Timestamp)
 
 /**
  * The Packages table will be of type Table[Package] so that
@@ -80,7 +80,7 @@ object Packages extends Table[Package]("packages") with Queriable {
    * The default projection is mapped to the Package case class.
    */
   def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ creationTime ~ lastUpdated <> (Package, Package.unapply _))
+    status ~ osVersion ~ creationTime ~ lastUpdated <>(Package, Package.unapply _))
 
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
@@ -91,23 +91,23 @@ object Packages extends Table[Package]("packages") with Queriable {
   }
 
   def findById(id: String): Package = DB.withSession {
-    implicit session: Session => 
+    implicit session: Session =>
       Query(this).where(_.id === uuid(id)).first
   }
 
   def insert(p: NewPackage) = DB.withSession {
     implicit session: Session =>
-    autoId.insert(
-    Config.pkGenerator.newKey,
-    p.name,
-    uuid(p.task),
-    uuid(p.creator),
-    uuid(p.assignee),
-    p.ccList,
-    p.status,
-    p.osVersion,
-    currentTimestamp,
-    currentTimestamp)
+      autoId.insert(
+        Config.pkGenerator.newKey,
+        p.name,
+        uuid(p.task),
+        uuid(p.creator),
+        uuid(p.assignee),
+        p.ccList,
+        p.status,
+        p.osVersion,
+        currentTimestamp,
+        currentTimestamp)
   }
 
 }

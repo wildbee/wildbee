@@ -18,7 +18,7 @@ object TasksController extends Controller {
   def create = Action {
     implicit request =>
       taskForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.tasks.newTask(formWithErrors)),
+        formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
         newTask => {
           Tasks.insert(newTask.name, newTask.owner)
           Redirect(routes.TasksController.show(newTask.name))
@@ -27,7 +27,7 @@ object TasksController extends Controller {
   }
   // TODO: Add workflow to this
   def newTask() = Action {
-    Ok(views.html.tasks.newTask(taskForm))
+    Ok(views.html.tasks.newEntity(taskForm))
   }
   // TODO: add update task
 
@@ -41,7 +41,8 @@ object TasksController extends Controller {
   //    Workflows.delete(name)       //Delete data dependent on a task first
   //    Tasks.delete(name) 
   //  }
-    Redirect(routes.TasksController.index)
+  //  Redirect(routes.TasksController.index)
+  Ok("TODO")
  }
   
   // TODO: review this Dustin!
