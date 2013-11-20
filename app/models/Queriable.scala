@@ -14,7 +14,7 @@ import helpers._
  * models since it will define all of the basic CRUD operations
  * in a generalized way.
  */
-trait Queriable[T <: AnyRef { val id: UUID }] {
+trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   self: Table[T] =>
 
   def id: Column[UUID]
@@ -25,15 +25,30 @@ trait Queriable[T <: AnyRef { val id: UUID }] {
 
   def returnID = * returning id
 
+  def nameToId(name: String): UUID = DB.withSession {
+    implicit session: Session =>
+      Query(this).where(_.name === name).first.id
+  }
+
+  def idToName(id: String): String = idToName(uuid(id))
+
+  def idToName(id: UUID): String = {
+    findById(id).name
+  }
+
   def findAll: List[T] = DB.withSession {
     implicit session: Session =>
       Query(this).list
   }
 
-  def findById(id: String): T = DB.withSession {
+  def findById(id: String): T = findById(uuid(id))
+
+  def findById(id: UUID): T = DB.withSession {
     implicit session: Session =>
-      Query(this).where(_.id === uuid(id)).first
+      Query(this).where(_.id === id).first
   }
+
+  def findByName(name: String): T = findById(nameToId(name))
 
   //  def findMappedById(id: String): Y = DB.withSession {
   //    implicit session: Session =>
