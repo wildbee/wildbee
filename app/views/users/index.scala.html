@@ -1,4 +1,7 @@
-@(q: List[(_, String, String)])
-@for(values <- q) {
-    <p>@values._1 - @values._2 - @values._3</p>
+@(users: List[User] = Users.findAll)
+
+@main("Listing Users") {
+    @for(user <- users) {
+        <p>@user.id - @user.name - @user.email</p>
+    }
 }

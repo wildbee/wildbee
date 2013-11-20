@@ -3,17 +3,11 @@ package controllers
 import play.api._
 import play.api.mvc._
 import models._
-import play.api.db.DB
-import play.api.Play.current
-import scala.slick.session.Database.threadLocalSession
-import scala.slick.driver.PostgresDriver.simple._
+
 import play.api.data._
 import play.api.data.Forms._
-import java.util.UUID
-import helpers._
 
 object PackagesController extends Controller {
-  lazy val database = Database.forDataSource(DB.getDataSource())
 
   val packageForm = Form(
     mapping(
