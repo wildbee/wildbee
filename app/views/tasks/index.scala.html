@@ -1,0 +1,18 @@
+@(message: String, 
+  tasks:   List[(java.util.UUID, String, String, java.sql.Timestamp, java.sql.Timestamp)], 
+  owner:   List[String],
+  status:  List[String])
+
+@import helper._
+
+@main(message) {
+
+   <h1>ETT</h1>
+
+   <h1> List of Tasks</h1>
+   @for( (task,idx) <- tasks.view.zipWithIndex) {
+       <h2>
+            || Task ID: @task._1 || Owner: @{owner(idx)} || Task: @task._3 || Status: @{status(idx)} || Last Updated: @task._5 ||
+       </h2>
+   }
+}

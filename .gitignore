@@ -14,3 +14,9 @@ dist
 /RUNNING_PID
 /.settings
 *.swp
+.cache
+.target/
+bin/
+play-2.2.1.zip
+play-2.2.1/
+

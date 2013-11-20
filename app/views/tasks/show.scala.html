@@ -1,0 +1,44 @@
+@(message: String, 
+  workForm: Form[Workflows],
+  comboBox: List[String],
+  task:    (java.util.UUID, String, String, java.sql.Timestamp, java.sql.Timestamp), 
+  status:  String)
+
+@import helper._
+
+@main(message) {
+
+   <h1>Showing Task: @task._3</h1>
+   <h2>
+       || Task ID: @task._1 || Owner: @task._2 || Task: @task._3 || Status: @status || Last Updated: @task._5 ||
+   </h2>
+   <table border="1" style="height:200px" cellspacing="20">
+	   <td>
+	   @form(routes.TasksController.updateWorkflow(task._3)) {
+	        @select(workForm("stage[0]"), options(comboBox))
+	        @select(workForm("stage[1]"), options(comboBox))
+	        @select(workForm("stage[2]"), options(comboBox))
+	        @select(workForm("stage[3]"), options(comboBox))
+	
+		  <div class="form-actions">
+		  	<button type="submit">Update Workflow</button>
+		  </div>
+	    }
+	  </td>
+  	  <td>
+	     @form(routes.TasksController.delete(task._3 )) {
+		   <div class="form-actions">
+		       <button type="submit">Delete Taskk</button>
+		   </div>
+	   	 }
+  	 </td>
+  	 <td>
+	   @form(routes.TasksController.update(task._3)) {
+		   <div class="form-actions">
+		       <button type="submit">Update a Task</button>
+		   </div>
+	   }
+  	 </td>
+   </table>
+  
+}
