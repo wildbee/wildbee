@@ -27,6 +27,12 @@ object Tasks extends Table[Task]("tasks") {
                     Config.pkGenerator.fromString(owner))
   }
 
+  /** YYYY-MM-DD HH:MM:SS.MS */
+  def currentTime = { 
+    def date = new java.util.Date()
+    new Timestamp(date.getTime())
+  }
+
   def findAll: List[Task] = DB.withSession {
     implicit session: Session =>
       Query(this).list
@@ -42,4 +48,14 @@ object Tasks extends Table[Task]("tasks") {
       Query(Tasks).where(_.name === taskName).first
   }
 
+  def update(name: String): Unit = DB.withSession {
+    implicit session: Session =>
+      val task = Tasks filter (_.name === name)
+      task map (_.lastUpdated) update (currentTime)
+  }
+  
+  def delete(task: String): Unit = DB.withSession {
+    implicit session: Session =>
+      Tasks where ( _.name === task ) delete
+  }
 }

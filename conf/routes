@@ -29,4 +29,7 @@ GET     /user/:email                controllers.UsersController.show(email: Stri
 # tasks
 GET     /task/new                   controllers.TasksController.newTask
 POST    /task                       controllers.TasksController.create
-GET    /task/:taskName              controllers.TasksController.show(taskName: String)
+# TODO: fix the methods!
+# GET     /task/:task                 controllers.TasksController.show(task: String)
+# GET     /status/:task               controllers.TasksController.updateWorkflow(task: String)
+# GET     /tasks                      controllers.TasksController.index

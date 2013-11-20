@@ -25,12 +25,31 @@ object TasksController extends Controller {
         }
       )
   }
-
+  // TODO: Add workflow to this
   def newTask() = Action {
     Ok(views.html.tasks.newTask(taskForm))
   }
+  // TODO: add update task
 
   def show(taskName: String) = Action {
     Ok(views.html.tasks.show(Tasks.findByTask(taskName)))
   }
+  // TODO: Integrate workflow with this
+  def delete(name: String) = Action { implicit request =>
+  //  database withSession { 
+  //    PackageStatuses.delete(name) //Should be a package thing
+  //    Workflows.delete(name)       //Delete data dependent on a task first
+  //    Tasks.delete(name) 
+  //  }
+    Redirect(routes.TasksController.index)
+ }
+  
+  // TODO: review this Dustin!
+  // def updateWorkflow(name :String) = Action { implicit request =>
+  //  workForm.bindFromRequest.fold(
+  //    errors => BadRequest(views.html.index("Error Updating :: " + errors)),
+  //    w      => database withSession { Workflows.create(name, w.stage) }
+  //  )   
+  //  Redirect(routes.TasksController.show(name))
+  // }
 }
