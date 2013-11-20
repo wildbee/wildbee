@@ -90,7 +90,12 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
     insertWithId(newId, p)
   }
 
-  def packageForUpdate(id: String): NewPackage = {
+  /**
+   * This method returns a NewPackage type created from a queried
+   * Package. Useful during updates to fill a form with the current
+   * values.
+   */
+  def mapToNewPackage(id: String): NewPackage = {
     val p = findById(id)
     NewPackage(
       p.name,
@@ -102,6 +107,10 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       p.osVersion)
   }
 
+  /**
+   * This method maps from NewPackage to Package in order to
+   * create an update.
+   */
   def updatePackage(id: UUID, p: NewPackage, o: Package) =
     update(id, Package(
       id,
@@ -114,29 +123,4 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       p.osVersion,
       o.created,
       currentTimestamp))
-
-  //  def findAll: List[Package] = DB.withSession {
-  //    implicit session: Session =>
-  //      Query(Packages).list
-  //  }
-  //
-  //  def findById(id: String): Package = DB.withSession {
-  //    implicit session: Session =>
-  //      Query(Packages).where(_.id === uuid(id)).first
-  //  }
-
-  /**
-   * These two following helpers should be generalized and made
-   * traits since they will be used by many models.
-   */
-  //  def getUserMap: Map[String, String] = DB.withSession {
-  //    implicit session: Session =>
-  //      Query(Users).list.map(u => (u._1.toString, u._2)).toMap
-  //  }
-  //
-  //  def getTaskMap: Map[String, String] = DB.withSession {
-  //    implicit session: Session =>
-  //      Query(Tasks).list.map(t => (t._1.toString, t._2)).toMap
-  //  }
-
 }

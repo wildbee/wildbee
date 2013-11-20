@@ -47,7 +47,7 @@ object PackagesController extends Controller {
   }
 
   def edit(id: String) = Action { implicit request =>
-    val pack = Packages.packageForUpdate(id)
+    val pack = Packages.mapToNewPackage(id)
     val filledForm = packageForm.fill(pack)
     Ok(views.html.packages.edit(filledForm, id))
   }
