@@ -1,8 +1,27 @@
-@(task: Task)
+@(task: Task,
+  users: List[User] = Users.findAll
+)
 
 @main("Show tasks") {
-    <p>@task.id - @task.name - @task.owner </p>
+      <p>
+        <h1>@task.name</h1>
+  		================================================= <br/>
+  		Task Owner: @{Users.findById(task.owner).name}</br>
+  		Task Creation Time: @task.creationTime</br>
+  		Task Last Updated: @task.lastUpdated</br>
+  		Task ID: @task.id<br/>
+  		Task Owner ID: @task.owner</br>
+  		=================================================
+       </p>
+       
+     @helper.form(routes.TasksController.delete(task.name)) {
+        <div class="form-actions">
+            <button type="submit">Delete Task</button>
+       </div>
+     }
 }
+@*
 <!-- TODO: Show workflow -->
 <!-- TODO: delete task -->
 <!-- TODO: update a task -->
+*@
