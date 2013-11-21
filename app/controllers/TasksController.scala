@@ -25,6 +25,11 @@ object TasksController extends Controller {
         }
       )
   }
+
+  def index() = Action {
+    Ok(views.html.tasks.index())
+  }
+    
   // TODO: Add workflow to this
   def newTask() = Action {
     Ok(views.html.tasks.newEntity(taskForm))

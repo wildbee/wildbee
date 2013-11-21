@@ -29,7 +29,11 @@ object Users extends Table[User]("users") {
     implicit session: Session =>
       autoEmail.insert(Config.pkGenerator.newKey, name, email)
   }
-
+  def findById(id: UUID): User = DB.withSession {
+    implicit session: Session => Query(this)
+       .where (_.id === id)
+       .first               
+  }
   def findAll: List[User] = DB.withSession {
     implicit session: Session =>
       Query(this).list
