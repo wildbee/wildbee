@@ -15,13 +15,13 @@ case class Task(id: UUID, name: String, owner: UUID,
     creationTime: Timestamp, lastUpdated: Timestamp)
 
 object Tasks extends Table[Task]("tasks") {
-  def id = column[UUID]("id", O.PrimaryKey)
-  def name = column[String]("name")
-  def owner = column[UUID]("owner_id")
+  def id           = column[UUID]("id", O.PrimaryKey)
+  def name         = column[String]("name")
+  def owner        = column[UUID]("owner_id")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
-  def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
-  def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)
-  def uniqueName = index("idx_name", name, unique = true)
+  def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
+  def ownerFk      = foreignKey("owner_fk", owner, Users)(_.id)
+  def uniqueName   = index("idx_name", name, unique = true)
 
   def * = id ~ name ~ owner ~ creationTime ~ lastUpdated <>(Task, Task.unapply _)
   private def autoId = id ~ name ~ owner ~ creationTime ~ lastUpdated returning id
@@ -48,7 +48,7 @@ object Tasks extends Table[Task]("tasks") {
       Query(Tasks).list.map(t => (t.id.toString, t.name)).toMap
   }
 
-  def findByTask(taskName: String): Task = DB.withSession {
+  def findById(taskName: String): Task = DB.withSession {
     implicit session: Session =>
       Query(Tasks).where(_.name === taskName).first
   }

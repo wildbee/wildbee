@@ -22,7 +22,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tasks<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         @for(task <- Tasks.findAll) {
-                        <li><a href="#">@task.name</a></li>
+                        <li><a href="@{routes.TasksController.show(task.name)}">@task.name</a></li>
                         }
                         <li class="divider"></li>
                         <li><a href="@routes.TasksController.newTask">Create Task</a></li>
