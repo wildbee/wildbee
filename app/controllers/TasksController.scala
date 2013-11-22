@@ -26,7 +26,7 @@ object TasksController extends Controller {
   // TODO: add update task
 
   def show(taskName: String) = Action {
-    Ok(views.html.tasks.show(Tasks.findById(taskName)))
+    Ok(views.html.tasks.show(Tasks.findByName(taskName)))
   }
   
   def create = Action {

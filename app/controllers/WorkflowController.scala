@@ -19,10 +19,15 @@ object WorkflowController extends Controller {
   def newWorkflow = Action {
     Ok(views.html.workflows.newEntity(workForm, List("Open", "In Progress", "Pending", "Closed")))
   }
+  
   def index = Action {
     Ok(views.html.workflows.index())
   }
  
+  def show(workflow: String) = Action {
+    Ok(views.html.workflows.show(Workflows.findByName(workflow)))
+  }
+  
   def create() = Action {
     implicit request =>
       workForm.bindFromRequest.fold(
@@ -30,7 +35,7 @@ object WorkflowController extends Controller {
         workflow => {
           AllowedStatuses.create(workflow.name, workflow.status)
           Workflows.create(workflow.name)
-          Redirect(routes.WorkflowController.index)
+          Redirect(routes.WorkflowController.show(workflow.name))
         }
       )
   }

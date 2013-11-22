@@ -24,6 +24,11 @@ object Workflows extends Table[Workflow]("workflows") {
       Query(this).list
   }
   
+  def findByName(name: String): Workflow = DB.withSession {
+    implicit session: Session =>
+      Query(Workflows) filter (_.name === name) first
+  }
+    
   /** In this case update is just re-creating the workflow */
   def create(name: String): Unit = DB.withSession {
     implicit session: Session => {

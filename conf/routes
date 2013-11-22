@@ -33,5 +33,6 @@ POST    /task/:task/delete          controllers.TasksController.delete(task: Str
 
 #Workflows
 GET     /workflow/new               controllers.WorkflowController.newWorkflow
+GET     /workflow/:workflow         controllers.WorkflowController.show(workflow: String)
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create

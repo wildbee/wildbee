@@ -7,17 +7,17 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 
-
-object AllowedStatuses extends Table[(UUID, String, String, String)]("allowed_statuses") {
+case class AllowedStatus(id: UUID, workflow: String, presentState: String, futureState: String)
+object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
   def id           = column[UUID]  ("id", O.PrimaryKey)
   def workflow     = column[String]("workflow")
   def presentState = column[String]("state")
   def futureState  = column[String]("next_state")
   
-  def * = id ~ workflow ~ presentState ~ futureState
+  def * = id ~ workflow ~ presentState ~ futureState <> (AllowedStatus, AllowedStatus.unapply _)
   def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
-  def nextState(workflow: String, state: String): String = DB.withSession {
+  def getLogic(workflow: String): Map[String, List[String]] = DB.withSession {
     implicit session: Session => {
       val transistions = AllowedStatuses
         .filter(_.workflow === workflow)
@@ -28,13 +28,13 @@ object AllowedStatuses extends Table[(UUID, String, String, String)]("allowed_st
         .groupBy(_._1)                           //A -> List((A,B),(A,C))
         .map { case (k, v) => (k, v.map(_._2)) } //A -> List(B, C)
   
-      val choices = transistionMapping(state)
-  
+      transistionMapping
+      
       /** Temporary ***************************************
         * When you have logic like A -> (B,C), randomly pick which state to move into next
         * For testing, not sure how conflicts should be resolved
         * You would instead give user ability to choose next state from available states
-        */
+      val choices = transistionMapping(state)
       println("=========")
       println("Possible Outcomes")
       println("==========")
@@ -45,7 +45,8 @@ object AllowedStatuses extends Table[(UUID, String, String, String)]("allowed_st
       val idx = rand.nextInt(choices.length)
       println("Randomly Outcome => " + choices(idx))
       choices(idx)
-      /** Temporary * ****************************************/
+      * Temporary * ****************************************/
+       
     }
   }
 
@@ -70,13 +71,14 @@ object AllowedStatuses extends Table[(UUID, String, String, String)]("allowed_st
 }
 
 /** Define the packages current state */
-//TOOD: Tie this in with a package rather than a task
-object PackageStatuses extends Table[(UUID, UUID, String, String)]("package_statuses") {
-  def id = column[UUID]("id", O.PrimaryKey)
+case class Status(id: UUID, taskId: UUID, task: String, status: String)
+object Statuses extends Table[Status]("status") {
+  def id     = column[UUID]("id", O.PrimaryKey)
   def taskId = column[UUID]("task_id")
-  def task = column[String]("task")
+  def task   = column[String]("task")
   def status = column[String]("status")
-  def * = id ~ taskId ~ task ~ status
+  
+  def * = id ~ taskId ~ task ~ status <> (Status, Status.unapply _)
   def autoId = id ~ taskId ~ task ~ status returning id
 
   def currentStatus(workflow: String): String = DB.withSession {
@@ -84,30 +86,30 @@ object PackageStatuses extends Table[(UUID, UUID, String, String)]("package_stat
     // How would I nicely represent the below with Query?
     // So below is actually a query, ".list" and ".first" executes the query
     implicit session: Session => {
-      val status = for {s <- PackageStatuses if s.taskId === id} yield s.status
+      val status = for {s <- Statuses if s.taskId === id} yield s.status
       status.first
     }
   }
 
   def create(task: String, state: String): Unit = DB.withSession {
     implicit session: Session =>
-      autoId.insert(Config.pkGenerator.newKey, Tasks.findById(task).id, task, state) //This is temporary
+      autoId.insert(Config.pkGenerator.newKey, Tasks.findByName(task).id, task, state) //This is temporary
   }
 
   def delete(task: String): Unit = DB.withSession {
     implicit session: Session =>
-      PackageStatuses where (_.id === Tasks.findById(task).id) delete
+      Statuses where (_.id === Tasks.findByName(task).id) delete
   }
 
-  /** There should be a better way to find your current status */
+  /** There should be a better way to find your current status 
   def update(workflow: String, state: String = ""): Unit = DB.withSession {
     implicit session: Session => {
-      val currentState = PackageStatuses filter (_.taskId === taskId)
+      val currentState = Statuses filter (_.taskId === taskId)
       val nextState = state match {
         case "" => AllowedStatuses.nextState(workflow, currentStatus(workflow))
         case _ => state
       }
       currentState map (_.status) update (nextState)
     }
-  }
+  }*/
 }
