@@ -43,12 +43,8 @@ object TasksController extends Controller {
     
   // TODO: Integrate workflow with this
   def delete(name: String) = Action { 
-    implicit request => {
-       //PackageStatuses.delete(name) //Should be a package thing
-      //Workflows.delete(name)         //Delete data dependent on a task first
+    implicit request => 
       Tasks.delete(name) 
-    }
-    
     Redirect(routes.TasksController.index)
  }
   

@@ -24,8 +24,8 @@ object WorkflowController extends Controller {
     Ok(views.html.workflows.index())
   }
  
-  def show(workflow: String) = Action {
-    Ok(views.html.workflows.show(Workflows.findByName(workflow)))
+  def show(name: String) = Action {
+    Ok(views.html.workflows.show(Workflows.findByName(name)))
   }
   
   def create() = Action {
@@ -37,6 +37,14 @@ object WorkflowController extends Controller {
           Workflows.create(workflow.name)
           Redirect(routes.WorkflowController.show(workflow.name))
         }
-      )
+    )
+  }
+  
+  def delete(name: String) = Action {
+    implicit request => {
+      AllowedStatuses.delete(name)
+      Workflows.delete(name)
+    }
+    Redirect(routes.WorkflowController.index)
   }
 }

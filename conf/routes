@@ -36,3 +36,4 @@ GET     /workflow/new               controllers.WorkflowController.newWorkflow
 GET     /workflow/:workflow         controllers.WorkflowController.show(workflow: String)
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create
+POST    /workflow/:workflow/delete  controllers.WorkflowController.delete(workflow: String)
