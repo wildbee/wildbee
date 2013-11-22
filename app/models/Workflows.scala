@@ -13,8 +13,8 @@ object Workflows extends Table[Workflow]("workflows") {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
 
-  def statusFk = foreignKey("status_fk", name, AllowedStatuses)(_.workflow)
-  def uniqueName = index("idx_name", name, unique = true)
+//  def statusFk = foreignKey("status_fk", name, AllowedStatuses)(_.workflow)
+  def uniqueName = index("idx_workflow_name", name, unique = true)
 
   def * = id ~ name  <> (Workflow, Workflow.unapply _)
   def autoId = id ~ name returning id
