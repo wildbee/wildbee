@@ -1,0 +1,18 @@
+@(workflows: List[Workflow] = Workflows.findAll)
+
+@import helper._
+
+@main("Listing Tasks") {
+
+   <h1>ETT</h1>
+
+   <h1> List of Tasks</h1>
+   @workflows.map { workflow =>
+       <p>
+       		================================================= <br/>
+       		Workflow ID: @workflow.id<br/>
+       		Workflow Name: @workflow.name<br/>
+       		=================================================
+       </p>
+   }
+}

@@ -1,0 +1,21 @@
+@(workflow: Workflow)
+
+@main("Show Workflow") {
+      <p>
+        <h1>@workflow.name</h1>
+  		================================================= <br/>
+  		Workflow ID: @workflow.id<br/>
+  		<u>Workflow Mapping</u> <br>
+  		@AllowedStatuses.getLogic(workflow.name).map { case (key, value) =>
+  			- @key -> @value.mkString(", ") <br/>
+  		}
+  		================================================
+       </p>
+
+
+     @helper.form(routes.WorkflowController.delete(workflow.name)) {
+        <div class="form-actions">
+            <button type="submit">Delete Task</button>
+       </div>
+     }
+}
