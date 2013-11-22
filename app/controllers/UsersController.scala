@@ -26,7 +26,7 @@ object UsersController extends Controller {
   def newUser() = Action {
     Ok(views.html.users.newUser(userForm))
   }
-  
+
   def edit(email: String) = Action {
     val user = Users.findByEmail(email)
     val filledForm = userForm.fill(NewUser(user.name, user.email))

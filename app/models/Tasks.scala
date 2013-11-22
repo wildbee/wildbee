@@ -29,7 +29,7 @@ object Tasks extends Table[Task]("tasks") {
     def date = new java.util.Date()
     new Timestamp(date.getTime())
   }
-  
+
   def findAll: List[Task] = DB.withSession {
     implicit session: Session =>
       Query(this).list
