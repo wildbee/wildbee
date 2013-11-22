@@ -15,6 +15,24 @@ object UsersController extends Controller {
       "name" -> nonEmptyText,
       "email" -> email)(NewUser.apply)(NewUser.unapply))
 
+  def index() = Action {
+    Ok(views.html.users.index())
+  }
+
+  def show(email: String) = Action {
+    Ok(views.html.users.show(Users.findByEmail(email)))
+  }
+    
+  def newUser() = Action {
+    Ok(views.html.users.newUser(userForm))
+  }
+  
+  def edit(email: String) = Action {
+    val user = Users.findByEmail(email)
+    val filledForm = userForm.fill(NewUser(user.name, user.email))
+    Ok(views.html.users.editUser(filledForm, user))
+  }
+
   def create = Action {
     implicit request =>
       userForm.bindFromRequest.fold(
@@ -24,20 +42,6 @@ object UsersController extends Controller {
           Redirect(routes.UsersController.show(email))
         }
       )
-  }
-
-  def index() = Action {
-    Ok(views.html.users.index())
-  }
-
-  def newUser() = Action {
-    Ok(views.html.users.newUser(userForm))
-  }
-
-  def edit(email: String) = Action {
-    val user = Users.findByEmail(email)
-    val filledForm = userForm.fill(NewUser(user.name, user.email))
-    Ok(views.html.users.editUser(filledForm, user))
   }
 
   def update(email: String) = Action {
@@ -53,7 +57,5 @@ object UsersController extends Controller {
       )
   }
 
-  def show(email: String) = Action {
-    Ok(views.html.users.show(Users.findByEmail(email)))
-  }
+
 }

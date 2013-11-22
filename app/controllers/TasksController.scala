@@ -18,15 +18,13 @@ object TasksController extends Controller {
   def index() = Action {
     Ok(views.html.tasks.index())
   }
-    
-  // TODO: Add workflow to this
-  def newTask() = Action {
-    Ok(views.html.tasks.newEntity(taskForm))
-  }
-  // TODO: add update task
 
   def show(taskName: String) = Action {
     Ok(views.html.tasks.show(Tasks.findByName(taskName)))
+  }
+    
+  def newTask() = Action {
+    Ok(views.html.tasks.newEntity(taskForm))
   }
   
   def create = Action {
@@ -41,19 +39,9 @@ object TasksController extends Controller {
       )
   }
     
-  // TODO: Integrate workflow with this
   def delete(name: String) = Action { 
     implicit request => 
       Tasks.delete(name) 
     Redirect(routes.TasksController.index)
  }
-  
-  // TODO: review this Dustin!
-  // def updateWorkflow(name :String) = Action { implicit request =>
-  //  workForm.bindFromRequest.fold(
-  //    errors => BadRequest(views.html.index("Error Updating :: " + errors)),
-  //    w      => database withSession { Workflows.create(name, w.stage) }
-  //  )   
-  //  Redirect(routes.TasksController.show(name))
-  // }
 }

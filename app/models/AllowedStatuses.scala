@@ -29,24 +29,6 @@ object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
         .map { case (k, v) => (k, v.map(_._2)) } //A -> List(B, C)
   
       transistionMapping
-      
-      /** Temporary ***************************************
-        * When you have logic like A -> (B,C), randomly pick which state to move into next
-        * For testing, not sure how conflicts should be resolved
-        * You would instead give user ability to choose next state from available states
-      val choices = transistionMapping(state)
-      println("=========")
-      println("Possible Outcomes")
-      println("==========")
-      choices map (println)
-      println("==========")
-  
-      val rand = new Random(System.currentTimeMillis())
-      val idx = rand.nextInt(choices.length)
-      println("Randomly Outcome => " + choices(idx))
-      choices(idx)
-      * Temporary * ****************************************/
-       
     }
   }
 
@@ -70,7 +52,7 @@ object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
 
 }
 
-/** Define the packages current state */
+/** Currently not in use
 case class Status(id: UUID, taskId: UUID, task: String, status: String)
 object Statuses extends Table[Status]("status") {
   def id     = column[UUID]("id", O.PrimaryKey)
@@ -101,7 +83,6 @@ object Statuses extends Table[Status]("status") {
       Statuses where (_.id === Tasks.findByName(task).id) delete
   }
 
-  /** There should be a better way to find your current status 
   def update(workflow: String, state: String = ""): Unit = DB.withSession {
     implicit session: Session => {
       val currentState = Statuses filter (_.taskId === taskId)
@@ -111,5 +92,5 @@ object Statuses extends Table[Status]("status") {
       }
       currentState map (_.status) update (nextState)
     }
-  }*/
-}
+  }
+}*/

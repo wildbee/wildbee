@@ -13,11 +13,11 @@ object WorkflowController extends Controller {
   val workForm = Form(
     mapping(
       "name"   -> nonEmptyText,
-      "status" -> list(text)
-    )(NewWorkflow.apply)(NewWorkflow.unapply))
+      "status" -> list(text))(NewWorkflow.apply)(NewWorkflow.unapply))
   
   def newWorkflow = Action {
-    Ok(views.html.workflows.newEntity(workForm, List("Open", "In Progress", "Pending", "Closed")))
+    Ok(views.html.workflows.newEntity(
+        workForm, List("Open", "In Progress", "Pending", "Closed"))) //TODO: Make it easier to create workflow, Ex. Checkboxes, pictures, etc
   }
   
   def index = Action {
@@ -28,10 +28,11 @@ object WorkflowController extends Controller {
     Ok(views.html.workflows.show(Workflows.findByName(name)))
   }
   
+  /** When creating a workflow creat its logic first */
   def create() = Action {
     implicit request =>
       workForm.bindFromRequest.fold(
-        errors => BadRequest(views.html.index("Error Creating Task :: " + errors)),
+        errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
           AllowedStatuses.create(workflow.name, workflow.status)
           Workflows.create(workflow.name)
@@ -40,6 +41,7 @@ object WorkflowController extends Controller {
     )
   }
   
+  /** When deleting a workflow delete its logic first */
   def delete(name: String) = Action {
     implicit request => {
       AllowedStatuses.delete(name)
