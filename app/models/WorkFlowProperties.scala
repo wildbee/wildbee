@@ -8,28 +8,19 @@ import java.util.Random
 import java.util.UUID
 
 
-//TODO: Maybe status should be its own type
-/** Currently Unused
-trait Status {
-        val availableStatuses = List("Open", "In Progress", "Pending", "Closed")
-} */
-
-/** Define the workflow for a task */
-case class Workflows(stage: List[String])
-
-object Workflows extends Table[(UUID, UUID, String, String)]("workflows") {
-  def id = column[UUID]("id", O.PrimaryKey)
-  def taskId = column[UUID]("task_id")
+object AllowedStatuses extends Table[(UUID, String, String, String)]("allowed_statuses") {
+  def id           = column[UUID]  ("id", O.PrimaryKey)
+  def workflow     = column[String]("workflow")
   def presentState = column[String]("state")
-  def futureState = column[String]("next_state")
+  def futureState  = column[String]("next_state")
+  
+  def * = id ~ workflow ~ presentState ~ futureState
+  def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
-  def * = id ~ taskId ~ presentState ~ futureState
-  def autoId = id ~ taskId ~ presentState ~ futureState returning id
-
-  def nextState(id: UUID, state: String): String = DB.withSession {
+  def nextState(workflow: String, state: String): String = DB.withSession {
     implicit session: Session => {
-      val transistions = Workflows
-        .filter(_.taskId === id)
+      val transistions = AllowedStatuses
+        .filter(_.workflow === workflow)
         .map(w => (w.presentState, w.futureState))
         .list
   
@@ -59,41 +50,36 @@ object Workflows extends Table[(UUID, UUID, String, String)]("workflows") {
   }
 
   /** In this case update is just re-creating the workflow */
-  def create(task: String, stateTable: List[String]): Unit = DB.withSession {
+  def create(workflow: String, stateTable: List[String]): Unit = DB.withSession {
     implicit session: Session => {
-      val shiftedStateTable = stateTable.tail ::: List(stateTable.head) //O(n) can we do better?
+      println("Creating logic for :: " + workflow)
+      val shiftedStateTable = stateTable.tail ::: List(stateTable.head)
       val stateTransistions = stateTable zip shiftedStateTable
-      val taskId = Tasks.findById(task).id 
-      delete(task)              //Delete previous task's workflow
-      stateTransistions map {   //Create new task's workflow
-        case (state, nextState) => autoId.insert(Config.pkGenerator.newKey, taskId, state, nextState)
+      delete(workflow)              //Delete previous task's workflow
+      stateTransistions map {       //Create new task's workflow
+        case (state, nextState) => autoId.insert(Config.pkGenerator.newKey, workflow, state, nextState)
       }
     }
   }
 
-  def delete(task: String): Unit = DB.withSession {
+  def delete(workflow: String): Unit = DB.withSession {
     implicit session: Session =>
-      Workflows filter (_.taskId === Tasks.findById(task).id) delete
+      AllowedStatuses filter (_.workflow === workflow) delete
   }
 
 }
 
 /** Define the packages current state */
 //TOOD: Tie this in with a package rather than a task
-object PackageStatuses extends Table[(UUID, UUID, String, String)]("allowed_statuses") {
+object PackageStatuses extends Table[(UUID, UUID, String, String)]("package_statuses") {
   def id = column[UUID]("id", O.PrimaryKey)
-
   def taskId = column[UUID]("task_id")
-
   def task = column[String]("task")
-
   def status = column[String]("status")
-
   def * = id ~ taskId ~ task ~ status
-
   def autoId = id ~ taskId ~ task ~ status returning id
 
-  def currentStatus(id: UUID): String = DB.withSession {
+  def currentStatus(workflow: String): String = DB.withSession {
     // While going through code I don't think using Query is a good way to go
     // How would I nicely represent the below with Query?
     // So below is actually a query, ".list" and ".first" executes the query
@@ -114,12 +100,11 @@ object PackageStatuses extends Table[(UUID, UUID, String, String)]("allowed_stat
   }
 
   /** There should be a better way to find your current status */
-  def update(task: String, state: String = ""): Unit = DB.withSession {
+  def update(workflow: String, state: String = ""): Unit = DB.withSession {
     implicit session: Session => {
-      val taskId = Tasks.findById(task).id
       val currentState = PackageStatuses filter (_.taskId === taskId)
       val nextState = state match {
-        case "" => Workflows.nextState(taskId, currentStatus(taskId))
+        case "" => AllowedStatuses.nextState(workflow, currentStatus(workflow))
         case _ => state
       }
       currentState map (_.status) update (nextState)

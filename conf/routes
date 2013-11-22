@@ -24,11 +24,14 @@ POST    /user/:email                controllers.UsersController.update(email: St
 GET     /user/:email/edit           controllers.UsersController.edit(email: String)
 GET     /user/:email                controllers.UsersController.show(email: String)
 
-# tasks
+# Tasks
 GET     /tasks                      controllers.TasksController.index
 GET     /task/new                   controllers.TasksController.newTask
 GET     /task/:task                 controllers.TasksController.show(task: String)
 POST    /task                       controllers.TasksController.create
 POST    /task/:task/delete          controllers.TasksController.delete(task: String)
-# TODO: fix the methods!
-# GET     /status/:task               controllers.TasksController.updateWorkflow(task: String)
+
+#Workflows
+GET     /workflow/new               controllers.WorkflowController.newWorkflow
+GET     /workflows                  controllers.WorkflowController.index
+POST    /workflow                   controllers.WorkflowController.create

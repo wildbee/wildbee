@@ -35,7 +35,7 @@ object TasksController extends Controller {
         formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
         newTask => {
           Tasks.insert(newTask.name, newTask.owner)
-           Workflows.create(newTask.name, List("Open","In Progress","Closed"))
+          //Workflows.create(newTask.name, List("Open","In Progress","Closed"))
           Redirect(routes.TasksController.show(newTask.name))
         }
       )
@@ -45,7 +45,7 @@ object TasksController extends Controller {
   def delete(name: String) = Action { 
     implicit request => {
        //PackageStatuses.delete(name) //Should be a package thing
-      Workflows.delete(name)         //Delete data dependent on a task first
+      //Workflows.delete(name)         //Delete data dependent on a task first
       Tasks.delete(name) 
     }
     

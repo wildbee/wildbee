@@ -1,0 +1,14 @@
+@(workForm: Form[NewWorkflow], statuses: List[String])
+@import helper._
+@main("Workflow Form") {
+  @form(action = routes.WorkflowController.create) {
+    @inputText(workForm("name"))       
+    @select(workForm("status[0]"), options(statuses))
+    @select(workForm("status[1]"), options(statuses))
+    @select(workForm("status[2]"), options(statuses))
+    @select(workForm("status[3]"), options(statuses))
+    <div class="form-actions">
+        <button type="submit">Create Workflow</button>
+    </div>
+  }
+}
