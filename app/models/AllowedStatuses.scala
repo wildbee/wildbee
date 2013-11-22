@@ -9,11 +9,11 @@ import java.util.UUID
 
 case class AllowedStatus(id: UUID, workflow: String, presentState: String, futureState: String)
 object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
-  def id           = column[UUID]  ("id", O.PrimaryKey)
-  def workflow     = column[String]("workflow")
+  def id = column[UUID]  ("id", O.PrimaryKey)
+  def workflow = column[String]("workflow")
   def presentState = column[String]("state")
-  def futureState  = column[String]("next_state")
-  
+  def futureState = column[String]("next_state")
+
   def * = id ~ workflow ~ presentState ~ futureState <> (AllowedStatus, AllowedStatus.unapply _)
   def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
@@ -23,11 +23,11 @@ object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
         .filter(_.workflow === workflow)
         .map(w => (w.presentState, w.futureState))
         .list
-  
+
       val transistionMapping = transistions
         .groupBy(_._1)                           //A -> List((A,B),(A,C))
         .map { case (k, v) => (k, v.map(_._2)) } //A -> List(B, C)
-  
+
       transistionMapping
     }
   }
@@ -59,7 +59,7 @@ object Statuses extends Table[Status]("status") {
   def taskId = column[UUID]("task_id")
   def task   = column[String]("task")
   def status = column[String]("status")
-  
+
   def * = id ~ taskId ~ task ~ status <> (Status, Status.unapply _)
   def autoId = id ~ taskId ~ task ~ status returning id
 

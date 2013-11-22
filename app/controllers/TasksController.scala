@@ -22,11 +22,11 @@ object TasksController extends Controller {
   def show(taskName: String) = Action {
     Ok(views.html.tasks.show(Tasks.findByName(taskName)))
   }
-    
+
   def newTask() = Action {
     Ok(views.html.tasks.newEntity(taskForm))
   }
-  
+
   def create = Action {
     implicit request =>
       taskForm.bindFromRequest.fold(
@@ -38,10 +38,10 @@ object TasksController extends Controller {
         }
       )
   }
-    
-  def delete(name: String) = Action { 
-    implicit request => 
-      Tasks.delete(name) 
+
+  def delete(name: String) = Action {
+    implicit request =>
+      Tasks.delete(name)
     Redirect(routes.TasksController.index)
  }
 }

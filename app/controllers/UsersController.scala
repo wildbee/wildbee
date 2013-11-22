@@ -22,7 +22,7 @@ object UsersController extends Controller {
   def show(email: String) = Action {
     Ok(views.html.users.show(Users.findByEmail(email)))
   }
-    
+
   def newUser() = Action {
     Ok(views.html.users.newUser(userForm))
   }

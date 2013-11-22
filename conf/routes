@@ -9,12 +9,12 @@ GET     /                           controllers.Application.index
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # Packages
-GET		/packages					controllers.PackagesController.index
-GET		/package/new				controllers.PackagesController.newPackage
-GET		/package/:id				controllers.PackagesController.show(id: String)
-GET		/package/:id/edit			controllers.PackagesController.edit(id: String)
-POST	/package/:id				controllers.PackagesController.update(id: String)
-POST	/package					controllers.PackagesController.create
+GET     /packages                   controllers.PackagesController.index
+GET     /package/new                controllers.PackagesController.newPackage
+GET     /package/:id                controllers.PackagesController.show(id: String)
+GET     /package/:id/edit           controllers.PackagesController.edit(id: String)
+POST    /package/:id                controllers.PackagesController.update(id: String)
+POST    /package                    controllers.PackagesController.create
 
 # Users
 GET     /users                      controllers.UsersController.index

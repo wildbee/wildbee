@@ -6,12 +6,12 @@
   		================================================= <br/>
   		Workflow ID: @workflow.id<br/>
   		<u>Workflow Mapping</u> <br>
-  		@AllowedStatuses.getLogic(workflow.name).map { case (key, value) => 
+  		@AllowedStatuses.getLogic(workflow.name).map { case (key, value) =>
   			- @key -> @value.mkString(", ") <br/>
   		}
   		================================================
        </p>
-       
+
 
      @helper.form(routes.WorkflowController.delete(workflow.name)) {
         <div class="form-actions">
