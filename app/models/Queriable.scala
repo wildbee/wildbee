@@ -25,29 +25,50 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
 
   def returnID = * returning id
 
+  /**
+   * Return the UUID of the entity with this name in this table.
+   */
   def nameToId(name: String): UUID = DB.withSession {
     implicit session: Session =>
       Query(this).where(_.name === name).first.id
   }
 
+  /**
+   * Returns the name of the entity given by the string id.
+   */
   def idToName(id: String): String = idToName(uuid(id))
 
+  /**
+   * Returns the name of the entity given by this UUID.
+   */
   def idToName(id: UUID): String = {
     findById(id).name
   }
 
+  /**
+   * Returns a list of all entities for this table.
+   */
   def findAll: List[T] = DB.withSession {
     implicit session: Session =>
       Query(this).list
   }
 
+  /**
+   * Find entity by string UUID.
+   */
   def findById(id: String): T = findById(uuid(id))
 
+  /**
+   * Find entity by UUID.
+   */
   def findById(id: UUID): T = DB.withSession {
     implicit session: Session =>
       Query(this).where(_.id === id).first
   }
 
+  /**
+   * Find an entity by name rather then by UUID.
+   */
   def findByName(name: String): T = findById(nameToId(name))
 
   //  def findMappedById(id: String): Y = DB.withSession {
@@ -77,32 +98,42 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
         tableToQuery(this).where(_.id === id)).update(item)
   }
 
+  /**
+   * Delete an entity from its table.
+   */
   def delete(id: UUID) = DB.withSession {
     implicit session: Session =>
       queryToDeleteInvoker(
         tableToQuery(this).where(_.id === id)).delete
   }
 
-  def getUserMap: Map[String, String] = DB.withSession {
+  /**
+   * A map of UUID to name. Useful for filling out
+   * combo boxes in forms, for example.
+   */
+  def mapIdToName: Map[String, String] = DB.withSession {
     implicit session: Session =>
-      Query(Users).list.map(u => (u._1.toString, u._2)).toMap
+      Query(this).list.map(item => (item.id.toString, item.name)).toMap
   }
 
-  def getTaskMap: Map[String, String] = DB.withSession {
-    implicit session: Session =>
-      Query(Tasks).list.map(t => (t._1.toString, t._2)).toMap
-  }
-
+  /**
+   * UUID string to UUID.
+   */
   def uuid(id: String): UUID = {
     Config.pkGenerator.fromString(id)
   }
 
+  /**
+   * Helper for generating a current time.
+   */
   def currentTimestamp: Timestamp = {
     new Timestamp((new Date()).getTime())
   }
 
+  /**
+   * Helper for generating a new UUID.
+   */
   def newId: UUID = {
     Config.pkGenerator.newKey
   }
-
 }

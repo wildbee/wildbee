@@ -1,6 +1,6 @@
 package models
 
-import scala.slick.driver.PostgresDriver.simple._
+import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.Play.current
 import java.util.UUID
@@ -16,7 +16,7 @@ case class User(id: UUID, name: String, email: String)
  * Note: cannot name the table as simply 'user' since it conflicts
  * with the 'user' table already created in the database by default
  */
-object Users extends Table[User]("users") {
+object Users extends Table[User]("users")  with Queriable[User]{
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def email = column[String]("email")
@@ -28,15 +28,17 @@ object Users extends Table[User]("users") {
     implicit session: Session =>
       autoEmail.insert(Config.pkGenerator.newKey, name, email)
   }
-  def findById(id: UUID): User = DB.withSession {
-    implicit session: Session => Query(this)
-       .where (_.id === id)
-       .first               
-  }
-  def findAll: List[User] = DB.withSession {
-    implicit session: Session =>
-      Query(this).list
-  }
+//  This method is implemented in the Queriable trait.
+//  def findById(id: UUID): User = DB.withSession {
+//    implicit session: Session => Query(this)
+//       .where (_.id === id)
+//       .first               
+//  }
+// This method is implemented in the Queriable trait.  
+//  def findAll: List[User] = DB.withSession {
+//    implicit session: Session =>
+//      Query(this).list
+//  }
 
   def findByEmail(email: String): User = DB.withSession {
     implicit session: Session =>
