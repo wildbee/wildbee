@@ -7,6 +7,7 @@ import helpers._
 import java.util.UUID
 import java.sql.Timestamp
 import java.util.Date
+import scala.language.postfixOps
 
 case class NewTask(name: String, owner: String)
 case class Task(id: UUID, name: String, owner: UUID,

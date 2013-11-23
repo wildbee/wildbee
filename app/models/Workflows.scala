@@ -6,6 +6,7 @@ import play.api.Play.current
 import helpers._
 import java.util.Random
 import java.util.UUID
+import scala.language.postfixOps
 
 case class NewWorkflow(name: String, status: List[String])
 case class Workflow(id: UUID, name: String)
