@@ -1,14 +1,16 @@
 @(packs: List[Package], packForm: Form[NewPackage])
- 
-<h1>Packages</h1>
-<ul>
-@newPackage(packForm)
-</ul>
-@packs.map { pack =>
+@main("Show Packages") {
+	<h1>Packages</h1>
 	<ul>
-	name: @pack.name <br> 
-	creator: @pack.creator <br>
-	task: @pack.task <br>
+	@new_entity(packForm)
 	</ul>
+	@packs.map { pack =>
+		<ul>
+		================================================= <br/>
+		name: @pack.name <br> 
+		creator: @Users.idToName(pack.creator) <br>
+		task: @Tasks.idToName(pack.task) <br>
+		=================================================
+		</ul>
+	}
 }
- 

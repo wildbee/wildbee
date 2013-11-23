@@ -9,29 +9,8 @@ import java.util.Date
 import java.util.UUID
 import helpers._
 
-/**
- * Traits that can be commonly used by all
- * database table objects.
- * Could go in a different file, and we could
- * add generalized queries to this once we figure
- * out how.
- */
-trait Queriable {
-
-  def uuid(id: String): UUID = {
-    Config.pkGenerator.fromString(id)
-  }
-
-  def currentTimestamp: Timestamp = {
-    new Timestamp((new Date()).getTime())
-  }
-
-}
-
-/**
- * This class is for creating new packages:
- * It only has some of the columns, and all
- * as strings.
+/*
+ * This class is for creating new packages from string inputs:
  */
 case class NewPackage(
                        name: String,
@@ -61,7 +40,7 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable {
+object Packages extends Table[Package]("packages") with Queriable[Package] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def task = column[UUID]("task_id")
@@ -85,29 +64,63 @@ object Packages extends Table[Package]("packages") with Queriable {
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
 
-  def findAll: List[Package] = DB.withSession {
-    implicit session: Session =>
-      Query(this).list
+  def mappedEntity = (name ~ task.toString ~ creator.toString.toString ~ assignee.toString ~ ccList ~ status ~
+    osVersion <> (NewPackage, NewPackage.unapply _))
+
+  /**
+   * Call this if you want to explicitly set your own id.
+   */
+  def insertWithId(id: UUID, p: NewPackage): UUID =
+    Packages.insert(Package(
+      id,
+      p.name,
+      uuid(p.task),
+      uuid(p.creator),
+      uuid(p.assignee),
+      p.ccList,
+      p.status,
+      p.osVersion,
+      currentTimestamp,
+      currentTimestamp))
+
+  /**
+   * Call this to auto-create id.
+   */
+  def insert(p: NewPackage): UUID = {
+    insertWithId(newId, p)
   }
 
-  def findById(id: String): Package = DB.withSession {
-    implicit session: Session =>
-      Query(this).where(_.id === uuid(id)).first
+  /**
+   * This method returns a NewPackage type created from a queried
+   * Package. Useful during updates to fill a form with the current
+   * values.
+   */
+  def mapToNewPackage(id: String): NewPackage = {
+    val p = findById(id)
+    NewPackage(
+      p.name,
+      p.task.toString,
+      p.creator.toString,
+      p.assignee.toString,
+      p.ccList,
+      p.status,
+      p.osVersion)
   }
 
-  def insert(p: NewPackage) = DB.withSession {
-    implicit session: Session =>
-      autoId.insert(
-        Config.pkGenerator.newKey,
-        p.name,
-        uuid(p.task),
-        uuid(p.creator),
-        uuid(p.assignee),
-        p.ccList,
-        p.status,
-        p.osVersion,
-        currentTimestamp,
-        currentTimestamp)
-  }
-
+  /**
+   * This method maps from NewPackage to Package in order to
+   * create an update.
+   */
+  def updatePackage(id: UUID, p: NewPackage, o: Package) =
+    update(id, Package(
+      id,
+      p.name,
+      uuid(p.task),
+      uuid(p.creator),
+      uuid(p.assignee),
+      p.ccList,
+      p.status,
+      p.osVersion,
+      o.created,
+      currentTimestamp))
 }

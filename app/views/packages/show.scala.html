@@ -3,10 +3,16 @@
 		"cc list", "status", "os version","creation time", 
 		"last updated")) 
  
-<h1>@pack.name</h1>
-@for((name, ele) <- (names zip pack.productIterator.toList)) {
-	<ul> 
- 		@name : @ele.toString
-	</ul>
+@main("Show Package") {
+	<p>
+	<h1>@pack.name</h1>
+	================================================= <br/>
+	@for((name, ele) <- (names zip pack.productIterator.toList)) {
+		<ul> 
+	 		@name : @ele.toString
+		</ul>
+	}
+	=================================================
+	</p>
 }
 

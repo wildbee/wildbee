@@ -1,6 +1,6 @@
 package models
 
-import scala.slick.driver.PostgresDriver.simple._
+import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.Play.current
 import helpers._
@@ -12,7 +12,7 @@ case class NewTask(name: String, owner: String)
 case class Task(id: UUID, name: String, owner: UUID,
     creationTime: Timestamp, lastUpdated: Timestamp)
 
-object Tasks extends Table[Task]("tasks") {
+object Tasks extends Table[Task]("tasks") with Queriable[Task]{
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def owner = column[UUID]("owner_id")
@@ -29,16 +29,18 @@ object Tasks extends Table[Task]("tasks") {
     def date = new java.util.Date()
     new Timestamp(date.getTime())
   }
+  
+// This method is implemented in the Queriable trait.
+//  def findAll: List[Task] = DB.withSession {
+//    implicit session: Session =>
+//      Query(this).list
+//  }
 
-  def findAll: List[Task] = DB.withSession {
-    implicit session: Session =>
-      Query(this).list
-  }
-
-  def findByName(taskName: String): Task = DB.withSession {
-    implicit session: Session =>
-      Query(Tasks).where(_.name === taskName).first
-  }
+// This method is implemented in the Queriable trait.  
+//  def findByName(taskName: String): Task = DB.withSession {
+//    implicit session: Session =>
+//      Query(Tasks).where(_.name === taskName).first
+//  }
 
   def getTaskMap: Map[String, String] = DB.withSession {
     implicit session: Session =>

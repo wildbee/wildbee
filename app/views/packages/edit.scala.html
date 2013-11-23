@@ -1,0 +1,51 @@
+@(packForm: Form[NewPackage],
+	id: String,
+	users: Map[String,String] = Users.mapIdToName,
+	tasks: Map[String,String] = Tasks.mapIdToName
+)
+<table>
+@main("Update a Package") {
+  	@helper.form(action = routes.PackagesController.update(id)) {
+	<tr>
+    <td>@helper.inputText((packForm("name")))</td>
+    
+    
+    <td>@helper.select(packForm("task"),
+    	helper.options(tasks)
+    )</td>
+    <td>@helper.select(packForm("creator"),
+    	helper.options(users)
+    )</td>
+    <td>@helper.select(packForm("assignee"),
+    	helper.options(users)
+    )</td>
+    </tr>
+    <tr>
+    <td>@helper.inputText((packForm("ccList")))</td>
+    <td>@helper.inputText((packForm("status")))</td>
+    <td>@helper.inputText((packForm("osVersion")))</td>
+    </tr>
+    <div class="form-actions">
+      <button type="submit">Update Package</button>
+    </div>
+    
+  }
+ @if(packForm.hasErrors) {
+ 	<tr>
+ 	<td>
+    <div class="alert alert-error">
+        <a class="close" data-dismiss="alert">
+		Errors:
+        </a>
+        @if(packForm.errors.size > 0) {
+            @for(e <- packForm.errors) {
+            	<br>
+            		@e.key : @e.message
+            }
+        } else {No error returned.}
+    </div>
+    <td>
+    </tr>
+}
+}
+</table>
