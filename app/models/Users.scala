@@ -21,7 +21,6 @@ object Users extends Table[User]("users") {
   def name = column[String]("name")
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
-
   def * = id ~ name ~ email <>(User, User.unapply _)
   def autoEmail = id ~ name ~ email returning email
 
@@ -56,5 +55,4 @@ object Users extends Table[User]("users") {
     implicit session: Session =>
       Query(Users).list.map(u => (u.id.toString, u.name)).toMap
   }
-
 }
