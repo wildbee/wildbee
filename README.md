@@ -1,5 +1,7 @@
 Wildbee web application
 =====================================
+[![Build Status](https://travis-ci.org/wildbee/wildbee.png)](https://travis-ci.org/wildbee/wildbee)
+
 This project is a complete rewrite of [ETT][ETT] using Scala and the
 [Play framework][playframework].
 
