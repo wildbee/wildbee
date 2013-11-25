@@ -1,11 +1,12 @@
 package models
 
-import scala.slick.driver.PostgresDriver.simple._
+import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import play.api.Play.current
 import helpers._
 import java.util.Random
 import java.util.UUID
+import scala.language.postfixOps
 
 case class AllowedStatus(id: UUID, workflow: String, presentState: String, futureState: String)
 object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {

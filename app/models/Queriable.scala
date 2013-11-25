@@ -8,7 +8,7 @@ import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
-
+import scala.language.reflectiveCalls
 /**
  * The Entity trait can be shared by entities in our
  * models since it will define all of the basic CRUD operations
