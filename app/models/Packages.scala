@@ -13,28 +13,28 @@ import helpers._
  * This class is for creating new packages from string inputs:
  */
 case class NewPackage(
-                       name: String,
-                       task: String,
-                       creator: String,
-                       assignee: String,
-                       ccList: String = "None",
-                       status: String,
-                       osVersion: String)
+  name: String,
+  task: String,
+  creator: String,
+  assignee: String,
+  ccList: String = "None",
+  status: String,
+  osVersion: String)
 
 /**
  * This is the main case class that we will map projections to.
  */
 case class Package(
-                    id: UUID,
-                    name: String,
-                    task: UUID,
-                    creator: UUID,
-                    assignee: UUID,
-                    ccList: String = "None",
-                    status: String,
-                    osVersion: String,
-                    created: java.sql.Timestamp,
-                    updated: java.sql.Timestamp)
+  id: UUID,
+  name: String,
+  task: UUID,
+  creator: UUID,
+  assignee: UUID,
+  ccList: String = "None",
+  status: String,
+  osVersion: String,
+  created: java.sql.Timestamp,
+  updated: java.sql.Timestamp)
 
 /**
  * The Packages table will be of type Table[Package] so that
@@ -59,7 +59,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
    * The default projection is mapped to the Package case class.
    */
   def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ creationTime ~ lastUpdated <>(Package, Package.unapply _))
+    status ~ osVersion ~ creationTime ~ lastUpdated <> (Package, Package.unapply _))
 
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id

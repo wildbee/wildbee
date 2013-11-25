@@ -1,0 +1,50 @@
+@(packForm: Form[NewPackage],
+	users: Map[String,String] = Users.getUserMap,
+	tasks: Map[String,String] = Tasks.getTaskMap)
+
+<table>
+  	@helper.form(action = routes.PackagesController.create) {
+	<tr>
+    <td>@helper.inputText((packForm("name")))</td>
+    
+    
+    <td>@helper.select(packForm("task"),
+    	helper.options(tasks)
+    )</td>
+    <td>@helper.select(packForm("creator"),
+    	helper.options(users)
+    )</td>
+    <td>@helper.select(packForm("assignee"),
+    	helper.options(users)
+    )</td>
+    </tr>
+    <tr>
+    <td>@helper.inputText((packForm("ccList")))</td>
+    <td>@helper.inputText((packForm("status")))</td>
+    <td>@helper.inputText((packForm("osVersion")))</td>
+    </tr>
+    <tr>
+    
+    </tr>
+  }
+ @if(packForm.hasErrors) {
+ 	<tr>
+ 	<td>
+    <div class="alert alert-error">
+        <a class="close" data-dismiss="alert">
+		Errors:
+        </a>
+        @if(packForm.errors.size > 0) {
+            @for(e <- packForm.errors) {
+            	<br>
+            		@e.key : @e.message
+            }
+        } else {No error returned.}
+    </div>
+    <td>
+    </tr>
+}
+</table>
+<div class="form-actions">
+     <button type="submit">Add Package</button>
+</div>

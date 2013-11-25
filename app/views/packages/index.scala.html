@@ -1,8 +1,9 @@
 @(packs: List[Package], packForm: Form[NewPackage])
+
 @main("Show Packages") {
 	<h1>Packages</h1>
 	<ul>
-	@new_entity(packForm)
+	@helpers.input_form(packForm)
 	</ul>
 	@packs.map { pack =>
 		<ul>
