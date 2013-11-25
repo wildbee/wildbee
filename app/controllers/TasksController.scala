@@ -13,7 +13,8 @@ object TasksController extends Controller {
   val taskForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "owner_id" -> nonEmptyText)(NewTask.apply)(NewTask.unapply))
+      "owner" -> nonEmptyText,
+      "workflow" -> nonEmptyText)(NewTask.apply)(NewTask.unapply))
 
   def index() = Action {
     Ok(views.html.tasks.index())
@@ -32,16 +33,14 @@ object TasksController extends Controller {
       taskForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
         newTask => {
-          Tasks.insert(newTask.name, newTask.owner)
-          //Workflows.create(newTask.name, List("Open","In Progress","Closed"))
+          Tasks.insert(newTask)
           Redirect(routes.TasksController.show(newTask.name))
-        }
-      )
+        })
   }
 
   def delete(name: String) = Action {
     implicit request =>
       Tasks.delete(name)
-    Redirect(routes.TasksController.index)
- }
+      Redirect(routes.TasksController.index)
+  }
 }

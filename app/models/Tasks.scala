@@ -9,20 +9,21 @@ import java.sql.Timestamp
 import java.util.Date
 import scala.language.postfixOps
 
-case class NewTask(name: String, owner: String)
+case class NewTask(name: String, owner: String, workflow: String)
 case class Task(id: UUID, name: String, owner: UUID,
-    creationTime: Timestamp, lastUpdated: Timestamp)
+  creationTime: Timestamp, workflow: UUID, lastUpdated: Timestamp)
 
-object Tasks extends Table[Task]("tasks") with Queriable[Task]{
+object Tasks extends Table[Task]("tasks") with Queriable[Task] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def owner = column[UUID]("owner_id")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
-  def lastUpdated  = column[Timestamp]("last_updated", O.NotNull)
+  def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
   def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)
+  def workflow = column[UUID]("workflow_id")
   def uniqueName = index("idx_name", name, unique = true)
 
-  def * = id ~ name ~ owner ~ creationTime ~ lastUpdated <>(Task, Task.unapply _)
+  def * = id ~ name ~ owner ~ creationTime ~ workflow ~ lastUpdated <> (Task, Task.unapply _)
   private def autoId = id ~ name ~ owner ~ creationTime ~ lastUpdated returning id
 
   /** YYYY-MM-DD HH:MM:SS.MS */
@@ -30,28 +31,24 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task]{
     def date = new java.util.Date()
     new Timestamp(date.getTime())
   }
-  
-// This method is implemented in the Queriable trait.
-//  def findAll: List[Task] = DB.withSession {
-//    implicit session: Session =>
-//      Query(this).list
-//  }
-
-// This method is implemented in the Queriable trait.  
-//  def findByName(taskName: String): Task = DB.withSession {
-//    implicit session: Session =>
-//      Query(Tasks).where(_.name === taskName).first
-//  }
 
   def getTaskMap: Map[String, String] = DB.withSession {
     implicit session: Session =>
       Query(Tasks).list.map(t => (t.id.toString, t.name)).toMap
   }
 
-  def insert(name: String, owner: String) = DB.withSession {
-    implicit session: Session =>
-      autoId.insert(Config.pkGenerator.newKey, name,
-        Config.pkGenerator.fromString(owner), currentTime, currentTime)
+  def insertWithId(id: UUID, t: NewTask): UUID = {
+    Tasks.insert(Task(
+      id,
+      t.name,
+      uuid(t.owner),
+      currentTimestamp,
+      uuid(t.workflow),
+      currentTimestamp))
+  }
+
+  def insert(t: NewTask): UUID = {
+    insertWithId(newId, t)
   }
 
   def update(name: String): Unit = DB.withSession {
