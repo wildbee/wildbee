@@ -1,0 +1,14 @@
+language: scala
+scala:
+  - 2.10.2
+
+env:
+  - PLAY_VERSION=2.2.1
+before_script:
+    - sed -i "s;^db.default.user.*;db.default.user=\"postgres\";g" conf/application.conf
+    - psql -c "create database wildbeehive;" -U postgres
+
+script: sbt test
+
+notifications:
+    email: false
