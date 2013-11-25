@@ -1,35 +1,45 @@
 @(packForm: Form[NewPackage],
-	users: Map[String,String] = Users.getUserMap,
-	tasks: Map[String,String] = Tasks.getTaskMap)
+	formAction: Call = routes.PackagesController.create,
+	users: Map[String,String] = Users.mapIdToName,
+	tasks: Map[String,String] = Tasks.mapIdToName,
+	statuses: Map[String,String] = Statuses.mapIdToName)
 
 <table>
-  	@helper.form(action = routes.PackagesController.create) {
-	<tr>
-    <td>@helper.inputText((packForm("name")))</td>
-    
-    
-    <td>@helper.select(packForm("task"),
+  	@helper.form(action = formAction) {
+	<tr>	
+    	@helper.inputText((packForm("name")))
+    </tr>
+    <tr>
+    <td>
+    @helper.select(packForm("task"),
     	helper.options(tasks)
-    )</td>
-    <td>@helper.select(packForm("creator"),
+    )
+    </td>
+    <td>
+    @helper.select(packForm("creator"),
     	helper.options(users)
-    )</td>
-    <td>@helper.select(packForm("assignee"),
+    )
+    </td>
+    <td>
+    @helper.select(packForm("assignee"),
     	helper.options(users)
-    )</td>
-    </tr>
-    <tr>
-    <td>@helper.inputText((packForm("ccList")))</td>
-    <td>@helper.inputText((packForm("status")))</td>
-    <td>@helper.inputText((packForm("osVersion")))</td>
-    </tr>
-    <tr>
+    )
+    </td>
     
+    <tr>
+    <td>
+    @helper.inputText((packForm("ccList")))
+    </td>
+    <td>
+    @helper.inputText((packForm("osVersion")))
+    </td>
+    <td>
+    @helper.select(packForm("status"),
+    	helper.options(statuses))
+    </tr>
     </tr>
   }
  @if(packForm.hasErrors) {
- 	<tr>
- 	<td>
     <div class="alert alert-error">
         <a class="close" data-dismiss="alert">
 		Errors:
@@ -41,8 +51,6 @@
             }
         } else {No error returned.}
     </div>
-    <td>
-    </tr>
 }
 </table>
 <div class="form-actions">
