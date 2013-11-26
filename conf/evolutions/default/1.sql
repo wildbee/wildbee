@@ -5,6 +5,8 @@
 
 create table "allowed_statuses" ("id" UUID NOT NULL PRIMARY KEY,"workflow" VARCHAR(254) NOT NULL,"state" VARCHAR(254) NOT NULL,"next_state" VARCHAR(254) NOT NULL);
 create table "packages" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"task_id" UUID NOT NULL,"creator_id" UUID NOT NULL,"assignee_id" UUID NOT NULL,"cc_list" VARCHAR(254) DEFAULT 'None' NOT NULL,"status" VARCHAR(254) NOT NULL,"os_version" VARCHAR(254) NOT NULL,"creation_time" TIMESTAMP NOT NULL,"last_updated" TIMESTAMP NOT NULL);
+create table "statuses" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL);
+create unique index "idx_status_name" on "statuses" ("name");
 create table "tasks" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"owner_id" UUID NOT NULL,"creation_time" TIMESTAMP NOT NULL,"last_updated" TIMESTAMP NOT NULL);
 create unique index "idx_name" on "tasks" ("name");
 create table "users" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL);
@@ -24,6 +26,7 @@ alter table "packages" drop constraint "task_fk";
 alter table "tasks" drop constraint "owner_fk";
 drop table "allowed_statuses";
 drop table "packages";
+drop table "statuses";
 drop table "tasks";
 drop table "users";
 drop table "workflows";

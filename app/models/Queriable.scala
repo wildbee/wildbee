@@ -107,6 +107,11 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
         tableToQuery(this).where(_.id === id)).delete
   }
 
+  def deleteAll() = DB.withSession {
+    implicit session: Session =>
+      queryToDeleteInvoker(tableToQuery(this)) delete
+  }
+
   /**
    * A map of UUID to name. Useful for filling out
    * combo boxes in forms, for example.
