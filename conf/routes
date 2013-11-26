@@ -15,6 +15,8 @@ GET     /package/:id                controllers.PackagesController.show(id: Stri
 GET     /package/:id/edit           controllers.PackagesController.edit(id: String)
 POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package                    controllers.PackagesController.create
+POST    /package/:id/delete         controllers.PackagesController.delete(id: String)
+
 
 # Users
 GET     /users                      controllers.UsersController.index
@@ -37,3 +39,12 @@ GET     /workflow/:workflow         controllers.WorkflowController.show(workflow
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create
 POST    /workflow/:workflow/delete  controllers.WorkflowController.delete(workflow: String)
+
+
+#Statuses
+GET     /status/new                 controllers.StatusesController.newStatus
+GET     /status/:status             controllers.StatusesController.show(status: String)
+GET     /statuses                   controllers.StatusesController.index
+POST    /status                     controllers.StatusesController.create
+POST    /status/:id                 controllers.StatusesController.update(id: String)
+POST    /status/:status/delete      controllers.StatusesController.delete(status: String)

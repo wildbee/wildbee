@@ -3,7 +3,7 @@ package controllers
 import play.api._
 import play.api.mvc._
 import models._
-
+import java.util.UUID
 import play.api.data._
 import play.api.data.Forms._
 
@@ -54,6 +54,11 @@ object PackagesController extends Controller {
         Packages.updatePackage(oldPack.id, updatedPack, oldPack)
         Redirect(routes.PackagesController.show(oldPack.id.toString))
       })
+  }
+
+  def delete(id: String) = Action { implicit request =>
+    Packages.delete(Packages.uuid(id))
+    Redirect(routes.PackagesController.index)
   }
 
 }

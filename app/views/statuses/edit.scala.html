@@ -1,0 +1,7 @@
+@(statusForm: Form[NewStatus],id: String)
+
+@main("Update a Status") {
+@helpers.input_form(
+statusForm = statusForm,
+formAction = routes.StatusesController.update(id))
+}

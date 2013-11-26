@@ -3,15 +3,15 @@
 @main("Show Packages") {
 	<h1>Packages</h1>
 	<ul>
-	@helpers.input_form(packForm)
+	    @helpers.input_form(packForm)
 	</ul>
 	@packs.map { pack =>
 		<ul>
-		================================================= <br/>
-		name: @pack.name <br> 
-		creator: @Users.idToName(pack.creator) <br>
-		task: @Tasks.idToName(pack.task) <br>
-		=================================================
+            ================================================= <br/>
+            name: @pack.name <br>
+            creator: @Users.idToName(pack.creator) <br>
+            task: @Tasks.idToName(pack.task) <br>
+            =================================================
 		</ul>
 	}
 }

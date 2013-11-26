@@ -1,6 +1,7 @@
 logs
 project/project
 project/target
+project/*.iml
 target
 tmp
 .history

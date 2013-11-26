@@ -34,9 +34,12 @@
     </td>
     <td>
     @helper.select(packForm("status"),
-    	helper.options())
+    	helper.options(Statuses.mapIdToName))
     </tr>
     </tr>
+    <div class="form-actions">
+        <button type="submit">Add Package</button>
+    </div>
   }
  @if(packForm.hasErrors) {
     <div class="alert alert-error">
@@ -52,6 +55,3 @@
     </div>
 }
 </table>
-<div class="form-actions">
-     <button type="submit">Add Package</button>
-</div>
