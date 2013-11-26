@@ -1,8 +1,7 @@
 @(packForm: Form[NewPackage],
 	formAction: Call = routes.PackagesController.create,
 	users: Map[String,String] = Users.mapIdToName,
-	tasks: Map[String,String] = Tasks.mapIdToName,
-	statuses: Map[String,String] = Statuses.mapIdToName)
+	tasks: Map[String,String] = Tasks.mapIdToName)
 
 <table>
   	@helper.form(action = formAction) {
@@ -35,7 +34,7 @@
     </td>
     <td>
     @helper.select(packForm("status"),
-    	helper.options(statuses))
+    	helper.options())
     </tr>
     </tr>
   }
