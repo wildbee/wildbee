@@ -16,8 +16,7 @@ object WorkflowController extends Controller {
       "status" -> list(text))(NewWorkflow.apply)(NewWorkflow.unapply))
 
   def newWorkflow = Action {
-    Ok(views.html.workflows.newEntity(
-        workForm, List("Open", "In Progress", "Pending", "Closed"))) //TODO: Make it easier to create workflow, Ex. Checkboxes, pictures, etc
+    Ok(views.html.workflows.newEntity(workForm))
   }
 
   def index = Action {
