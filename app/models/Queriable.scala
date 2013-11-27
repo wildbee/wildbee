@@ -136,4 +136,12 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   def newId: UUID = {
     Config.pkGenerator.newKey
   }
+
+  /**
+   * Helper method to delete all the rows in a table
+   */
+  def deleteAll: Unit = DB.withSession {
+    implicit session: Session =>
+        tableToQuery(this).delete
+  }
 }
