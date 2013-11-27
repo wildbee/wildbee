@@ -17,11 +17,11 @@ import org.postgresql.util.PSQLException
 class UsersSpec extends Specification {
 
 //  TODO: dangerous since it deletes in the main database, not the test one
-//  implicit val afterContext = new After { def after = scala.slick.session.Database.forURL("jdbc:postgresql://localhost/wildbeehive-test") withSession {Users.deleteAll} }
-//  implicit val beforeContext = new Before { def before = scala.slick.session.Database.forURL("jdbc:postgresql://localhost/wildbeehive-test") withSession {Users.deleteAll} }
+//  implicit val afterContext = new After { def after = scala.slick.session.Database.forURL("jdbc:postgresql://localhost/wildbeehivetest") withSession {Users.deleteAll} }
+//  implicit val beforeContext = new Before { def before = scala.slick.session.Database.forURL("jdbc:postgresql://localhost/wildbeehivetest") withSession {Users.deleteAll} }
 
   def fakeAppGen = FakeApplication(additionalConfiguration = Map(
-    "db.default.url" -> "jdbc:postgresql://localhost/wildbeehive-test"))
+    "db.default.url" -> "jdbc:postgresql://localhost/wildbeehivetest"))
 
   "User model" should {
 
