@@ -36,13 +36,15 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   /**
    * Returns the name of the entity given by the string id.
    */
-  def idToName(id: String): String = idToName(uuid(id))
+  //def idToName(id: String): String = idToName(uuid(id))
 
   /**
    * Returns the name of the entity given by this UUID.
    */
-  def idToName(id: UUID): String = {
-    findById(id).name
+  def idToName(id: Any): String = id match {
+    case id: String => findById(uuid(id)).name
+    case id: UUID => findById(id).name
+    case _ => "Unknown"
   }
 
   /**
@@ -54,17 +56,19 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   }
 
   /**
-   * Find entity by string UUID.
+   * Find entity by its id.
    */
-  def findById(id: String): T = findById(uuid(id))
-
-  /**
-   * Find entity by UUID.
-   */
-  def findById(id: UUID): T = DB.withSession {
-    implicit session: Session =>
-      Query(this).where(_.id === id).first
+  def findById(id: Any): T = {
+    def get(id: UUID): T = DB.withSession {
+      implicit session: Session =>
+        Query(this).where(_.id === id).first
+    }
+    id match {
+      case id: String => get(uuid(id))
+      case id: UUID => get(id)
+    }
   }
+
 
   /**
    * Find an entity by name rather then by UUID.
@@ -82,11 +86,10 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
    * needs to implement its own mapping from user inputs to
    * case class.
    */
-  def insert(item: T) = {
-    DB.withSession { implicit session: Session =>
+  def insert(item: T) = DB.withSession {
+    implicit session: Session =>
       returnID.insert(item)
     }
-  }
 
   /**
    * Same as insert above. Need to map your inputs to the correct
