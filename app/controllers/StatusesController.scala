@@ -31,8 +31,8 @@ object StatusesController extends Controller {
       })
   }
 
-  def show(name: String) = Action {
-    Ok(views.html.statuses.show(Statuses.findByName(name)))
+  def show(status: String) = Action {
+    Ok(views.html.statuses.show(Statuses.find(status)))
   }
 
   def edit(id: String) = Action { implicit request =>

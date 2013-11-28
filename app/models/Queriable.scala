@@ -41,7 +41,7 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   /**
    * Returns the name of the entity given by this UUID.
    */
-  def idToName(id: Any): String = id match {
+  def idToName(id: AnyRef): String = id match {
     case id: String => findById(uuid(id)).name
     case id: UUID => findById(id).name
     case _ => "Unknown"
@@ -58,7 +58,7 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   /**
    * Find entity by its id.
    */
-  def findById(id: Any): T = {
+  def findById(id: AnyRef): T = {
     def get(id: UUID): T = DB.withSession {
       implicit session: Session =>
         Query(this).where(_.id === id).first
@@ -69,6 +69,23 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
     }
   }
 
+  /**
+   * General find query searches by id if given a
+   * valid UUID (in UUID or string format), or by
+   * name if given a non-uuid string.
+   * @param atty
+   * @return
+   */
+  def find(atty: AnyRef): T = atty match {
+    case atty: UUID => findById(atty)
+    case atty: String => {
+      if (vidP(atty)) {
+        findById(atty)
+      } else {
+        findByName(atty)
+      }
+    }
+  }
 
   /**
    * Find an entity by name rather then by UUID.
@@ -125,6 +142,13 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   def uuid(id: String): UUID = {
     Config.pkGenerator.fromString(id)
   }
+
+  /**
+   * Shortcut to validate uuid strings.
+   * @param id
+   * @return
+   */
+  def vidP(id: String) = Config.pkGenerator.validP(id)
 
   /**
    * Helper for generating a current time.
