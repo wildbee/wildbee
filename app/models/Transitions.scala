@@ -8,20 +8,20 @@ import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
 
-case class AllowedStatus(id: UUID, workflow: String, presentState: String, futureState: String)
-object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
+case class Transition(id: UUID, workflow: String, presentState: String, futureState: String)
+object Transitions extends Table[Transition]("transitions") {
   def id = column[UUID]("id", O.PrimaryKey)
   def workflow = column[String]("workflow")
   def presentState = column[String]("state")
   def futureState = column[String]("next_state")
 
-  def * = id ~ workflow ~ presentState ~ futureState <> (AllowedStatus, AllowedStatus.unapply _)
+  def * = id ~ workflow ~ presentState ~ futureState <> (Transition, Transition.unapply _)
   def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
   def getLogic(workflow: String): Map[String, List[String]] = DB.withSession {
     implicit session: Session =>
       {
-        val transistions = AllowedStatuses
+        val transistions = Transitions
           .filter(_.workflow === workflow)
           .map(w => (w.presentState, w.futureState))
           .list
@@ -50,19 +50,18 @@ object AllowedStatuses extends Table[AllowedStatus]("allowed_statuses") {
 
   def delete(workflow: String): Unit = DB.withSession {
     implicit session: Session =>
-      AllowedStatuses filter (_.workflow === workflow) delete
+      Transitions filter (_.workflow === workflow) delete
   }
 
   /**
    * Returns a mapping of id => name for all statuses that are allowed
    * in this workflow.
    */
-  def getAllowedMap(workflow: String): Map[String, String] = DB.withSession {
+  def allowedStatusesMap(workflow: UUID): Map[String, String] = DB.withSession {
     implicit session: Session =>
-      val statuses = Query(this).where(_.workflow === workflow).list
+      val statuses = Query(this).where(_.workflow === workflow.toString).list
       statuses.map(item => (item.id.toString, Statuses.idToName(item.id))).toMap
   }
-
 }
 
 /**

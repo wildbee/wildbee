@@ -33,8 +33,8 @@ object WorkflowController extends Controller {
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
-          AllowedStatuses.create(workflow.name, workflow.status)
-          Workflows.create(workflow.name)
+          Transitions.create(workflow.name, workflow.status)
+          Workflows.insert(workflow)
           Redirect(routes.WorkflowController.show(workflow.name))
         }
     )
@@ -43,7 +43,7 @@ object WorkflowController extends Controller {
   /** When deleting a workflow delete its logic first */
   def delete(name: String) = Action {
     implicit request => {
-      AllowedStatuses.delete(name)
+      Transitions.delete(name)
       Workflows.delete(name)
     }
     Redirect(routes.WorkflowController.index)

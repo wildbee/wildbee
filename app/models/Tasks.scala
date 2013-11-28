@@ -61,4 +61,29 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task] {
     implicit session: Session =>
       Tasks where (_.name === task) delete
   }
+
+  /**
+   * Returns the UUID of the starting status for this task.
+   * @param id
+   * @return
+   */
+  def getStartingStatus(id: UUID): UUID = {
+    val workflow = Tasks.findById(id).workflow
+    Workflows.findById(workflow).startStatus
+  }
+
+  /**
+   * Returns a mapping of name => UUID of all allowed statuses
+   * for this task.
+   * @param task
+   * @return
+   */
+  def allowedStatuses(task: UUID): Map[String,String] = {
+    val workflow = Tasks.findById(task).workflow
+    Transitions.allowedStatusesMap(workflow)
+  }
+
+  def allowedStatuses(task: String): Map[String, String] = {
+    allowedStatuses(uuid(task))
+  }
 }

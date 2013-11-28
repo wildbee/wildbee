@@ -1,7 +1,5 @@
 @(packForm: Form[NewPackage],
-	formAction: Call = routes.PackagesController.create,
-	users: Map[String,String] = Users.mapIdToName,
-	tasks: Map[String,String] = Tasks.mapIdToName)
+	formAction: Call = routes.PackagesController.create)
 
 <table>
   	@helper.form(action = formAction) {
@@ -9,37 +7,46 @@
     	@helper.inputText((packForm("name")))
     </tr>
     <tr>
-    <td>
-    @helper.select(packForm("task"),
-    	helper.options(tasks)
-    )
-    </td>
-    <td>
-    @helper.select(packForm("creator"),
-    	helper.options(users)
-    )
-    </td>
-    <td>
-    @helper.select(packForm("assignee"),
-    	helper.options(users)
-    )
-    </td>
-    
+        <td>
+            @helper.select(packForm("task"),
+                helper.options(Tasks.mapIdToName)
+            )
+        </td>
+        <td>
+            @helper.select(packForm("creator"),
+                helper.options(Users.mapIdToName)
+            )
+        </td>
+        <td>
+            @helper.select(packForm("assignee"),
+                helper.options(Users.mapIdToName)
+            )
+        </td>
+    </tr>
     <tr>
-    <td>
-    @helper.inputText((packForm("ccList")))
-    </td>
-    <td>
-    @helper.inputText((packForm("osVersion")))
-    </td>
-    <td>
-    @helper.select(packForm("status"),
-    	helper.options(Statuses.mapIdToName))
+        <td>
+            @helper.inputText((packForm("ccList")))
+        </td>
+        <td>
+            @helper.inputText((packForm("osVersion")))
+        </td>
+        <td>
+            @if(packForm.data.contains("task")){
+                @helper.select(packForm("status"),
+                    helper.options(Tasks.allowedStatuses(
+                        packForm.data.get("task").get)))
+            } else {
+                <input type="hidden" name="status" value="None">
+            }
+        </td>
     </tr>
+    <tr>
+        <td>
+            <div class="form-actions">
+                <button type="submit">Add Package</button>
+            </div>
+        </td>
     </tr>
-    <div class="form-actions">
-        <button type="submit">Add Package</button>
-    </div>
   }
  @if(packForm.hasErrors) {
     <div class="alert alert-error">

@@ -16,7 +16,7 @@ object PackagesController extends Controller {
       "creator" -> nonEmptyText,
       "assignee" -> nonEmptyText,
       "ccList" -> text,
-      "status" -> nonEmptyText,
+      "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
   def index = Action {

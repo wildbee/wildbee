@@ -18,7 +18,7 @@ case class NewPackage(
   creator: String,
   assignee: String,
   ccList: String = "None",
-  status: String,
+  status: String = "None",
   osVersion: String)
 
 /**
@@ -31,7 +31,7 @@ case class Package(
   creator: UUID,
   assignee: UUID,
   ccList: String = "None",
-  status: String,
+  status: UUID,
   osVersion: String,
   created: java.sql.Timestamp,
   updated: java.sql.Timestamp)
@@ -47,7 +47,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
   def ccList = column[String]("cc_list", O.Default("None"))
-  def status = column[String]("status")
+  def status = column[UUID]("status")
   def osVersion = column[String]("os_version")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
@@ -64,8 +64,8 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
 
-  def mappedEntity = (name ~ task.toString ~ creator.toString.toString ~ assignee.toString ~ ccList ~ status ~
-    osVersion <> (NewPackage, NewPackage.unapply _))
+  def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
+    ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
 
   /**
    * Call this if you want to explicitly set your own id.
@@ -78,7 +78,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       uuid(p.creator),
       uuid(p.assignee),
       p.ccList,
-      p.status,
+      Tasks.getStartingStatus(uuid(p.task)),
       p.osVersion,
       currentTimestamp,
       currentTimestamp))
@@ -103,7 +103,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       p.creator.toString,
       p.assignee.toString,
       p.ccList,
-      p.status,
+      p.status.toString,
       p.osVersion)
   }
 
@@ -119,7 +119,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       uuid(p.creator),
       uuid(p.assignee),
       p.ccList,
-      p.status,
+      uuid(p.status),
       p.osVersion,
       o.created,
       currentTimestamp))
