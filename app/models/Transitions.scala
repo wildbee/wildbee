@@ -8,17 +8,17 @@ import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
 
-case class Transition(id: UUID, workflow: String, presentState: String, futureState: String)
+case class Transition(id: UUID, workflow: UUID, presentState: String, futureState: String)
 object Transitions extends Table[Transition]("transitions") {
   def id = column[UUID]("id", O.PrimaryKey)
-  def workflow = column[String]("workflow")
+  def workflow = column[UUID]("workflow")
   def presentState = column[String]("state")
   def futureState = column[String]("next_state")
 
   def * = id ~ workflow ~ presentState ~ futureState <> (Transition, Transition.unapply _)
   def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
-  def getLogic(workflow: String): Map[String, List[String]] = DB.withSession {
+  def getLogic(workflow: UUID): Map[String, List[String]] = DB.withSession {
     implicit session: Session =>
       {
         val transistions = Transitions
@@ -35,7 +35,7 @@ object Transitions extends Table[Transition]("transitions") {
   }
 
   /** In this case update is just re-creating the workflow */
-  def create(workflow: String, stateTable: List[String]): Unit = DB.withSession {
+  def create(workflow: UUID, stateTable: List[String]): Unit = DB.withSession {
     implicit session: Session =>
       {
         println("Creating logic for :: " + workflow)
@@ -48,7 +48,7 @@ object Transitions extends Table[Transition]("transitions") {
       }
   }
 
-  def delete(workflow: String): Unit = DB.withSession {
+  def delete(workflow: UUID): Unit = DB.withSession {
     implicit session: Session =>
       Transitions filter (_.workflow === workflow) delete
   }
@@ -59,7 +59,7 @@ object Transitions extends Table[Transition]("transitions") {
    */
   def allowedStatusesMap(workflow: UUID): Map[String, String] = DB.withSession {
     implicit session: Session =>
-      val statuses = Query(this).where(_.workflow === workflow.toString).list
+      val statuses = Query(this).where(_.workflow === workflow).list
       statuses.map(item => (item.id.toString, Statuses.idToName(item.id))).toMap
   }
 }
