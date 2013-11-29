@@ -8,17 +8,17 @@ import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
 
-case class Transition(id: UUID, workflow: UUID, presentState: String, futureState: String)
+case class Transition(id: UUID, workflow: UUID, presentState: UUID, futureState: UUID)
 object Transitions extends Table[Transition]("transitions") {
   def id = column[UUID]("id", O.PrimaryKey)
   def workflow = column[UUID]("workflow")
-  def presentState = column[String]("state")
-  def futureState = column[String]("next_state")
+  def presentState = column[UUID]("state")
+  def futureState = column[UUID]("next_state")
 
   def * = id ~ workflow ~ presentState ~ futureState <> (Transition, Transition.unapply _)
   def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
-  def getLogic(workflow: UUID): Map[String, List[String]] = DB.withSession {
+  def getLogic(workflow: UUID): Map[UUID, List[UUID]] = DB.withSession {
     implicit session: Session =>
       {
         val transistions = Transitions
@@ -35,11 +35,11 @@ object Transitions extends Table[Transition]("transitions") {
   }
 
   /** In this case update is just re-creating the workflow */
-  def create(workflow: UUID, stateTable: List[String]): Unit = DB.withSession {
+  def create(workflow: UUID, stateTableStrings: List[String]): Unit = DB.withSession {
     implicit session: Session =>
       {
-        println("Creating logic for :: " + workflow)
-        val shiftedStateTable = stateTable.tail ::: List(stateTable.head)
+        val stateTable =  stateTableStrings map (Workflows.uuid(_))
+        val shiftedStateTable = ( stateTable.tail ::: List(stateTable.head) )
         val stateTransistions = stateTable zip shiftedStateTable
         delete(workflow) //Delete previous task's workflow
         stateTransistions map { //Create new task's workflow

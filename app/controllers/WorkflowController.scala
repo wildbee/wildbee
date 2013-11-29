@@ -2,11 +2,11 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-
 import models._
-
 import play.api.data._
 import play.api.data.Forms._
+import helpers.Config
+import java.util.UUID
 
 object WorkflowController extends Controller {
 
@@ -34,7 +34,7 @@ object WorkflowController extends Controller {
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
           Workflows.insert(workflow)
-          Transitions.create(Workflows.nameToId(workflow.name), workflow.status)
+          Transitions.create(Workflows.nameToId(workflow.name),  workflow.status)
           Redirect(routes.WorkflowController.show(workflow.name))
         }
     )
