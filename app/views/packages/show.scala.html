@@ -15,11 +15,17 @@
 	=================================================
 	</p>
 
-@helper.form(routes.PackagesController.delete(pack.id.toString)) {
-<div class="form-actions">
-    <button type="submit">Delete Package</button>
-</div>
-}
+
+    @helper.form(routes.PackagesController.copy(pack.task.toString, pack.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Clone Package</button>
+    </div>
+    }
+    @helper.form(routes.PackagesController.delete(pack.id.toString)) {
+        <div class="form-actions">
+            <button type="submit">Delete Package</button>
+        </div>
+    }
 }
 
 

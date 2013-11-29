@@ -62,7 +62,7 @@ object PackagesController extends Controller {
     Redirect(routes.PackagesController.index)
   }
 
-  def clone(tid: String, pid: String) = Action {
+  def copy(tid: String, pid: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
     val filledForm = packageForm.fill(pack)
     Ok(views.html.packages.new_entity(filledForm))

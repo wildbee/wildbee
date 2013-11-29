@@ -70,7 +70,8 @@ object Packages extends Table[Package]("packages") with Queriable[Package,NewPac
   def findByTask(task: String, pack: String): Package = DB.withSession {
     implicit session: Session =>
       val t = Tasks.find(task)
-      Query(this).where(_.name === pack).where(_.task === t.id).first
+      val p = Packages.find(pack)
+      Query(this).where(_.name === p.name).where(_.task === t.id).first
   }
   /**
    * Call this if you want to explicitly set your own id.

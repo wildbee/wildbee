@@ -31,6 +31,7 @@ GET     /task/new                   controllers.TasksController.newTask
 GET     /task/:task                 controllers.TasksController.show(task: String)
 GET     /task/:t/package/:p         controllers.PackagesController.show(t: String, p: String)
 GET     /task/:t/package/:p/edit    controllers.PackagesController.edit(t: String, p: String)
+GET     /task/:t/package/:p/copy   controllers.PackagesController.copy(t: String, p: String)
 POST    /task                       controllers.TasksController.create
 POST    /task/:task/delete          controllers.TasksController.delete(task: String)
 
