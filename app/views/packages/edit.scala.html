@@ -1,7 +1,4 @@
-@(packForm: Form[NewPackage],
-	id: String)
-	
-)
+@(packForm: Form[NewPackage], id: String)(implicit session: play.api.mvc.Session)
 
 @main("Update a Package") {
 	@helpers.input_form(

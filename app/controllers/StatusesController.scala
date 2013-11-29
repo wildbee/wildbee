@@ -14,11 +14,11 @@ object StatusesController extends Controller {
       "name" -> nonEmptyText
     )(NewStatus.apply)(NewStatus.unapply))
 
-  def index = Action {
+  def index = Action { implicit request =>
     Ok(views.html.statuses.index(Statuses.findAll, StatusForm))
   }
 
-  def newStatus = Action {
+  def newStatus = Action { implicit request =>
     Ok(views.html.statuses.new_entity(StatusForm))
   }
 
@@ -31,7 +31,7 @@ object StatusesController extends Controller {
       })
   }
 
-  def show(status: String) = Action {
+  def show(status: String) = Action { implicit request =>
     Ok(views.html.statuses.show(Statuses.find(status)))
   }
 

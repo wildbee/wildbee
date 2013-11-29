@@ -1,7 +1,7 @@
 @(taskForm: Form[NewTask], 
 	users: Map[String, String] = Users.mapIdToName,
 	workflows: Map[String, String] = Workflows.mapIdToName
-	)
+	)(implicit session: play.api.mvc.Session)
 @main("Product Form") {
   @helper.form(action = routes.TasksController.create) {
     @helper.textarea((taskForm("name")))
