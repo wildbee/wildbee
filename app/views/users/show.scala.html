@@ -1,4 +1,4 @@
-@(user: User)
+@(user: User)(implicit session: play.api.mvc.Session)
 @main("User") {
     <p>@user.id - @user.name - @user.email</p>
 }

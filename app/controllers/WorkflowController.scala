@@ -15,21 +15,20 @@ object WorkflowController extends Controller {
       "name"   -> nonEmptyText,
       "status" -> list(text))(NewWorkflow.apply)(NewWorkflow.unapply))
 
-  def newWorkflow = Action {
+  def newWorkflow = Action { implicit request =>
     Ok(views.html.workflows.newEntity(workForm))
   }
 
-  def index = Action {
+  def index = Action { implicit request =>
     Ok(views.html.workflows.index())
   }
 
-  def show(name: String) = Action {
+  def show(name: String) = Action { implicit request =>
     Ok(views.html.workflows.show(Workflows.find(name)))
   }
 
   /** When creating a workflow creat its logic first */
-  def create() = Action {
-    implicit request =>
+  def create() = Action { implicit request =>
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
@@ -41,8 +40,7 @@ object WorkflowController extends Controller {
   }
 
   /** When deleting a workflow delete its logic first */
-  def delete(name: String) = Action {
-    implicit request => {
+  def delete(name: String) = Action { implicit request => {
       Transitions.delete(Workflows.nameToId(name))
       Workflows.delete(name)
     }

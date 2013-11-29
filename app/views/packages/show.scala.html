@@ -1,7 +1,7 @@
 @(pack: Package,
 	names: List[String]=List("id","name", "task","creator","assignee",
 		"cc list", "status", "os version","creation time", 
-		"last updated")) 
+		"last updated"))(implicit session: play.api.mvc.Session)
  
 @main("Show Package") {
 	<p>
