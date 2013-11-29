@@ -57,10 +57,11 @@ object Transitions extends Table[Transition]("transitions") {
    * Returns a mapping of id => name for all statuses that are allowed
    * in this workflow.
    */
-  def allowedStatusesMap(workflow: UUID): Map[String, String] = DB.withSession {
+  def allowedStatusesMap(workflow: UUID, currentStatus: UUID): Map[String, String] = DB.withSession {
     implicit session: Session =>
-      val statuses = Query(this).where(_.workflow === workflow).list
-      statuses.map(item => (item.id.toString, Statuses.idToName(item.id))).toMap
+      val nextStateLogic = getLogic(workflow)
+      val nextStates = nextStateLogic(currentStatus)
+      nextStates.map(state =>(state.toString, Statuses.idToName(state))).toMap
   }
 }
 

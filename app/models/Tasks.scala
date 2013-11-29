@@ -78,10 +78,11 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task] {
    * @param task
    * @return
    */
-  def allowedStatuses(task: AnyRef): Map[String, String] = {
+  def allowedStatuses(task: AnyRef, pack: AnyRef): Map[String, String] = {
     def as(t: UUID) = {
-      val workflow = Tasks.findById(t).workflow
-      Transitions.allowedStatusesMap(workflow)
+      val workflow = Tasks.find(t).workflow
+      val status:UUID = Packages.find(pack).status
+      Transitions.allowedStatusesMap(workflow, status)
     }
     task match {
       case task: String => as(uuid(task))
