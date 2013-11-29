@@ -1,4 +1,4 @@
-@(workForm: Form[NewWorkflow], s: Map[String,String]=Statuses.mapIdToName)
+@(workForm: Form[NewWorkflow], s: Map[String,String]=Statuses.mapIdToName)(implicit session: play.api.mvc.Session)
 @import helper._
 
 @main("Workflow Form") {

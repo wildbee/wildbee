@@ -19,11 +19,11 @@ object PackagesController extends Controller {
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
-  def index = Action {
+  def index = Action { implicit request =>
     Ok(views.html.packages.index(Packages.findAll, packageForm))
   }
 
-  def newPackage = Action {
+  def newPackage = Action { implicit request =>
     Ok(views.html.packages.new_entity(packageForm))
   }
 
@@ -37,11 +37,11 @@ object PackagesController extends Controller {
       })
   }
 
-//  def show(id: String) = Action {
+//  def show(id: String) = Action { implicit request =>
 //    Ok(views.html.packages.show(Packages.findById(id)))
 //  }
 
-  def show(task: String, pack: String) = Action {
+  def show(task: String, pack: String) = Action { implicit request =>
     Ok(views.html.packages.show(Packages.findByTask(task, pack)))
   }
 

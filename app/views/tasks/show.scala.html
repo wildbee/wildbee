@@ -1,6 +1,6 @@
 @(task: Task,
   users: List[User] = Users.findAll
-)
+)(implicit session: play.api.mvc.Session)
 
 @main("Show tasks") {
       <p>

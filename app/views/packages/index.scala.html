@@ -1,4 +1,4 @@
-@(packs: List[Package], packForm: Form[NewPackage])
+@(packs: List[Package], packForm: Form[NewPackage])(implicit session: play.api.mvc.Session)
 
 @main("Show Packages") {
 	<h1>Packages</h1>

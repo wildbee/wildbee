@@ -1,4 +1,4 @@
-@(workflows: List[Workflow] = Workflows.findAll)
+@(workflows: List[Workflow] = Workflows.findAll)(implicit session: play.api.mvc.Session)
 
 @import helper._
 
