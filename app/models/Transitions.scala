@@ -53,59 +53,16 @@ object Transitions extends Table[Transition]("transitions") {
       Transitions filter (_.workflow === workflow) delete
   }
 
-  /**
+  /** Return mapping of status.uuid.toString -> status.uuid
    * Returns a mapping of id => name for all statuses that are allowed
    * in this workflow.
    */
-  def allowedStatusesMap(workflow: UUID, currentStatus: UUID): Map[String, String] = DB.withSession {
+  def allowedStatuses(task: AnyRef, pack: AnyRef): Map[String, String] = DB.withSession {
     implicit session: Session =>
+      val workflow = Tasks.find(task).workflow
+      val currentStatus = Packages.find(pack).status
       val nextStateLogic = getLogic(workflow)
       val nextStates = nextStateLogic(currentStatus)
       nextStates.map(state =>(state.toString, Statuses.idToName(state))).toMap
   }
 }
-
-/**
- * Currently not in use
- * case class Status(id: UUID, taskId: UUID, task: String, status: String)
- * object Statuses extends Table[Status]("status") {
- * def id     = column[UUID]("id", O.PrimaryKey)
- * def taskId = column[UUID]("task_id")
- * def task   = column[String]("task")
- * def status = column[String]("status")
- *
- * def * = id ~ taskId ~ task ~ status <> (Status, Status.unapply _)
- * def autoId = id ~ taskId ~ task ~ status returning id
- *
- * def currentStatus(workflow: String): String = DB.withSession {
- * // While going through code I don't think using Query is a good way to go
- * // How would I nicely represent the below with Query?
- * // So below is actually a query, ".list" and ".first" executes the query
- * implicit session: Session => {
- * val status = for {s <- Statuses if s.taskId === id} yield s.status
- * status.first
- * }
- * }
- *
- * def create(task: String, state: String): Unit = DB.withSession {
- * implicit session: Session =>
- * autoId.insert(Config.pkGenerator.newKey, Tasks.findByName(task).id, task, state) //This is temporary
- * }
- *
- * def delete(task: String): Unit = DB.withSession {
- * implicit session: Session =>
- * Statuses where (_.id === Tasks.findByName(task).id) delete
- * }
- *
- * def update(workflow: String, state: String = ""): Unit = DB.withSession {
- * implicit session: Session => {
- * val currentState = Statuses filter (_.taskId === taskId)
- * val nextState = state match {
- * case "" => AllowedStatuses.nextState(workflow, currentStatus(workflow))
- * case _ => state
- * }
- * currentState map (_.status) update (nextState)
- * }
- * }
- * }
- */
