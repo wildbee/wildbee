@@ -62,12 +62,18 @@
                 <div class="form-group">
                     <input type="text" placeholder="Email" class="form-control" name="email">
                 </div>
-                <button type="submit" class="btn btn-success">Sign in (Doesn't work!)</button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <span class="glyphicon glyphicon-log-in"></span>
+                </button>
             </form>
             } else {
-            <form class="navbar-form navbar-right" action="@{routes.Application.logout}", method="POST">
-                <button type="submit" class="btn btn-success">Logout</button>
-            </form>
+            <div class="navbar-right">
+                <p class="navbar-text">Welcome, @session.get("connected")</p>
+                <form class="navbar-form navbar-right" action="@{routes.Application.logout}", method="POST">
+                    <button type="submit" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-log-out"></span></button>
+
+                </form>
+            </div>
             }
         </div>
     </div>
