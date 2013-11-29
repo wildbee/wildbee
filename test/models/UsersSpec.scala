@@ -6,25 +6,25 @@ import org.junit.runner._
 import org.specs2.specification._
 import play.api.test._
 import play.api.test.Helpers._
-
 import models._
 import org.postgresql.util.PSQLException
+import helpers.Config
 
 /**
  * Spec to test the Users model CRUD
  */
 @RunWith(classOf[JUnitRunner])
-class UsersSpec extends Specification with BeforeExample {
+class UsersSpec extends Specification with BeforeExample with TestData{
 
+  sequential
 
-  def fakeAppGen = FakeApplication(additionalConfiguration = Map(
-    "db.default.url" -> "jdbc:postgresql://localhost/wildbeehivetest"))
-
-  def before = new WithApplication(fakeAppGen){Users.deleteAll}
+  def before = new WithApplication(fakeAppGen){
+    clearDB()
+  }
 
   "User model" should {
 
-    "should be able to add a new User" in new WithApplication(fakeAppGen) {
+    "be able to add a new User" in new WithApplication(fakeAppGen) {
       Users.insert("name_of_user", "email@example.com")
     }
 

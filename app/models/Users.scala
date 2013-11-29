@@ -28,17 +28,11 @@ object Users extends Table[User]("users")  with Queriable[User]{
     implicit session: Session =>
       autoEmail.insert(Config.pkGenerator.newKey, name, email)
   }
-//  This method is implemented in the Queriable trait.
-//  def findById(id: UUID): User = DB.withSession {
-//    implicit session: Session => Query(this)
-//       .where (_.id === id)
-//       .first               
-//  }
-// This method is implemented in the Queriable trait.  
-//  def findAll: List[User] = DB.withSession {
-//    implicit session: Session =>
-//      Query(this).list
-//  }
+
+  def insertWithId(id: UUID, user: NewUser): UUID = DB.withSession{
+  	implicit session: Session =>
+  	  Users.insert(User(id, user.name, user.email))
+  }
 
   def findByEmail(email: String): User = DB.withSession {
     implicit session: Session =>
