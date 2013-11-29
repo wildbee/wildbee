@@ -7,15 +7,21 @@
 	<p>
 	<h1>@pack.name</h1>
 	================================================= <br/>
-	@for((name, ele) <- (names zip pack.productIterator.toList)) {
-		<ul> 
-	 		@name : @ele.toString
-		</ul>
-	}
+		<ul>id : @pack.id</ul>
+        <ul>name : @pack.name</ul>
+        <ul>task : @Tasks.idToName(pack.task)</ul>
+        <ul>creator : @Users.idToName(pack.creator)</ul>
+        <ul>assignee : @Users.idToName(pack.assignee)</ul>
+        <ul>status : @Statuses.idToName(pack.status)</ul>
+        <ul>os version: @pack.osVersion</ul>
 	=================================================
 	</p>
 
-
+    @helper.form(routes.PackagesController.edit(pack.task.toString, pack.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Edit Package</button>
+    </div>
+    }
     @helper.form(routes.PackagesController.copy(pack.task.toString, pack.id.toString)) {
     <div class="form-actions">
         <button type="submit">Clone Package</button>

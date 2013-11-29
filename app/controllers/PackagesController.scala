@@ -44,11 +44,12 @@ object PackagesController extends Controller {
   def edit(tid: String, pid: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
     val filledForm = packageForm.fill(pack)
-    Ok(views.html.packages.edit(filledForm, pid))
+    val statuses = Transitions.allowedStatuses(pack.task,pack.name)
+    Ok(views.html.packages.edit(filledForm, pid, statuses))
   }
 
   def update(id: String) = Action { implicit request =>
-    val oldPack = Packages.findById(id)
+    val oldPack = Packages.find(id)
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
@@ -65,7 +66,8 @@ object PackagesController extends Controller {
   def copy(tid: String, pid: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
     val filledForm = packageForm.fill(pack)
-    Ok(views.html.packages.new_entity(filledForm))
+    val statuses = Transitions.allowedStatuses(pack.task,pack.name)
+    Ok(views.html.packages.new_entity(filledForm,statuses))
   }
 
 }

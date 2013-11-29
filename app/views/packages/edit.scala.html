@@ -1,10 +1,12 @@
 @(packForm: Form[NewPackage],
-	id: String)
+	id: String,
+    statuses: Map[String,String] = Map())
 	
 )
 
 @main("Update a Package") {
 	@helpers.input_form(
 		packForm = packForm, 
-		formAction = routes.PackagesController.update(id))
+		formAction = routes.PackagesController.update(id),
+        statuses)
 }
