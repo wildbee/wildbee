@@ -71,21 +71,4 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task] {
     val workflow = Tasks.findById(id).workflow
     Workflows.findById(workflow).startStatus
   }
-
-  /**
-   * Returns a mapping of name => UUID of all allowed statuses
-   * for this task.
-   * @param task
-   * @return
-   */
-  def allowedStatuses(task: AnyRef): Map[String, String] = {
-    def as(t: UUID) = {
-      val workflow = Tasks.findById(t).workflow
-      Transitions.allowedStatusesMap(workflow)
-    }
-    task match {
-      case task: String => as(uuid(task))
-      case task: UUID => as(task)
-    }
-  }
 }

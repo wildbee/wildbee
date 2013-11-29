@@ -101,7 +101,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
    * values.
    */
   def mapToNewPackage(id: String): NewPackage = {
-    val p = findById(id)
+    val p = find(id)
     NewPackage(
       p.name,
       p.task.toString,
