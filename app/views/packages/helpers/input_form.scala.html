@@ -32,9 +32,13 @@
         </td>
         <td>
             @if(packForm.data.contains("task")){
-                @helper.select(packForm("status"),
-                    helper.options(Tasks.allowedStatuses(
-                        packForm.data.get("task").get)))
+                @if(Tasks.allowedStatuses(packForm.data.get("task").get).isEmpty) {
+                    <input type="hidden" name="status" value="None">
+                } else {
+                    @helper.select(packForm("status"),
+                        helper.options(Tasks.allowedStatuses(
+                            packForm.data.get("task").get)))
+                }
             } else {
                 <input type="hidden" name="status" value="None">
             }
