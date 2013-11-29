@@ -36,13 +36,15 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   /**
    * Returns the name of the entity given by the string id.
    */
-  def idToName(id: String): String = idToName(uuid(id))
+  //def idToName(id: String): String = idToName(uuid(id))
 
   /**
    * Returns the name of the entity given by this UUID.
    */
-  def idToName(id: UUID): String = {
-    findById(id).name
+  def idToName(id: AnyRef): String = id match {
+    case id: String => findById(uuid(id)).name
+    case id: UUID => findById(id).name
+    case _ => "Unknown"
   }
 
   /**
@@ -54,16 +56,35 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   }
 
   /**
-   * Find entity by string UUID.
+   * Find entity by its id.
    */
-  def findById(id: String): T = findById(uuid(id))
+  def findById(id: AnyRef): T = {
+    def get(id: UUID): T = DB.withSession {
+      implicit session: Session =>
+        Query(this).where(_.id === id).first
+    }
+    id match {
+      case id: String => get(uuid(id))
+      case id: UUID => get(id)
+    }
+  }
 
   /**
-   * Find entity by UUID.
+   * General find query searches by id if given a
+   * valid UUID (in UUID or string format), or by
+   * name if given a non-uuid string.
+   * @param atty
+   * @return
    */
-  def findById(id: UUID): T = DB.withSession {
-    implicit session: Session =>
-      Query(this).where(_.id === id).first
+  def find(atty: AnyRef): T = atty match {
+    case atty: UUID => findById(atty)
+    case atty: String => {
+      if (vidP(atty)) {
+        findById(atty)
+      } else {
+        findByName(atty)
+      }
+    }
   }
 
   /**
@@ -82,11 +103,10 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
    * needs to implement its own mapping from user inputs to
    * case class.
    */
-  def insert(item: T) = {
-    DB.withSession { implicit session: Session =>
+  def insert(item: T) = DB.withSession {
+    implicit session: Session =>
       returnID.insert(item)
     }
-  }
 
   /**
    * Same as insert above. Need to map your inputs to the correct
@@ -124,6 +144,13 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
   }
 
   /**
+   * Shortcut to validate uuid strings.
+   * @param id
+   * @return
+   */
+  def vidP(id: String) = Config.pkGenerator.validP(id)
+
+  /**
    * Helper for generating a current time.
    */
   def currentTimestamp: Timestamp = {
@@ -135,5 +162,13 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
    */
   def newId: UUID = {
     Config.pkGenerator.newKey
+  }
+
+  /**
+   * Helper method to delete all the rows in a table
+   */
+  def deleteAll: Unit = DB.withSession {
+    implicit session: Session =>
+        tableToQuery(this).delete
   }
 }
