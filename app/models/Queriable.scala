@@ -19,13 +19,9 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
   self: Table[T] =>
 
   def id: Column[UUID]
-
   def name: Column[String]
-
   def * : scala.slick.lifted.ColumnBase[T]
-
   def returnID = * returning id
-
   def mapToNew(id: UUID) : Y
 
   /**

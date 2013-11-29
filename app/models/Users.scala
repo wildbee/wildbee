@@ -33,17 +33,6 @@ object Users extends Table[User]("users")  with Queriable[User, NewUser]{
     val u = find(id)
     NewUser(u.name, u.email)
   }
-//  This method is implemented in the Queriable trait.
-//  def findById(id: UUID): User = DB.withSession {
-//    implicit session: Session => Query(this)
-//       .where (_.id === id)
-//       .first               
-//  }
-// This method is implemented in the Queriable trait.  
-//  def findAll: List[User] = DB.withSession {
-//    implicit session: Session =>
-//      Query(this).list
-//  }
 
   def findByEmail(email: String): User = DB.withSession {
     implicit session: Session =>

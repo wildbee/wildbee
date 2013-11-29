@@ -37,10 +37,6 @@ object PackagesController extends Controller {
       })
   }
 
-//  def show(id: String) = Action {
-//    Ok(views.html.packages.show(Packages.findById(id)))
-//  }
-
   def show(tid: String, pid: String) = Action {
     Ok(views.html.packages.show(Packages.findByTask(tid, pid)))
   }
@@ -64,6 +60,12 @@ object PackagesController extends Controller {
   def delete(id: String) = Action { implicit request =>
     Packages.delete(Packages.uuid(id))
     Redirect(routes.PackagesController.index)
+  }
+
+  def clone(tid: String, pid: String) = Action {
+    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
+    val filledForm = packageForm.fill(pack)
+    Ok(views.html.packages.new_entity(filledForm))
   }
 
 }
