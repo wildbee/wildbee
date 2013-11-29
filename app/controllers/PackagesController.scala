@@ -41,14 +41,14 @@ object PackagesController extends Controller {
 //    Ok(views.html.packages.show(Packages.findById(id)))
 //  }
 
-  def show(task: String, pack: String) = Action {
-    Ok(views.html.packages.show(Packages.findByTask(task, pack)))
+  def show(tid: String, pid: String) = Action {
+    Ok(views.html.packages.show(Packages.findByTask(tid, pid)))
   }
 
-  def edit(id: String) = Action { implicit request =>
-    val pack = Packages.mapToNewPackage(id)
+  def edit(tid: String, pid: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
     val filledForm = packageForm.fill(pack)
-    Ok(views.html.packages.edit(filledForm, id))
+    Ok(views.html.packages.edit(filledForm, pid))
   }
 
   def update(id: String) = Action { implicit request =>

@@ -13,7 +13,7 @@ case class NewTask(name: String, owner: String, workflow: String)
 case class Task(id: UUID, name: String, owner: UUID,
   creationTime: Timestamp, workflow: UUID, lastUpdated: Timestamp)
 
-object Tasks extends Table[Task]("tasks") with Queriable[Task] {
+object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def owner = column[UUID]("owner_id")
@@ -25,6 +25,11 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task] {
 
   def * = id ~ name ~ owner ~ creationTime ~ workflow ~ lastUpdated <> (Task, Task.unapply _)
   private def autoId = id ~ name ~ owner ~ creationTime ~ lastUpdated returning id
+
+  def mapToNew(id: UUID): NewTask = {
+    val t = find(id)
+    NewTask(t.name, t.owner.toString, t.workflow.toString)
+  }
 
   /** YYYY-MM-DD HH:MM:SS.MS */
   def currentTime = {

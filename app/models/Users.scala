@@ -16,7 +16,7 @@ case class User(id: UUID, name: String, email: String)
  * Note: cannot name the table as simply 'user' since it conflicts
  * with the 'user' table already created in the database by default
  */
-object Users extends Table[User]("users")  with Queriable[User]{
+object Users extends Table[User]("users")  with Queriable[User, NewUser]{
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def email = column[String]("email")
@@ -27,6 +27,11 @@ object Users extends Table[User]("users")  with Queriable[User]{
   def insert(name: String, email: String) = DB.withSession {
     implicit session: Session =>
       autoEmail.insert(Config.pkGenerator.newKey, name, email)
+  }
+
+  def mapToNew(id: UUID): NewUser = {
+    val u = find(id)
+    NewUser(u.name, u.email)
   }
 //  This method is implemented in the Queriable trait.
 //  def findById(id: UUID): User = DB.withSession {

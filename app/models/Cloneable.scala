@@ -12,13 +12,15 @@ import scala.language.reflectiveCalls
  * Requires a Queriable object and all of its restrictions.
  * @tparam T
  */
-trait Cloneable[T <: AnyRef with Queriable[T] { val id: UUID; val name: String }] {
+trait Cloneable[T <: AnyRef with Queriable[T,Y] { val id: UUID; val name: String },
+                Y <: AnyRef {val name: String}] {
   self: Table[T] =>
 
   def id: Column[UUID]
   def name: Column[String]
   def find: T
   def newId: UUID
+  def mapToNew: Y
 
 //  def clone(oid: UUID): UUID = DB.withSession {
 //    implicit session: Session =>
