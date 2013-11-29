@@ -6,7 +6,7 @@
   		================================================= <br/>
   		Workflow ID: @workflow.id<br/>
   		<u>Workflow Mapping</u> <br>
-  		@AllowedStatuses.getLogic(workflow.name).map { case (key, value) =>
+  		@Transitions.getLogic(workflow.name).map { case (key, value) =>
   			- @key -> @value.mkString(", ") <br/>
   		}
   		================================================

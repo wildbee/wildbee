@@ -1,0 +1,11 @@
+@(status: Status)
+        @main("Show Status") {
+        <p>
+            <h1>@status.name</h1>
+        </p>
+        }
+@helper.form(routes.StatusesController.delete(status.name)) {
+<div class="form-actions">
+    <button type="submit">Delete Status</button>
+</div>
+}

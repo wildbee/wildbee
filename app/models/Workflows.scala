@@ -9,20 +9,26 @@ import java.util.UUID
 import scala.language.postfixOps
 
 case class NewWorkflow(name: String, status: List[String])
-case class Workflow(id: UUID, name: String)
+case class Workflow(id: UUID, name: String, startStatus: UUID)
 object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
+  def startStatus = column[UUID]("start_status")
 
 //  def statusFk = foreignKey("status_fk", name, AllowedStatuses)(_.workflow)
   def uniqueName = index("idx_workflow_name", name, unique = true)
 
-  def * = id ~ name  <> (Workflow, Workflow.unapply _)
-  def autoId = id ~ name returning id
+  def * = id ~ name ~ startStatus <> (Workflow, Workflow.unapply _)
+  def autoId = id ~ name ~ startStatus returning id
 
-  def create(name: String): Unit = DB.withSession {
-    implicit session: Session =>
-        autoId.insert(Config.pkGenerator.newKey, name)
+  def insert(w: NewWorkflow): UUID = {
+    insertWithId(newId, w)
+  }
+
+  def insertWithId(id: UUID, w: NewWorkflow): UUID = {
+    Workflows.insert(
+      Workflow(id, w.name, uuid(w.status(0)))
+    )
   }
 
   def delete(name: String): Unit = DB.withSession {

@@ -18,4 +18,20 @@ object Statuses extends Table[Status]("statuses") with Queriable[Status] {
 
   def * = id ~ name  <> (Status, Status.unapply _)
   def autoId = id ~ name returning id
+
+  def insert(s: NewStatus): UUID = {
+    insertWithId(newId, s)
+  }
+
+  def insertWithId(id: UUID, p: NewStatus): UUID = {
+    Statuses.insert(Status(id, p.name))
+  }
+
+  def mapToNewStatus(id: String): NewStatus = {
+    val s = findById(id)
+    NewStatus(s.name)
+  }
+
+  def updateStatus(id: UUID, s: NewStatus, o: Status) =
+    update(id, Status(id, s.name))
 }

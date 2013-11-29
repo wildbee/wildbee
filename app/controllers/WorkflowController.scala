@@ -16,8 +16,7 @@ object WorkflowController extends Controller {
       "status" -> list(text))(NewWorkflow.apply)(NewWorkflow.unapply))
 
   def newWorkflow = Action {
-    Ok(views.html.workflows.newEntity(
-        workForm, List("Open", "In Progress", "Pending", "Closed"))) //TODO: Make it easier to create workflow, Ex. Checkboxes, pictures, etc
+    Ok(views.html.workflows.newEntity(workForm))
   }
 
   def index = Action {
@@ -25,7 +24,7 @@ object WorkflowController extends Controller {
   }
 
   def show(name: String) = Action {
-    Ok(views.html.workflows.show(Workflows.findByName(name)))
+    Ok(views.html.workflows.show(Workflows.find(name)))
   }
 
   /** When creating a workflow creat its logic first */
@@ -34,8 +33,8 @@ object WorkflowController extends Controller {
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
-          AllowedStatuses.create(workflow.name, workflow.status)
-          Workflows.create(workflow.name)
+          Transitions.create(workflow.name, workflow.status)
+          Workflows.insert(workflow)
           Redirect(routes.WorkflowController.show(workflow.name))
         }
     )
@@ -44,7 +43,7 @@ object WorkflowController extends Controller {
   /** When deleting a workflow delete its logic first */
   def delete(name: String) = Action {
     implicit request => {
-      AllowedStatuses.delete(name)
+      Transitions.delete(name)
       Workflows.delete(name)
     }
     Redirect(routes.WorkflowController.index)

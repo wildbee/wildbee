@@ -11,10 +11,12 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Packages
 GET     /packages                   controllers.PackagesController.index
 GET     /package/new                controllers.PackagesController.newPackage
-GET     /package/:id                controllers.PackagesController.show(id: String)
 GET     /package/:id/edit           controllers.PackagesController.edit(id: String)
 POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package                    controllers.PackagesController.create
+POST    /package/:id/delete         controllers.PackagesController.delete(id: String)
+
+
 
 # Users
 GET     /users                      controllers.UsersController.index
@@ -28,6 +30,7 @@ GET     /user/:email                controllers.UsersController.show(email: Stri
 GET     /tasks                      controllers.TasksController.index
 GET     /task/new                   controllers.TasksController.newTask
 GET     /task/:task                 controllers.TasksController.show(task: String)
+GET     /task/:t/package/:p         controllers.PackagesController.show(t: String, p: String)
 POST    /task                       controllers.TasksController.create
 POST    /task/:task/delete          controllers.TasksController.delete(task: String)
 
@@ -37,3 +40,14 @@ GET     /workflow/:workflow         controllers.WorkflowController.show(workflow
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create
 POST    /workflow/:workflow/delete  controllers.WorkflowController.delete(workflow: String)
+
+
+#Statuses
+GET     /status/new                 controllers.StatusesController.newStatus
+GET     /status/:status             controllers.StatusesController.show(status: String)
+GET     /statuses                   controllers.StatusesController.index
+POST    /status                     controllers.StatusesController.create
+POST    /status/:id                 controllers.StatusesController.update(id: String)
+POST    /status/:status/delete      controllers.StatusesController.delete(status: String)
+
+

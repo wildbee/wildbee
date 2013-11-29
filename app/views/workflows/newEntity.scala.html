@@ -1,14 +1,23 @@
-@(workForm: Form[NewWorkflow], statuses: List[String])
+@(workForm: Form[NewWorkflow], s: Map[String,String]=Statuses.mapIdToName)
 @import helper._
+
 @main("Workflow Form") {
+<p>
+<h2>Add a new Workflow</h2>
   @form(action = routes.WorkflowController.create) {
     @inputText(workForm("name"))
-    @select(workForm("status[0]"), options(statuses))
-    @select(workForm("status[1]"), options(statuses))
-    @select(workForm("status[2]"), options(statuses))
-    @select(workForm("status[3]"), options(statuses))
+    @select(workForm("status[0]"), options(s))
+    @select(workForm("status[1]"), options(s))
+    @select(workForm("status[2]"), options(s))
+    @select(workForm("status[3]"), options(s))
     <div class="form-actions">
         <button type="submit">Create Workflow</button>
     </div>
   }
+</p>
+        <br>
+<p>
+    <h2>Add a new Status</h2>
+    @statuses.helpers.input_form(controllers.StatusesController.StatusForm)
+</p>
 }

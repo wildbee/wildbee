@@ -1,0 +1,28 @@
+@(statusForm: Form[NewStatus], formAction: Call = routes.StatusesController.create)
+<table>
+    @helper.form(action = formAction) {
+    <tr>
+        @helper.inputText((statusForm("name")))
+    </tr>
+    <div class="form-actions">
+        <button type="submit">Add Status</button>
+    </div>
+    }
+
+@if(statusForm.hasErrors) {
+<div class="alert alert-error">
+    <a class="close" data-dismiss="alert">
+        Errors:
+    </a>
+    @if(statusForm.errors.size > 0) {
+        @for(e <- statusForm.errors) {
+            <br>
+            @e.key : @e.message
+        }
+    } else {
+        No error returned.
+    }
+</div>
+}
+</table>
+
