@@ -67,6 +67,11 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
   def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
     ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
 
+  def findByTask(task: String, pack: String): Package = DB.withSession {
+    implicit session: Session =>
+      val t = Tasks.find(task)
+      Query(this).where(_.name === pack).where(_.task === t.id).first
+  }
   /**
    * Call this if you want to explicitly set your own id.
    */

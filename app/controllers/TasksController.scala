@@ -20,8 +20,8 @@ object TasksController extends Controller {
     Ok(views.html.tasks.index())
   }
 
-  def show(taskName: String) = Action {
-    Ok(views.html.tasks.show(Tasks.findByName(taskName)))
+  def show(task: String) = Action {
+    Ok(views.html.tasks.show(Tasks.find(task)))
   }
 
   def newTask() = Action {

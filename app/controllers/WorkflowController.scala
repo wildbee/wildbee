@@ -24,7 +24,7 @@ object WorkflowController extends Controller {
   }
 
   def show(name: String) = Action {
-    Ok(views.html.workflows.show(Workflows.findByName(name)))
+    Ok(views.html.workflows.show(Workflows.find(name)))
   }
 
   /** When creating a workflow creat its logic first */
