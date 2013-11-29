@@ -1,11 +1,16 @@
-@(taskForm: Form[NewTask], users: Map[String, String] = Users.getUserMap)
+@(taskForm: Form[NewTask], 
+	users: Map[String, String] = Users.mapIdToName,
+	workflows: Map[String, String] = Workflows.mapIdToName
+	)
 @main("Product Form") {
   @helper.form(action = routes.TasksController.create) {
     @helper.textarea((taskForm("name")))
     @helper.select(
-        taskForm("owner_id"),
-        helper.options(users)
-    )
+        taskForm("owner"),
+        helper.options(users))
+    @helper.select(
+    	taskForm("workflow"),
+    	helper.options(workflows))
 
     <div class="form-actions">
         <button type="submit">Create Task</button>

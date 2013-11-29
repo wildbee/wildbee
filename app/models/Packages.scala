@@ -13,28 +13,28 @@ import helpers._
  * This class is for creating new packages from string inputs:
  */
 case class NewPackage(
-                       name: String,
-                       task: String,
-                       creator: String,
-                       assignee: String,
-                       ccList: String = "None",
-                       status: String,
-                       osVersion: String)
+  name: String,
+  task: String,
+  creator: String,
+  assignee: String,
+  ccList: String = "None",
+  status: String = "None",
+  osVersion: String)
 
 /**
  * This is the main case class that we will map projections to.
  */
 case class Package(
-                    id: UUID,
-                    name: String,
-                    task: UUID,
-                    creator: UUID,
-                    assignee: UUID,
-                    ccList: String = "None",
-                    status: String,
-                    osVersion: String,
-                    created: java.sql.Timestamp,
-                    updated: java.sql.Timestamp)
+  id: UUID,
+  name: String,
+  task: UUID,
+  creator: UUID,
+  assignee: UUID,
+  ccList: String = "None",
+  status: UUID,
+  osVersion: String,
+  created: java.sql.Timestamp,
+  updated: java.sql.Timestamp)
 
 /**
  * The Packages table will be of type Table[Package] so that
@@ -47,7 +47,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
   def ccList = column[String]("cc_list", O.Default("None"))
-  def status = column[String]("status")
+  def status = column[UUID]("status")
   def osVersion = column[String]("os_version")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
@@ -59,14 +59,19 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
    * The default projection is mapped to the Package case class.
    */
   def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ creationTime ~ lastUpdated <>(Package, Package.unapply _))
+    status ~ osVersion ~ creationTime ~ lastUpdated <> (Package, Package.unapply _))
 
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ creationTime ~ lastUpdated returning id
 
-  def mappedEntity = (name ~ task.toString ~ creator.toString.toString ~ assignee.toString ~ ccList ~ status ~
-    osVersion <> (NewPackage, NewPackage.unapply _))
+  def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
+    ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
 
+  def findByTask(task: String, pack: String): Package = DB.withSession {
+    implicit session: Session =>
+      val t = Tasks.find(task)
+      Query(this).where(_.name === pack).where(_.task === t.id).first
+  }
   /**
    * Call this if you want to explicitly set your own id.
    */
@@ -78,7 +83,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       uuid(p.creator),
       uuid(p.assignee),
       p.ccList,
-      p.status,
+      Tasks.getStartingStatus(uuid(p.task)),
       p.osVersion,
       currentTimestamp,
       currentTimestamp))
@@ -103,7 +108,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       p.creator.toString,
       p.assignee.toString,
       p.ccList,
-      p.status,
+      p.status.toString,
       p.osVersion)
   }
 
@@ -119,7 +124,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
       uuid(p.creator),
       uuid(p.assignee),
       p.ccList,
-      p.status,
+      uuid(p.status),
       p.osVersion,
       o.created,
       currentTimestamp))
