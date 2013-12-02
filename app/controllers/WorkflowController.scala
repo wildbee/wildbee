@@ -46,4 +46,21 @@ object WorkflowController extends Controller {
     }
     Redirect(routes.WorkflowController.index)
   }
+
+  def edit(workflow: String) = Action { implicit request =>
+    val id = Workflows.find(workflow).id
+    val form = workForm.fill(Workflows.mapToNew(id))
+    Ok(views.html.workflows.edit(form, id.toString))
+  }
+
+  def update(workflow: String) = Action { implicit request =>
+    val old = Workflows.find(workflow)
+    workForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.workflows.edit(formWithErrors,old.id.toString)),
+    updatedWorkflow => {
+       Workflows.updateWorkflow(old.id, updatedWorkflow, old)
+      Redirect(routes.WorkflowController.show(updatedWorkflow.name))
+    })
+
+  }
 }

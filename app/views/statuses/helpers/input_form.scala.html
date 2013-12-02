@@ -1,4 +1,6 @@
-@(statusForm: Form[NewStatus], formAction: Call = routes.StatusesController.create)
+@(statusForm: Form[NewStatus],
+workForm: Form[NewWorkflow]=null,
+formAction: Call = routes.StatusesController.create)
 <table>
     @helper.form(action = formAction) {
     <tr>

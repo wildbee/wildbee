@@ -1,20 +1,8 @@
-@(workForm: Form[NewWorkflow], s: Map[String,String]=Statuses.mapIdToName)(implicit session: play.api.mvc.Session)
+@(workForm: Form[NewWorkflow])(implicit session: play.api.mvc.Session)
 @import helper._
 
 @main("Workflow Form") {
-<p>
-<h2>Add a new Workflow</h2>
-  @form(action = routes.WorkflowController.create) {
-    @inputText(workForm("name"))
-    @select(workForm("status[0]"), options(s))
-    @select(workForm("status[1]"), options(s))
-    @select(workForm("status[2]"), options(s))
-    @select(workForm("status[3]"), options(s))
-    <div class="form-actions">
-        <button type="submit">Create Workflow</button>
-    </div>
-  }
-</p>
+@helpers.input_form(workForm)
         <br>
 <p>
     <h2>Add a new Status</h2>
