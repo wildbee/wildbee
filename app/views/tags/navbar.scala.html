@@ -16,7 +16,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         @for(user <- Users.findAll) {
-                        <li><a href="@{routes.UsersController.show(user.name)}">@user.name</a></li>
+                        <li><a href="@{routes.UsersController.show(user.email)}">@user.name</a></li>
                         }
                         <li class="divider"></li>
                         <li><a href="@routes.UsersController.newUser">Create User</a></li>
