@@ -9,13 +9,15 @@ import play.api.test.Helpers._
 import models._
 import org.postgresql.util.PSQLException
 import helpers.Config
+import helpers.ModelGenerator
 
 @RunWith(classOf[JUnitRunner])
-class TaskSpec extends Specification with TestData with BeforeExample {
+class TaskSpec extends Specification with TestData with BeforeExample with ModelGenerator {
   sequential
 
   def before = new WithApplication(fakeAppGen) {
     clearDB()
+    workflow.generate
     Statuses.insert(status1)
     Users.insert(user1)
     Workflows.insert(workflow1)
@@ -28,7 +30,7 @@ class TaskSpec extends Specification with TestData with BeforeExample {
       Tasks.findAll.size === 1
     }
 
-    "be able to add Tasks without an ID" in new WithApplication(fakeAppGen) {
+    "be able to add Tasks without an ID" in new WithApplication(fakeAppGen){
       Tasks.insert(task1)
       Tasks.findAll.size === 1
     }

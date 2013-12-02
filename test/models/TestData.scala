@@ -25,7 +25,7 @@ trait TestData {
   val task1 = NewTask("Task1", userID.toString(), workflowID.toString)
   val task2 = NewTask("Task2", userID.toString(), workflowID.toString)
   val user1 = User(userID,"User1", "email@example.com")
-  val status1 = Status(statusID, "Status1")
+  val status1 = Status(userID, "Status1")
   val workflow1 = Workflow(workflowID, "Workflow1", statusID)
 
 }
