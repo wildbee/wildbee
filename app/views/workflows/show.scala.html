@@ -17,6 +17,12 @@
     </div>
     }
 
+    @helper.form(routes.WorkflowController.copy(workflow.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Clone Workflow</button>
+    </div>
+    }
+
      @helper.form(routes.WorkflowController.delete(workflow.name)) {
         <div class="form-actions">
             <button type="submit">Delete Workflow</button>

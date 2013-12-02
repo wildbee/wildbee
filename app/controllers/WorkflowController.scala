@@ -63,4 +63,10 @@ object WorkflowController extends Controller {
     })
 
   }
+
+  def copy(wid: String) = Action { implicit request =>
+    val pack = Workflows.mapToNew(Workflows.find(wid).id)
+    val filledForm = workForm.fill(pack)
+    Ok(views.html.workflows.newEntity(filledForm))
+  }
 }

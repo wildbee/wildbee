@@ -45,6 +45,7 @@ POST    /workflow                   controllers.WorkflowController.create
 POST    /workflow/:workflow         controllers.WorkflowController.update(workflow)
 POST    /workflow/:workflow/delete  controllers.WorkflowController.delete(workflow: String)
 GET     /workflow/:workflow         controllers.WorkflowController.show(workflow: String)
+GET     /workflow/:workflow/copy    controllers.WorkflowController.copy(workflow: String)
 
 
 #Statuses
