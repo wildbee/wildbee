@@ -21,50 +21,9 @@ import scala.reflect.runtime.universe.{TypeTag, typeOf}
 trait Queriable[T <: Entity, Y <: NewEntity]{
 
   /**
-   * This trait is used by entity models with Tables of type T.
+   * This trait is used by entity models with Tables of type T with EntityTable trait of type T.
    */
-  self: Table[T] =>
-
-  /**
-   * The default projection for any entity model table.
-   * @return
-   */
-  def * : scala.slick.lifted.ColumnBase[T]
-
-  /**
-   * A default projection that returns the id. Used
-   * for inserting new entities.
-   * @return
-   */
-  def returnID = * returning id
-
-  /**
-   * All entity tables must have both a UUID id, and a
-   * String name.
-   * @return
-   */
-  def id: Column[UUID]
-  def name: Column[String]
-
-  /**
-   * Queriables must have some method that checks a string to
-   * determine if it's a valid id or not.
-   * @param id
-   * @return
-   */
-  def vidP(id: String): Boolean
-
-  /**
-   * Queriables must havea  string -> uuid conversion.
-   */
-  def uuid(id: String): UUID
-
-  /**
-   * Queriables must have a method that returns a new
-   * valid UUID
-   * @return
-   */
-  def newId: UUID
+  self: Table[T] with EntityTable[T] =>
 
   /**
    * All Queriables should have a method mapping a NewEntity class

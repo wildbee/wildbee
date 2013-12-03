@@ -44,7 +44,19 @@ trait Timekeeping {
 trait EntityTable[T <: Entity] extends Table[T] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
+
+  /**
+   * The default projection for any entity model table.
+   * @return
+   */
   def * : scala.slick.lifted.ColumnBase[T]
+
+  /**
+   * A default projection that returns the id. Used
+   * for inserting new entities.
+   * @return
+   */
+  def returnID = * returning id
 
   /**
    * UUID string to UUID.
