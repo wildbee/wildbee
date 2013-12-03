@@ -53,7 +53,7 @@ object PackagesController extends Controller {
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
-        Packages.updatePackage(oldPack.id, updatedPack, oldPack)
+        Packages.update(oldPack.id, Packages.mapToEntity(updatedPack,oldPack.id))
         Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
       })
   }
