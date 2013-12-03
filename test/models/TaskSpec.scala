@@ -10,6 +10,7 @@ import models._
 import org.postgresql.util.PSQLException
 import helpers.Config
 import helpers.ModelGenerator
+import java.util.UUID
 
 @RunWith(classOf[JUnitRunner])
 class TaskSpec extends Specification with TestData with BeforeExample with ModelGenerator {
@@ -17,35 +18,32 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
 
   def before = new WithApplication(fakeAppGen) {
     clearDB()
-    workflow.generate
     Statuses.insert(status1)
     Users.insert(user1)
     Workflows.insert(workflow1)
   }
 
   "Task model" should {
-    "be able to add a new Task with an ID" in new WithApplication(fakeAppGen) {
-      Tasks.insertWithId(taskID, task1)
-      Tasks.find(taskID) must not be null
-      Tasks.findAll.size === 1
+    "be able to add a new Tasks with an ID and throw error on conflicting IDs" in
+    new WithApplication(fakeAppGen) {
+      val uuids = for (i <- 0 until 10) yield uuidFactory.generate
+      val tasks = uuids map (taskFactory.generateWithId(_))
+
+      uuids map (Tasks.find(_)) must not (throwA[NoSuchElementException])
+      Tasks.findAll.size === 10
+      taskFactory.generateWithId(uuids(randomInt(0, 10))) must throwA[PSQLException]
     }
 
-    "be able to add Tasks without an ID" in new WithApplication(fakeAppGen){
-      Tasks.insert(task1)
-      Tasks.findAll.size === 1
+    "be able to add Tasks without an ID" in new WithApplication(fakeAppGen) {
+      val tasks = for (i <- 0 until 10) yield taskFactory.generate
+      Tasks.findAll.size === 10
     }
 
-    "not be able to add tasks with conflicting ids" in new WithApplication(fakeAppGen){
-      Tasks.insertWithId(taskID, task1)
-    	Tasks.insertWithId(taskID, task1) must throwA[PSQLException]
-    }
-
-    "be able to delete a Task" in new WithApplication(fakeAppGen){
-      Tasks.insertWithId(taskID, task1)
-      Tasks.insert(task2)
-      Tasks.delete(taskID)
-      Tasks.findAll.size === 1
-      Tasks.find(taskID) must throwA[java.util.NoSuchElementException]
+    "be able to delete Tasks" in new WithApplication(fakeAppGen){
+      val tasks = for (i <- 0 until 10) yield taskFactory.generate
+      tasks map (t => Tasks delete(t.id))
+      Tasks.findAll.size === 0
+      Tasks delete tasks(randomInt(0, 10)).id must throwA[java.util.NoSuchElementException]
     }
   }
 }
