@@ -1,13 +1,15 @@
 package helpers
+
 import models._
-import scala.util.Random.nextInt
-import java.util.UUID
-import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import java.sql.Timestamp
+
 import java.util.Date
-import scala.collection.TraversableOnce
+import java.sql.Timestamp
+import java.util.UUID
+
+import scala.util.Random.nextInt
 import scala.collection.Iterator
-import scala.util.continuations._
+
+import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
 abstract class Generator[T] extends Iterator[T] {
   self =>
@@ -24,13 +26,21 @@ abstract class Generator[T] extends Iterator[T] {
 }
 
 /** Notes
- *  TODO: If you generate too many things you'll have name/uuid collisions
  *  TODO: Be able to generate models with something like
  *  val uuids, tasks = for {
  *    i <- 0 until 10
  *    u <- uuidFactory
  *    t <- taskFactory.withId(u)
  *  } yield (u, t)
+ *
+ *  Possibly Relevant Links
+ *  - https://issues.scala-lang.org/browse/SI-1336
+ *  - https://github.com/scala/scala/pull/1893
+ *  - https://github.com/scala/scala/commit/c82ecab
+ *  - http://stackoverflow.com/questions/4380831/\
+ *    why-does-filter-have-to-be-defined-for-pattern-matching-in-a-for-loop-in-scala
+ *
+ *  But filter is defined in Tasks by slick, so what's going on?
  */
 trait ModelGenerator extends {
 		var names: Set[String] = Set()
@@ -61,7 +71,7 @@ trait ModelGenerator extends {
   	 *  email: Specify a email address for your new user
   	 *  withId: Choose if you want to use the withId implementation
   	 */
-    def userFactory = new Generator[User] {
+    val userFactory = new Generator[User] {
       def generate() = generate(email=(randString + "@" + randString))
       def generate (uuid: UUID=uuidFactory.generate,name: String=randString,
           email: String, withId: Boolean=false) = {
@@ -78,7 +88,7 @@ trait ModelGenerator extends {
      *  name: Specify a name for your new status
      *  withId: Choose if you want to use the withId implementation
      */
-    def statusFactory = new Generator[Status] {
+    val statusFactory = new Generator[Status] {
     	def generate() = generate(uuid=uuidFactory.generate)
     	def generate(uuid: UUID = uuidFactory.generate, name: String=randString, withId: Boolean=false) = {
     	  val statusId =
@@ -98,7 +108,7 @@ trait ModelGenerator extends {
     *  statusId: Specify which default status ID to use with your workflow
     *  withId: Choose if you want to use the withId implementation
     */
-    def workflowFactory() = new Generator[Workflow] {
+    val workflowFactory = new Generator[Workflow] {
       def generate() = generate(uuid=uuidFactory.generate)
       def generate(uuid: UUID = uuidFactory.generate, name: String=randString,
           statusId: UUID=statusFactory.generate.id, withId: Boolean=false) = {
@@ -123,7 +133,7 @@ trait ModelGenerator extends {
      *  currentTime: Specify the timestamp for your task
      *  withId: Choose if you want to use the withId implementation
      */
-    def taskFactory = new Generator[Task] {
+    val taskFactory = new Generator[Task] {
       def generate(): Task = generate(uuid=uuidFactory.generate)
       def generate(
           uuid: UUID = uuidFactory.generate, name: String = randString,

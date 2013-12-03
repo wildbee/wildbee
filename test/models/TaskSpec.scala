@@ -19,7 +19,7 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
 
   def before = new WithApplication(fakeAppGen) {
     clearDB()
-    //resetModelGenerator()
+    resetModelGenerator()
   }
 
   "Task model" should {
@@ -42,7 +42,17 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
       val tasks = for (i <- 0 until 10) yield taskFactory.generate()
       tasks map (t => Tasks delete(t.id))
       Tasks.findAll.size === 0
-      Tasks delete tasks(intBetween(0, 10)).id //must throwA[java.util.NoSuchElementException] ??
+      Tasks delete tasks(intBetween(0, 10)).id //must throwA[	java.util.NoSuchElementException] ??
     }
+
+    /* I want this to work
+    "This is to test Model Generator" in new WithApplication(fakeAppGen){
+      val tests =
+        for { i <- 0 until 10
+      			  u:UUID <- uuidFactory
+      			  t:Task <- taskFactory.generate(uuid=u) } yield t
+      println(tests)
+      println(tests.size)
+    }*/
   }
 }
