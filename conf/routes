@@ -11,7 +11,6 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Packages
 GET     /packages                   controllers.PackagesController.index
 GET     /package/new                controllers.PackagesController.newPackage
-GET     /package/:id/edit           controllers.PackagesController.edit(id: String)
 POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package                    controllers.PackagesController.create
 POST    /package/:id/delete         controllers.PackagesController.delete(id: String)
@@ -33,6 +32,8 @@ GET     /tasks                      controllers.TasksController.index
 GET     /task/new                   controllers.TasksController.newTask
 GET     /task/:task                 controllers.TasksController.show(task: String)
 GET     /task/:t/package/:p         controllers.PackagesController.show(t: String, p: String)
+GET     /task/:t/package/:p/edit    controllers.PackagesController.edit(t: String, p: String)
+GET     /task/:t/package/:p/copy   controllers.PackagesController.copy(t: String, p: String)
 POST    /task                       controllers.TasksController.create
 POST    /task/:task/delete          controllers.TasksController.delete(task: String)
 

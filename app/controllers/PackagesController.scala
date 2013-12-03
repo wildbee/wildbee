@@ -37,22 +37,19 @@ object PackagesController extends Controller {
       })
   }
 
-//  def show(id: String) = Action { implicit request =>
-//    Ok(views.html.packages.show(Packages.findById(id)))
-//  }
-
-  def show(task: String, pack: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(task, pack)))
+  def show(tid: String, pid: String) = Action { implicit request =>
+    Ok(views.html.packages.show(Packages.findByTask(tid, pid)))
   }
 
-  def edit(id: String) = Action { implicit request =>
-    val pack = Packages.mapToNewPackage(id)
+  def edit(tid: String, pid: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
     val filledForm = packageForm.fill(pack)
-    Ok(views.html.packages.edit(filledForm, id))
+    val statuses = Transitions.allowedStatuses(pack.task,pack.name)
+    Ok(views.html.packages.edit(filledForm, pid, statuses))
   }
 
   def update(id: String) = Action { implicit request =>
-    val oldPack = Packages.findById(id)
+    val oldPack = Packages.find(id)
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
@@ -64,6 +61,13 @@ object PackagesController extends Controller {
   def delete(id: String) = Action { implicit request =>
     Packages.delete(Packages.uuid(id))
     Redirect(routes.PackagesController.index)
+  }
+
+  def copy(tid: String, pid: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
+    val filledForm = packageForm.fill(pack)
+    val statuses = Transitions.allowedStatuses(pack.task,pack.name)
+    Ok(views.html.packages.new_entity(filledForm,statuses))
   }
 
 }

@@ -10,7 +10,7 @@ import scala.language.postfixOps
 
 case class NewStatus(name: String)
 case class Status(id: UUID, name: String)
-object Statuses extends Table[Status]("statuses") with Queriable[Status] {
+object Statuses extends Table[Status]("statuses") with Queriable[Status, NewStatus] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
 
@@ -18,6 +18,11 @@ object Statuses extends Table[Status]("statuses") with Queriable[Status] {
 
   def * = id ~ name  <> (Status, Status.unapply _)
   def autoId = id ~ name returning id
+
+  def mapToNew(id: UUID): NewStatus = {
+    val s = find(id)
+    NewStatus(s.name)
+  }
 
   def insert(s: NewStatus): UUID = {
     insertWithId(newId, s)
