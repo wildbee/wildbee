@@ -19,12 +19,12 @@ object StatusesController extends Controller {
   }
 
   def newStatus = Action { implicit request =>
-    Ok(views.html.statuses.new_entity(StatusForm))
+    Ok(views.html.statuses.newEntity(StatusForm))
   }
 
   def create = Action { implicit request =>
     StatusForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.statuses.new_entity(formWithErrors)),
+      formWithErrors => BadRequest(views.html.statuses.newEntity(formWithErrors)),
       status => {
         val uuid = Statuses.insert(status)
         Redirect(routes.StatusesController.show(status.name))
