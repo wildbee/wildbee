@@ -1,4 +1,4 @@
-@(userForm: Form[NewUser])(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+@(userForm: Form[NewUser])(implicit session: play.api.mvc.Session)
 @main("Product Form") {
   @helper.form(action = routes.UsersController.create) {
     @helper.textarea((userForm("name")))

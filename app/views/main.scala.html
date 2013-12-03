@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(implicit session: play.api.mvc.Session, flash:play.api.mvc.Flash)
+@(title: String)(content: Html)(implicit session: play.api.mvc.Session)
 
 <!DOCTYPE html>
 
@@ -16,8 +16,8 @@
 <body>
 @tags.navbar()
 
-<div class="container">
-    @content
+    <div class="container">
+        @content
     </div>
 </body>
 </html>

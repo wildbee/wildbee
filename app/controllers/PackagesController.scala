@@ -34,6 +34,7 @@ object PackagesController extends Controller {
         val uuid = Packages.insert(pack)
         val newPack = Packages.find(uuid)
         Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
+            .flashing("success" -> "Package Created!")
       })
   }
 
@@ -55,12 +56,13 @@ object PackagesController extends Controller {
       updatedPack => {
         Packages.updatePackage(oldPack.id, updatedPack, oldPack)
         Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
+            .flashing("success" -> "Package Updated!")
       })
   }
 
   def delete(id: String) = Action { implicit request =>
     Packages.delete(Packages.uuid(id))
-    Redirect(routes.PackagesController.index)
+    Redirect(routes.PackagesController.index).flashing("success" -> "Package Deleted!")
   }
 
   def copy(tid: String, pid: String) = Action { implicit request =>

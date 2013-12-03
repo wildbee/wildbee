@@ -1,8 +1,8 @@
-@(statuses: List[Status], statusForm: Form[NewStatus])(implicit session: play.api.mvc.Session, flash:play.api.mvc.Flash)
+@(statuses: List[Status], statusForm: Form[NewStatus])(implicit session: play.api.mvc.Session)
 @main("Show Statuses") {
     <h1>Statuses</h1>
     <ul>
-        @helpers.input_form(statusForm)
+        @helpers.inputForm(statusForm)
     </ul>
     @statuses.map { status =>
         <ul>

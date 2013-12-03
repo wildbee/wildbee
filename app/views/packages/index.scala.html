@@ -1,9 +1,9 @@
-@(packs: List[Package], packForm: Form[NewPackage])(implicit session: play.api.mvc.Session, flash:play.api.mvc.Flash)
+@(packs: List[Package], packForm: Form[NewPackage])(implicit session: play.api.mvc.Session)
 
 @main("Show Packages") {
 	<h1>Packages</h1>
 	<ul>
-	    @helpers.input_form(packForm)
+	    @helpers.inputForm(packForm)
 	</ul>
 	@packs.map { pack =>
 		<ul>

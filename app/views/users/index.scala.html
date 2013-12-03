@@ -1,4 +1,4 @@
-@(users: List[User] = Users.findAll)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+@(users: List[User] = Users.findAll)(implicit session: play.api.mvc.Session)
 
 @main("Listing Users") {
     @for(user <- users) {

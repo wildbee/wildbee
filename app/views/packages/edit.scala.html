@@ -1,9 +1,9 @@
 @(packForm: Form[NewPackage],
 	id: String,
-    statuses: Map[String,String] = Map())(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+    statuses: Map[String,String] = Map())(implicit session: play.api.mvc.Session)
 
 @main("Update a Package") {
-	@helpers.input_form(
+	@helpers.inputForm(
 		packForm = packForm, 
 		formAction = routes.PackagesController.update(id),
         statuses)

@@ -1,4 +1,4 @@
-@(workForm: Form[NewWorkflow], s: Map[String,String]=Statuses.mapIdToName)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+@(workForm: Form[NewWorkflow], s: Map[String,String]=Statuses.mapIdToName)(implicit session: play.api.mvc.Session)
 @import helper._
 
 @main("Workflow Form") {
@@ -18,6 +18,6 @@
         <br>
 <p>
     <h2>Add a new Status</h2>
-    @statuses.helpers.input_form(controllers.StatusesController.StatusForm)
+    @statuses.helpers.inputForm(controllers.StatusesController.StatusForm)
 </p>
 }

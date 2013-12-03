@@ -4,6 +4,7 @@
 		"last updated"))(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
  
 @main("Show Package") {
+    @tags.flash()
 	<p>
 	<h1>@pack.name</h1>
 	================================================= <br/>
