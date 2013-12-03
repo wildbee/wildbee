@@ -36,7 +36,7 @@ object StatusesController extends Controller {
   }
 
   def edit(id: String) = Action { implicit request =>
-    val pack = Statuses.mapToNewStatus(id)
+    val pack = Statuses.mapToNew(id)
     val filledForm = StatusForm.fill(pack)
     Ok(views.html.statuses.edit(filledForm, id))
   }

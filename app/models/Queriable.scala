@@ -9,6 +9,7 @@ import java.util.Date
 import java.util.UUID
 import helpers._
 import scala.language.reflectiveCalls
+import scala.reflect.runtime.universe.{TypeTag, typeOf}
 /**
  * The Entity trait can be shared by entities in our
  * models since it will define all of the basic CRUD operations
@@ -17,8 +18,7 @@ import scala.language.reflectiveCalls
  * T is the case class used to map from a row in the DB table to a scala object.
  * Y is the case class used to map from all string user input to a scala object.
  */
-trait Queriable[T <: AnyRef { val id: UUID; val name: String },
-                Y <: AnyRef { val name: String }] {
+trait Queriable[T <: Entity, Y <: NewEntity]{
 
   /**
    * This trait is used by entity models with Tables of type T.
@@ -39,12 +39,40 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
   def returnID = * returning id
 
   /**
-   * All entities must have both a UUID id, and a
+   * All entity tables must have both a UUID id, and a
    * String name.
    * @return
    */
   def id: Column[UUID]
   def name: Column[String]
+
+  /**
+   * Queriables must have some method that checks a string to
+   * determine if it's a valid id or not.
+   * @param id
+   * @return
+   */
+  def vidP(id: String): Boolean
+
+  /**
+   * Queriables must havea  string -> uuid conversion.
+   */
+  def uuid(id: String): UUID
+
+  /**
+   * Queriables must have a method that returns a new
+   * valid UUID
+   * @return
+   */
+  def newId: UUID
+
+  /**
+   * All Queriables should have a method mapping a NewEntity class
+   * to an Entity class.
+   * @param item
+   * @return
+   */
+  def mapToEntity(item: Y, nid: UUID): T
 
   /**
    * This method maps an entity to its new case class.
@@ -53,6 +81,16 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
    * @return
    */
   def mapToNew(id: UUID) : Y
+
+  /**
+   *
+   * @param id
+   * @return
+   */
+  def mapToNew(id: AnyRef): Y = id match {
+    case id: String => mapToNew(uuid(id))
+    case id: UUID => mapToNew(id)
+  }
 
   /**
    * Return the UUID of the entity with this name in this table.
@@ -118,14 +156,28 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
 
   /**
    * To use this generalized insert trait, you need to pass
-   * the correct case class T into it. That means that the model
+   * the correct case class T into it.
+   */
+  def insert(item: T): UUID = {
+      DB.withSession {
+        implicit session: Session =>
+          returnID.insert(item)
+      }
+    }
+
+  /**
+   * To use this generalized insert trait, you need to pass
+   * the correct 'New' case class Y into it. That means that the model
    * needs to implement its own mapping from user inputs to
    * case class.
    */
-  def insert(item: T) = DB.withSession {
-    implicit session: Session =>
-      returnID.insert(item)
+  def insert(item: Y, nid: UUID = newId): UUID = {
+    DB.withSession {
+      implicit session: Session =>
+        returnID.insert(mapToEntity(item, nid))
     }
+  }
+
 
   /**
    * Same as insert above. Need to map your inputs to the correct
@@ -153,34 +205,6 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
   def mapIdToName: Map[String, String] = DB.withSession {
     implicit session: Session =>
       Query(this).list.map(item => (item.id.toString, item.name)).toMap
-  }
-
-  /**
-   * UUID string to UUID.
-   */
-  def uuid(id: String): UUID = {
-    Config.pkGenerator.fromString(id)
-  }
-
-  /**
-   * Shortcut to validate uuid strings.
-   * @param id
-   * @return
-   */
-  def vidP(id: String) = Config.pkGenerator.validP(id)
-
-  /**
-   * Helper for generating a current time.
-   */
-  def currentTimestamp: Timestamp = {
-    new Timestamp((new Date()).getTime())
-  }
-
-  /**
-   * Helper for generating a new UUID.
-   */
-  def newId: UUID = {
-    Config.pkGenerator.newKey
   }
 
   /**

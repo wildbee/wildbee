@@ -9,22 +9,29 @@ import java.sql.Timestamp
 import java.util.Date
 import scala.language.postfixOps
 
-case class NewTask(name: String, owner: String, workflow: String)
+case class NewTask(name: String, owner: String, workflow: String) extends NewEntity
 case class Task(id: UUID, name: String, owner: UUID,
-  creationTime: Timestamp, workflow: UUID, lastUpdated: Timestamp)
+  created: Timestamp, workflow: UUID, updated: Timestamp) extends Entity with Timekeeping
 
-object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] {
-  def id = column[UUID]("id", O.PrimaryKey)
-  def name = column[String]("name")
+object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] with EntityTable[Task] with TimekeepingTable[Task]{
   def owner = column[UUID]("owner_id")
-  def creationTime = column[Timestamp]("creation_time", O.NotNull)
-  def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
   def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)
   def workflow = column[UUID]("workflow_id")
   def uniqueName = index("idx_name", name, unique = true)
 
-  def * = id ~ name ~ owner ~ creationTime ~ workflow ~ lastUpdated <> (Task, Task.unapply _)
-  private def autoId = id ~ name ~ owner ~ creationTime ~ lastUpdated returning id
+  def * = id ~ name ~ owner ~ created ~ workflow ~ updated <> (Task, Task.unapply _)
+  private def autoId = id ~ name ~ owner ~ created ~ updated returning id
+
+
+  def mapToEntity(t: NewTask, nid: UUID = newId): Task = {
+    Task(
+      nid,
+      t.name,
+      uuid(t.owner),
+      currentTimestamp,
+      uuid(t.workflow),
+      currentTimestamp)
+  }
 
   def mapToNew(id: UUID): NewTask = {
     val t = find(id)
@@ -35,11 +42,6 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] {
   def currentTime = {
     def date = new java.util.Date()
     new Timestamp(date.getTime())
-  }
-
-  def getTaskMap: Map[String, String] = DB.withSession {
-    implicit session: Session =>
-      Query(Tasks).list.map(t => (t.id.toString, t.name)).toMap
   }
 
   def insertWithId(id: UUID, t: NewTask): UUID = {
@@ -59,7 +61,7 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] {
   def update(name: String): Unit = DB.withSession {
     implicit session: Session =>
       val task = Tasks filter (_.name === name)
-      task map (_.lastUpdated) update (currentTime)
+      task map (_.updated) update (currentTime)
   }
 
   def delete(task: String): Unit = DB.withSession {

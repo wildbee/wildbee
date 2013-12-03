@@ -6,9 +6,9 @@ import play.api.Play.current
 import java.util.UUID
 import helpers._
 
-case class NewUser(name: String, email: String)
+case class NewUser(name: String, email: String) extends NewEntity
 
-case class User(id: UUID, name: String, email: String)
+case class User(id: UUID, name: String, email: String) extends Entity
 
 /**
  * Entity model for wildbee_user
@@ -16,9 +16,7 @@ case class User(id: UUID, name: String, email: String)
  * Note: cannot name the table as simply 'user' since it conflicts
  * with the 'user' table already created in the database by default
  */
-object Users extends Table[User]("users")  with Queriable[User, NewUser]{
-  def id = column[UUID]("id", O.PrimaryKey)
-  def name = column[String]("name")
+object Users extends Table[User]("users")  with Queriable[User, NewUser] with EntityTable[User] {
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
   def * = id ~ name ~ email <>(User, User.unapply _)
@@ -27,6 +25,10 @@ object Users extends Table[User]("users")  with Queriable[User, NewUser]{
   def insert(name: String, email: String) = DB.withSession {
     implicit session: Session =>
       autoEmail.insert(Config.pkGenerator.newKey, name, email)
+  }
+
+  def mapToEntity(u: NewUser, nid: UUID = newId): User = {
+    User(nid, u.name, u.email)
   }
 
   def mapToNew(id: UUID): NewUser = {

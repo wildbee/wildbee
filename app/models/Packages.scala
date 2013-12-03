@@ -19,7 +19,7 @@ case class NewPackage(
   assignee: String,
   ccList: String = "None",
   status: String = "None",
-  osVersion: String)
+  osVersion: String) extends NewEntity
 
 /**
  * This is the main case class that we will map projections to.
@@ -34,23 +34,19 @@ case class Package(
   status: UUID,
   osVersion: String,
   created: java.sql.Timestamp,
-  updated: java.sql.Timestamp)
+  updated: java.sql.Timestamp) extends Entity with Timekeeping
 
 /**
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] {
-  def id = column[UUID]("id", O.PrimaryKey)
-  def name = column[String]("name")
+object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] with EntityTable[Package] with TimekeepingTable[Package] {
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
   def ccList = column[String]("cc_list", O.Default("None"))
   def status = column[UUID]("status")
   def osVersion = column[String]("os_version")
-  def creationTime = column[Timestamp]("creation_time", O.NotNull)
-  def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
   def belongsToTask = foreignKey("task_fk", task, Tasks)(_.id)
   def createdBy = foreignKey("creator_fk", creator, Users)(_.id)
   def assignedTo = foreignKey("assignee_fk", assignee, Users)(_.id)
@@ -59,10 +55,10 @@ object Packages extends Table[Package]("packages") with Queriable[Package,NewPac
    * The default projection is mapped to the Package case class.
    */
   def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ creationTime ~ lastUpdated <> (Package, Package.unapply _))
+    status ~ osVersion ~ created ~ updated <> (Package, Package.unapply _))
 
   def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ creationTime ~ lastUpdated returning id
+    status ~ osVersion ~ created ~ updated returning id
 
   def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
     ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
@@ -76,25 +72,37 @@ object Packages extends Table[Package]("packages") with Queriable[Package,NewPac
   /**
    * Call this if you want to explicitly set your own id.
    */
-  def insertWithId(id: UUID, p: NewPackage): UUID =
-    Packages.insert(Package(
-      id,
-      p.name,
-      uuid(p.task),
-      uuid(p.creator),
-      uuid(p.assignee),
-      p.ccList,
-      Tasks.getStartingStatus(uuid(p.task)),
-      p.osVersion,
-      currentTimestamp,
-      currentTimestamp))
+//  def insertWithId(id: UUID, p: NewPackage): UUID =
+//    Packages.insert(Package(
+//      id,
+//      p.name,
+//      uuid(p.task),
+//      uuid(p.creator),
+//      uuid(p.assignee),
+//      p.ccList,
+//      Tasks.getStartingStatus(uuid(p.task)),
+//      p.osVersion,
+//      currentTimestamp,
+//      currentTimestamp))
+
+  def mapToEntity(p: NewPackage, nid: UUID = newId): Package =
+    Package(nid,
+    p.name,
+    uuid(p.task),
+    uuid(p.creator),
+    uuid(p.assignee),
+    p.ccList,
+    Tasks.getStartingStatus(uuid(p.task)),
+    p.osVersion,
+    currentTimestamp,
+    currentTimestamp)
 
   /**
    * Call this to auto-create id.
    */
-  def insert(p: NewPackage): UUID = {
-    insertWithId(newId, p)
-  }
+//  def insert(p: NewPackage): UUID = {
+//    insertWithId(newId, p)
+//  }
 
   /**
    * This method returns a NewPackage type created from a queried

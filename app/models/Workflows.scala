@@ -8,18 +8,18 @@ import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
 
-case class NewWorkflow(name: String, status: List[String])
-case class Workflow(id: UUID, name: String, startStatus: UUID)
-object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,NewWorkflow] {
-  def id = column[UUID]("id", O.PrimaryKey)
-  def name = column[String]("name")
+case class NewWorkflow(name: String, status: List[String]) extends NewEntity
+case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
+object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,NewWorkflow] with EntityTable[Workflow] {
   def startStatus = column[UUID]("start_status")
-
-//  def statusFk = foreignKey("status_fk", name, AllowedStatuses)(_.workflow)
   def uniqueName = index("idx_workflow_name", name, unique = true)
 
   def * = id ~ name ~ startStatus <> (Workflow, Workflow.unapply _)
   def autoId = id ~ name ~ startStatus returning id
+
+  def mapToEntity(w: NewWorkflow, nid: UUID = newId): Workflow = {
+    Workflow(nid, w.name, uuid(w.status(0)))
+  }
 
   def mapToNew(id: UUID): NewWorkflow = {
     val w = find(id)
