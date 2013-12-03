@@ -24,18 +24,18 @@ object UsersController extends Controller {
   }
 
   def newUser() = Action { implicit request =>
-    Ok(views.html.users.newUser(userForm))
+    Ok(views.html.users.newEntity(userForm))
   }
 
   def edit(email: String) = Action { implicit request =>
     val user = Users.findByEmail(email)
     val filledForm = userForm.fill(NewUser(user.name, user.email))
-    Ok(views.html.users.editUser(filledForm, user))
+    Ok(views.html.users.edit(filledForm, user))
   }
 
   def create = Action { implicit request =>
       userForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.users.newUser(formWithErrors)),
+        formWithErrors => BadRequest(views.html.users.newEntity(formWithErrors)),
         newUser => {
           val email = Users.insert(newUser.name, newUser.email)
           Redirect(routes.UsersController.show(email))
@@ -47,7 +47,7 @@ object UsersController extends Controller {
       val user = Users.findByEmail(email)
 
       userForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.users.editUser(formWithErrors, user)),
+        formWithErrors => BadRequest(views.html.users.edit(formWithErrors, user)),
         editUser => {
           Users.update(email, editUser)
           Redirect(routes.UsersController.show(user.email))
