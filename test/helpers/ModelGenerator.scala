@@ -11,37 +11,32 @@ import scala.collection.Iterator
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
+/** Examples to get better idea of why map is needed
+ *  for (x <- integers) yield x > 0
+ *  val booleans = integers map {x => x > 0}
+ *  val booleans = (x: Int => x > 0)
+ *  val booleans = rand.nextInt > 0
+ */
 abstract class Generator[T] extends Iterator[T] {
   self =>
-  private var toggle = false
+  private var toggle = 0
   def generate: T
-  def next =  generate
-	def hasNext() = { toggle = !toggle; println(toggle); toggle }
+  def next: T =  self.generate
+	def hasNext() = { //Generate 10 T's by default
+    if (toggle <= 10) {toggle += 1; true}
+    else {toggle = 0; false}
+
+  }
+
+  /* Maybe not necessary
   override def map[S](f: T => S): Generator[S] = new Generator[S] {
     def generate = f(self.generate)
   }
   def flatMap[S](f: T => Generator[S]): Generator[S] = new Generator[S] {
     def generate = f(self.generate).generate
-  }
+  }*/
 }
 
-/** Notes
- *  TODO: Be able to generate models with something like
- *  val uuids, tasks = for {
- *    i <- 0 until 10
- *    u <- uuidFactory
- *    t <- taskFactory.withId(u)
- *  } yield (u, t)
- *
- *  Possibly Relevant Links
- *  - https://issues.scala-lang.org/browse/SI-1336
- *  - https://github.com/scala/scala/pull/1893
- *  - https://github.com/scala/scala/commit/c82ecab
- *  - http://stackoverflow.com/questions/4380831/\
- *    why-does-filter-have-to-be-defined-for-pattern-matching-in-a-for-loop-in-scala
- *
- *  But filter is defined in Tasks by slick, so what's going on?
- */
 trait ModelGenerator extends {
 		var names: Set[String] = Set()
 		def randString: String = {
@@ -50,10 +45,10 @@ trait ModelGenerator extends {
 		  else { names += name ; name }
 		}
 
+		/** Clear out information retained by the ModelGenerator */
 		def resetModelGenerator() {
 		  names = Set()
 		}
-
 
     /** Give a random integer between lo inclusive and hi exclusive*/
     def intBetween(lo: Int, hi: Int) =
@@ -142,7 +137,7 @@ trait ModelGenerator extends {
 	      val taskId =
 	        if (withId) Tasks.insertWithId(uuid, NewTask(name, userId.toString(), workflowId.toString()))
 	        else Tasks.insert(Task(uuid, name, userId, workflowId, currentTime, currentTime))
-	      Tasks find taskId
+	      Tasks.find(taskId)
       }
     }
 

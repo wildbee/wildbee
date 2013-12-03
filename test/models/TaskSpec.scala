@@ -25,8 +25,12 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
   "Task model" should {
     "be able to add a new Tasks with an ID and throw error on conflicting IDs" in
     new WithApplication(fakeAppGen) {
-      val uuids = for (i <- 0 until 10) yield uuidFactory.generate
-      val tasks = uuids map (u => taskFactory.generate(uuid=u))
+      val data =
+        for { i <- 0 until 10
+      			  u = uuidFactory.generate
+      			  t = taskFactory.generate(uuid=u, withId=true)} yield (u, t)
+      val uuids = data.map(_._1)
+      val tasks = data.map(_._2)
 
       uuids map (Tasks.find(_)) must not (throwA[NoSuchElementException])
       Tasks.findAll.size === 10
@@ -45,14 +49,12 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
       Tasks delete tasks(intBetween(0, 10)).id //must throwA[	java.util.NoSuchElementException] ??
     }
 
-    /* I want this to work
-    "This is to test Model Generator" in new WithApplication(fakeAppGen){
-      val tests =
-        for { i <- 0 until 10
-      			  u:UUID <- uuidFactory
-      			  t:Task <- taskFactory.generate(uuid=u) } yield t
-      println(tests)
-      println(tests.size)
+    /** I want this to work, right now data is receiving an iterator
+    "This is for testing" in new WithApplication(fakeAppGen){
+     val data: Vector[UUID] =
+        for { u:UUID <- uuidFactory } yield (u: UUID)
+      println("DATA ::: " + data)
+      println(data.size)
     }*/
   }
 }
