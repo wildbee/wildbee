@@ -1,4 +1,4 @@
-@(statusForm: Form[NewStatus],id: String)
+@(statusForm: Form[NewStatus],id: String)(implicit session: play.api.mvc.Session)
 
 @main("Update a Status") {
 @helpers.input_form(

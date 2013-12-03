@@ -40,7 +40,7 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable[Package] {
+object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def task = column[UUID]("task_id")
@@ -70,7 +70,8 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
   def findByTask(task: String, pack: String): Package = DB.withSession {
     implicit session: Session =>
       val t = Tasks.find(task)
-      Query(this).where(_.name === pack).where(_.task === t.id).first
+      val p = Packages.find(pack)
+      Query(this).where(_.name === p.name).where(_.task === t.id).first
   }
   /**
    * Call this if you want to explicitly set your own id.
@@ -100,7 +101,7 @@ object Packages extends Table[Package]("packages") with Queriable[Package] {
    * Package. Useful during updates to fill a form with the current
    * values.
    */
-  def mapToNewPackage(id: String): NewPackage = {
+  def mapToNew(id: UUID): NewPackage = {
     val p = find(id)
     NewPackage(
       p.name,

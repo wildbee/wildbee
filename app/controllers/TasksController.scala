@@ -16,20 +16,19 @@ object TasksController extends Controller {
       "owner" -> nonEmptyText,
       "workflow" -> nonEmptyText)(NewTask.apply)(NewTask.unapply))
 
-  def index() = Action {
+  def index() = Action { implicit request =>
     Ok(views.html.tasks.index())
   }
 
-  def show(task: String) = Action {
+  def show(task: String) = Action { implicit request =>
     Ok(views.html.tasks.show(Tasks.find(task)))
   }
 
-  def newTask() = Action {
+  def newTask() = Action { implicit request =>
     Ok(views.html.tasks.newEntity(taskForm))
   }
 
-  def create = Action {
-    implicit request =>
+  def create = Action { implicit request =>
       taskForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
         newTask => {
@@ -38,8 +37,7 @@ object TasksController extends Controller {
         })
   }
 
-  def delete(name: String) = Action {
-    implicit request =>
+  def delete(name: String) = Action { implicit request =>
       Tasks.delete(name)
       Redirect(routes.TasksController.index)
   }

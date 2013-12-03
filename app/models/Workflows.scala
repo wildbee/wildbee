@@ -10,7 +10,7 @@ import scala.language.postfixOps
 
 case class NewWorkflow(name: String, status: List[String])
 case class Workflow(id: UUID, name: String, startStatus: UUID)
-object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow] {
+object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,NewWorkflow] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def startStatus = column[UUID]("start_status")
@@ -20,6 +20,12 @@ object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow] {
 
   def * = id ~ name ~ startStatus <> (Workflow, Workflow.unapply _)
   def autoId = id ~ name ~ startStatus returning id
+
+  def mapToNew(id: UUID): NewWorkflow = {
+    val w = find(id)
+    // TODO: Add logic to grab all statuses, not just starting one.
+    NewWorkflow(w.name, List(w.startStatus.toString))
+  }
 
   def insert(w: NewWorkflow): UUID = {
     insertWithId(newId, w)

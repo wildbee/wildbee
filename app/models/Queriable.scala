@@ -14,16 +14,15 @@ import scala.language.reflectiveCalls
  * models since it will define all of the basic CRUD operations
  * in a generalized way.
  */
-trait Queriable[T <: AnyRef { val id: UUID; val name: String }] {
+trait Queriable[T <: AnyRef { val id: UUID; val name: String },
+                Y <: AnyRef { val name: String }] {
   self: Table[T] =>
 
   def id: Column[UUID]
-
   def name: Column[String]
-
   def * : scala.slick.lifted.ColumnBase[T]
-
   def returnID = * returning id
+  def mapToNew(id: UUID) : Y
 
   /**
    * Return the UUID of the entity with this name in this table.

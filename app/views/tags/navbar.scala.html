@@ -1,3 +1,4 @@
+@()(implicit session: play.api.mvc.Session)
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -14,6 +15,10 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Users<b class="caret"></b></a>
                     <ul class="dropdown-menu">
+                        @for(user <- Users.findAll) {
+                        <li><a href="@{routes.UsersController.show(user.email)}">@user.name</a></li>
+                        }
+                        <li class="divider"></li>
                         <li><a href="@routes.UsersController.newUser">Create User</a></li>
                         <li><a href="@routes.UsersController.index">View Users</a></li>
                     </ul>
@@ -32,6 +37,10 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Packages<b class="caret"></b></a>
                     <ul class="dropdown-menu">
+                        @for(pack <- Packages.findAll) {
+                            <li><a href="@{routes.PackagesController.show(pack.task.toString,pack.name)}">@pack.name</a></li>
+                        }
+                        <li class="divider"></li>
                         <li><a href="@routes.PackagesController.newPackage">Create Package</a></li>
                         <li><a href="@routes.PackagesController.index">Show Packages</a></li>
                     </ul>
@@ -48,12 +57,24 @@
                     </ul>
                 </li>
             </ul>
-            <form class="navbar-form navbar-right" action="", method="POST">
+            @if(!session.get("connected")) {
+            <form class="navbar-form navbar-right" action="@{routes.Application.signIn}", method="POST">
                 <div class="form-group">
                     <input type="text" placeholder="Email" class="form-control" name="email">
                 </div>
-                <button type="submit" class="btn btn-success">Sign in (Doesn't work!)</button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <span class="glyphicon glyphicon-log-in"></span>
+                </button>
             </form>
+            } else {
+            <div class="navbar-right">
+                <p class="navbar-text">Welcome, @session.get("connected")</p>
+                <form class="navbar-form navbar-right" action="@{routes.Application.logout}", method="POST">
+                    <button type="submit" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-log-out"></span></button>
+
+                </form>
+            </div>
+            }
         </div>
     </div>
 </div>

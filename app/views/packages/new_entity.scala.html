@@ -1,5 +1,5 @@
-@(packForm: Form[NewPackage])
+@(packForm: Form[NewPackage], statuses: Map[String,String] = Map())(implicit session: play.api.mvc.Session)
 
 @main("Add a Package") {
-@helpers.input_form(packForm)
+    @helpers.input_form(packForm, routes.PackagesController.create, statuses)
 }
