@@ -1,4 +1,4 @@
-@(statuses: List[Status], statusForm: Form[NewStatus])(implicit session: play.api.mvc.Session)
+@(statuses: List[Status], statusForm: Form[NewStatus])(implicit session: play.api.mvc.Session, flash:play.api.mvc.Flash)
 @main("Show Statuses") {
     <h1>Statuses</h1>
     <ul>

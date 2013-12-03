@@ -24,12 +24,12 @@ object PackagesController extends Controller {
   }
 
   def newPackage = Action { implicit request =>
-    Ok(views.html.packages.new_entity(packageForm))
+    Ok(views.html.packages.newEntity(packageForm))
   }
 
   def create = Action { implicit request =>
     packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.new_entity(formWithErrors)),
+      formWithErrors => BadRequest(views.html.packages.newEntity(formWithErrors)),
       pack => {
         val uuid = Packages.insert(pack)
         val newPack = Packages.find(uuid)

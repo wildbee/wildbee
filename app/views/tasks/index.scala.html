@@ -1,6 +1,6 @@
 @(tasks: List[Task] = Tasks.findAll,
   users: List[User] = Users.findAll
-)(implicit session: play.api.mvc.Session)
+)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
 
 @import helper._
 

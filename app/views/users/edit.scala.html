@@ -1,4 +1,4 @@
-@(userForm: Form[NewUser], user: User)(implicit session: play.api.mvc.Session)
+@(userForm: Form[NewUser], user: User)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
 
 @main("Product Form") {
 @helper.form(action = routes.UsersController.update(user.email)) {

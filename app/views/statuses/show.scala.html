@@ -1,4 +1,4 @@
-@(status: Status)(implicit session: play.api.mvc.Session)
+@(status: Status)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
         @main("Show Status") {
         <p>
             <h1>@status.name</h1>

@@ -1,0 +1,5 @@
+@(statusForm: Form[NewStatus])(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+
+@main("Add a Status") {
+@helpers.input_form(statusForm)
+}

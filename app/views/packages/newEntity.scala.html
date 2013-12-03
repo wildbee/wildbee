@@ -1,0 +1,5 @@
+@(packForm: Form[NewPackage])(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+
+@main("Add a Package") {
+@helpers.input_form(packForm)
+}

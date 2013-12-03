@@ -1,4 +1,4 @@
-@(packForm: Form[NewPackage], id: String)(implicit session: play.api.mvc.Session)
+@(packForm: Form[NewPackage], id: String)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
 
 @main("Update a Package") {
 	@helpers.input_form(
