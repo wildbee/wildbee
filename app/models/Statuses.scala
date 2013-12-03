@@ -7,6 +7,7 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
+import models.traits.Queriable
 
 case class NewStatus(name: String) extends NewEntity
 case class Status(id: UUID, name: String) extends Entity

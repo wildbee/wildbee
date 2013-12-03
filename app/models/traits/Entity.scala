@@ -10,19 +10,8 @@ import java.util.UUID
 import helpers._
 
 /**
- * This base abstract class represents any entity model in the db.
+ * Entity case class traits
  */
-abstract class Entity{
-  def id: UUID
-  def name: String
-}
-
-/**
- * This base abstract class represents the string/input form for an entity model in the db.
- */
-abstract class NewEntity{
-  def name: String
-}
 
 /**
  * For any entities that we wish to record times for.
@@ -31,7 +20,6 @@ trait Timekeeping {
   def created: java.sql.Timestamp
   def updated: java.sql.Timestamp
 }
-
 
 /**
  * Table object traits

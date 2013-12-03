@@ -8,6 +8,7 @@ import java.util.UUID
 import java.sql.Timestamp
 import java.util.Date
 import scala.language.postfixOps
+import models.traits.Queriable
 
 case class NewTask(name: String, owner: String, workflow: String) extends NewEntity
 case class Task(id: UUID, name: String, owner: UUID,

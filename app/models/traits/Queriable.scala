@@ -1,4 +1,4 @@
-package models
+package models.traits
 
 import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
@@ -10,6 +10,8 @@ import java.util.UUID
 import helpers._
 import scala.language.reflectiveCalls
 import scala.reflect.runtime.universe.{TypeTag, typeOf}
+import models.{EntityTable, NewEntity, Entity}
+
 /**
  * The Entity trait can be shared by entities in our
  * models since it will define all of the basic CRUD operations

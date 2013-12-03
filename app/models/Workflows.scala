@@ -7,6 +7,7 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
+import models.traits.Queriable
 
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity

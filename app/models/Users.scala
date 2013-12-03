@@ -5,6 +5,7 @@ import play.api.db.slick.DB
 import play.api.Play.current
 import java.util.UUID
 import helpers._
+import models.traits.Queriable
 
 case class NewUser(name: String, email: String) extends NewEntity
 

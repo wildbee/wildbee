@@ -8,6 +8,7 @@ import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
+import models.traits.Queriable
 
 /*
  * This class is for creating new packages from string inputs:
