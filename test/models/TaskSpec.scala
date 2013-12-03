@@ -19,20 +19,18 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
 
   def before = new WithApplication(fakeAppGen) {
     clearDB()
-    Statuses.insert(status1)
-    Users.insert(user1)
-    Workflows.insert(workflow1)
+    //resetModelGenerator()
   }
 
   "Task model" should {
     "be able to add a new Tasks with an ID and throw error on conflicting IDs" in
     new WithApplication(fakeAppGen) {
       val uuids = for (i <- 0 until 10) yield uuidFactory.generate
-      val tasks = uuids map (taskFactory.generateWithId(_))
+      val tasks = uuids map (u => taskFactory.generate(uuid=u))
 
       uuids map (Tasks.find(_)) must not (throwA[NoSuchElementException])
       Tasks.findAll.size === 10
-      taskFactory.generateWithId(uuids(randomInt(0, 10))) must throwA[PSQLException]
+      taskFactory.generate(uuid=uuids(intBetween(0, 10))) must throwA[PSQLException]
     }
 
     "be able to add Tasks without an ID" in new WithApplication(fakeAppGen) {
@@ -41,10 +39,10 @@ class TaskSpec extends Specification with TestData with BeforeExample with Model
     }
 
     "be able to delete Tasks" in new WithApplication(fakeAppGen){
-      val tasks = for (i <- 0 until 10) yield taskFactory.generate
+      val tasks = for (i <- 0 until 10) yield taskFactory.generate()
       tasks map (t => Tasks delete(t.id))
       Tasks.findAll.size === 0
-      Tasks delete tasks(randomInt(0, 10)).id //must throwA[java.util.NoSuchElementException] ??
+      Tasks delete tasks(intBetween(0, 10)).id //must throwA[java.util.NoSuchElementException] ??
     }
   }
 }

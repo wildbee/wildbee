@@ -33,16 +33,20 @@ abstract class Generator[T] extends Iterator[T] {
  *  } yield (u, t)
  */
 trait ModelGenerator extends {
+		var names: Set[String] = Set()
+		def randString: String = {
+		  val name = randomAlphanumeric(intBetween(1,10))
+		  if (names.contains(name)) randString
+		  else { names += name ; name }
+		}
 
-    def randString = () => randomAlphanumeric(randomInt(1,10))
+		def resetModelGenerator() {
+		  names = Set()
+		}
 
-    /*
-    def currentTimestamp: Timestamp = {
-    	new Timestamp((new Date()).getTime())
-    }*/
 
     /** Give a random integer between lo inclusive and hi exclusive*/
-    def randomInt(lo: Int, hi: Int) =
+    def intBetween(lo: Int, hi: Int) =
       lo + nextInt().abs % (hi - lo)
 
     /** Random uuid generator */
@@ -50,55 +54,85 @@ trait ModelGenerator extends {
   		def generate = Config.pkGenerator.newKey
   	}
 
-  	/** User Generator */
+  	/** User Generator
+  	 *  Options
+  	 *  uuid: Specify a UUID for your new user
+  	 *  name: Specify a name for your new user
+  	 *  email: Specify a email address for your new user
+  	 *  withId: Choose if you want to use the withId implementation
+  	 */
     def userFactory = new Generator[User] {
-      def generate() = generate(randString(), randString() + "@" + randString(), uuidFactory.generate)
-      def generate (name: String, email: String, uuid: UUID) ={
-        val userId = Users.insert(User(uuid, name, email))
+      def generate() = generate(email=(randString + "@" + randString))
+      def generate (uuid: UUID=uuidFactory.generate,name: String=randString,
+          email: String, withId: Boolean=false) = {
+        val userId =
+          if (withId) Users.insertWithId(uuid, NewUser(name, email))
+          else Users.insert(User(uuid, name, email))
         Users find userId
       }
   	}
 
-    /** Status Generator */
+    /** Status Generator
+     *  Options
+     *  uuid: Specify a UUID for your new status
+     *  name: Specify a name for your new status
+     *  withId: Choose if you want to use the withId implementation
+     */
     def statusFactory = new Generator[Status] {
-    	def generate() = generate(randString())
-    	def generate(name: String, uuid: UUID = uuidFactory.generate) = {
-    	  val statusId = Statuses.insert(Status(uuid, name))
+    	def generate() = generate(uuid=uuidFactory.generate)
+    	def generate(uuid: UUID = uuidFactory.generate, name: String=randString, withId: Boolean=false) = {
+    	  val statusId =
+    	    if (withId) Statuses.insertWithId(uuid, NewStatus(name))
+    	    else Statuses.insert(Status(uuid, name))
     	  Statuses find statusId
     	}
     }
 
    /** Workflow Generator
-    *  Also generates a random status since is required by workflow
+    *  Default Usage Side Effects
+    *  1. Generates status
+    *  ===========================
+    *  Options
+    *  uuid: Specify a UUID for your new workflow
+    *  name: Specify a name for your new workflow
+    *  statusId: Specify which default status ID to use with your workflow
+    *  withId: Choose if you want to use the withId implementation
     */
     def workflowFactory() = new Generator[Workflow] {
-      def generate() = generate(randString(), uuidFactory.generate, uuidFactory.generate)
-      def generate(name: String, statusId: UUID, uuid: UUID = uuidFactory.generate) = {
-        val statusId = statusFactory.generate.id
-        val workflowId = Workflows.insert(Workflow(uuid, name, statusId))
+      def generate() = generate(uuid=uuidFactory.generate)
+      def generate(uuid: UUID = uuidFactory.generate, name: String=randString,
+          statusId: UUID=statusFactory.generate.id, withId: Boolean=false) = {
+        val workflowId =
+          if(withId) Workflows.insertWithId(uuid, NewWorkflow(name, List(statusId.toString())))
+          else Workflows.insert(Workflow(uuid, name, statusId))
         Workflows find workflowId
       }
     }
 
     /** Task Generator
+     *  Default Usage Side Effects
      *  1. Generates user
      *  2. Generates status
      *  3. Generates workflow
-     *  Three additional generations requires by task
+     *	========================
+     *  Options
+     *  uuid: Specify a UUID for your new task
+     *  name: Specify a name for your new task
+     *  userId: Specify which user the task should be assigned to by a user id
+     *  workflowId: Specify which workflow the task should be assigned to by using a workflow if
+     *  currentTime: Specify the timestamp for your task
+     *  withId: Choose if you want to use the withId implementation
      */
     def taskFactory = new Generator[Task] {
-      def generate() = generate(randString(), uuidFactory.generate)
-      def generate(name: String, uuid: UUID, withId: Boolean = false) = {
-	      val userId = userFactory.generate.id
-	      val workflowId = workflowFactory.generate.id
-	      val currentTime = Tasks.currentTimestamp
+      def generate(): Task = generate(uuid=uuidFactory.generate)
+      def generate(
+          uuid: UUID = uuidFactory.generate, name: String = randString,
+          userId: UUID = userFactory.generate.id, workflowId: UUID = workflowFactory.generate.id,
+          currentTime: Timestamp = Tasks.currentTimestamp, withId: Boolean = false): Task = {
 	      val taskId =
 	        if (withId) Tasks.insertWithId(uuid, NewTask(name, userId.toString(), workflowId.toString()))
 	        else Tasks.insert(Task(uuid, name, userId, workflowId, currentTime, currentTime))
 	      Tasks find taskId
-      }
-      def generateWithId(uuid: UUID, name: String = randString()) = {
-      	generate(name, uuid, true)
       }
     }
 

@@ -34,6 +34,10 @@ object Users extends Table[User]("users")  with Queriable[User, NewUser]{
     NewUser(u.name, u.email)
   }
 
+ def insertWithId(id: UUID, u: NewUser): UUID = {
+    Users.insert(User(id, u.name, u.email))
+  }
+
   def findByEmail(email: String): User = DB.withSession {
     implicit session: Session =>
       Query(this).where(_.email === email).first
