@@ -9,12 +9,13 @@ import play.api.test.Helpers._
 import models._
 import org.postgresql.util.PSQLException
 import helpers.Config
+import helpers.TestUtilities
 
 /**
  * Spec to test the Users model CRUD
  */
 @RunWith(classOf[JUnitRunner])
-class UsersSpec extends Specification with BeforeExample with TestData{
+class UsersSpec extends Specification with BeforeExample with TestUtilities {
 
   sequential
 

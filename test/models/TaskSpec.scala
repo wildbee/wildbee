@@ -2,8 +2,8 @@ package models
 
 import org.specs2.mutable._
 import org.specs2.runner._
-import org.junit.runner._
 import org.specs2.specification._
+import org.junit.runner._
 import play.api.test._
 import play.api.test.Helpers._
 import models._
@@ -11,9 +11,11 @@ import org.postgresql.util.PSQLException
 import helpers.Config
 import helpers.ModelGenerator
 import java.util.UUID
+import helpers.TestUtilities
 
 @RunWith(classOf[JUnitRunner])
-class TaskSpec extends Specification with TestData with BeforeExample with ModelGenerator {
+class TaskSpec extends Specification with TestUtilities with BeforeExample with ModelGenerator {
+
   sequential
 
   def before = new WithApplication(fakeAppGen) {
