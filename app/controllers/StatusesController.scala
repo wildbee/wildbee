@@ -46,7 +46,7 @@ object StatusesController extends Controller {
     StatusForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
       updatedStatus => {
-        Statuses.update(oldStatus.id, Statuses.mapToEntity(updatedStatus))
+        Statuses.update(Statuses.mapToEntity(updatedStatus, oldStatus.id))
         Redirect(routes.StatusesController.show(oldStatus.id.toString))
       })
   }

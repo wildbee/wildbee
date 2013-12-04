@@ -58,7 +58,7 @@ object WorkflowController extends Controller {
     workForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.workflows.edit(formWithErrors,old.id.toString)),
     updatedWorkflow => {
-       Workflows.update(old.id, Workflows.mapToEntity(updatedWorkflow))
+      Workflows.update(Workflows.mapToEntity(updatedWorkflow, old.id))
       Redirect(routes.WorkflowController.show(updatedWorkflow.name))
     })
 

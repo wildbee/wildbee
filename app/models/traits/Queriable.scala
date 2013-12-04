@@ -101,10 +101,10 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
    * Same as insert above. Need to map your inputs to the correct
    * class of type T, then pass that into this method.
    */
-  def update(id: UUID, item: T) = DB.withSession {
+  def update(item: T) = DB.withSession {
     implicit session: Session =>
       tableQueryToUpdateInvoker(
-        tableToQuery(this).where(_.id === id)).update(item)
+        tableToQuery(this).where(_.id === item.id)).update(item)
   }
 
   /**
