@@ -68,7 +68,7 @@ trait ModelGenerator extends {
    *  email: Specify a email address for your new user
    */
   val userFactory = new Generator[User] {
-    def generate() = generate(email="what@what.com")
+    def generate() = generate(email = (randString + "@" + randString))
     def generate(uuid: UUID = uuidFactory.generate,
         name: String = randString, email: String = (randString + "@" + randString)) = {
       val userId = Users.insert(User(uuid, name, email))
