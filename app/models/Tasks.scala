@@ -10,20 +10,20 @@ import java.util.Date
 import scala.language.postfixOps
 
 case class NewTask(name: String, owner: String, workflow: String)
-case class Task(id: UUID, name: String, owner: UUID,
-  creationTime: Timestamp, workflow: UUID, lastUpdated: Timestamp)
+case class Task(id: UUID, name: String, owner: UUID, workflow: UUID,
+  creationTime: Timestamp, lastUpdated: Timestamp)
 
-object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] {
+object Tasks extends Table[Task]("tasks") with Queriable[Task, NewTask] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def owner = column[UUID]("owner_id")
   def creationTime = column[Timestamp]("creation_time", O.NotNull)
   def lastUpdated = column[Timestamp]("last_updated", O.NotNull)
-  def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)
   def workflow = column[UUID]("workflow_id")
   def uniqueName = index("idx_name", name, unique = true)
+  def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)
 
-  def * = id ~ name ~ owner ~ creationTime ~ workflow ~ lastUpdated <> (Task, Task.unapply _)
+  def * = id ~ name ~ owner ~ workflow ~ creationTime ~ lastUpdated <> (Task, Task.unapply _)
   private def autoId = id ~ name ~ owner ~ creationTime ~ lastUpdated returning id
 
   def mapToNew(id: UUID): NewTask = {
@@ -43,13 +43,7 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] {
   }
 
   def insertWithId(id: UUID, t: NewTask): UUID = {
-    Tasks.insert(Task(
-      id,
-      t.name,
-      uuid(t.owner),
-      currentTimestamp,
-      uuid(t.workflow),
-      currentTimestamp))
+    Tasks.insert(Task(id, t.name, uuid(t.owner), uuid(t.workflow), currentTimestamp, currentTimestamp))
   }
 
   def insert(t: NewTask): UUID = {
