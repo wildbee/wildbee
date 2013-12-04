@@ -13,6 +13,5 @@ trait TestUtilities {
     Statuses.deleteAll
     Tasks.deleteAll
     Users.deleteAll
-
   }
 }

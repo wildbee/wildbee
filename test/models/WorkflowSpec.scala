@@ -26,7 +26,7 @@ class WorkflowSpec extends Specification with TestUtilities with BeforeExample w
         for {
           i <- 0 until 10
           u = uuidFactory.generate
-          w = workflowFactory.generate(uuid = u, withId = true)
+          w = workflowFactory.generate(uuid = u)
         } yield (u, t)
 
       val uuids = data.map(_._1)

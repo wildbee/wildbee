@@ -27,7 +27,7 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
           for {
             i <- 0 until 10
             u = uuidFactory.generate
-            t = taskFactory.generate(uuid = u, withId = true)
+            t = taskFactory.generate(uuid = u)
           } yield (u, t)
         val uuids = data.map(_._1)
         val tasks = data.map(_._2)

@@ -26,7 +26,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
         for {
           i <- 0 until 10
           u = uuidFactory.generate
-          w = packageFactory.generate(uuid = u, withId = true)
+          w = packageFactory.generate(uuid = u)
         } yield (u, t)
 
       val uuids = data.map(_._1)
