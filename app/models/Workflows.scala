@@ -48,7 +48,14 @@ object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,Ne
         (Workflows filter (_.name === name)).delete
         None
       }
+  }
 
+  /** Define own deleteAll since we want to delete transistions also */
+  override def deleteAll() = DB.withSession {
+    implicit session: Session =>
+      val allNames= this.findAll map (_.name)
+      allNames map (name => Transitions.delete(nameToId(name)))
+      queryToDeleteInvoker(tableToQuery(this)) delete
   }
 
   def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) ={

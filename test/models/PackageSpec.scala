@@ -43,7 +43,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
 
     "be able to delete workflows" in new WithApplication(fakeAppGen){
       val packages = for (i <- 0 until 10) yield packageFactory.generate
-      packages map (w => Workflows delete (w.id))
+      packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
     }
   }

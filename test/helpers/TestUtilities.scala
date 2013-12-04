@@ -8,11 +8,11 @@ trait TestUtilities {
   "db.default.url" -> "jdbc:postgresql://localhost/wildbeehivetest"))
 
   def clearDB() { //Order Matters
-    Transitions.deleteAll
+    Packages.deleteAll
     Workflows.deleteAll
     Statuses.deleteAll
     Tasks.deleteAll
     Users.deleteAll
-    Packages.deleteAll
+
   }
 }
