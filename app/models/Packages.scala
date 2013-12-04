@@ -58,84 +58,40 @@ object Packages extends Table[Package]("packages") with Queriable[Package,NewPac
   def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ created ~ updated <> (Package, Package.unapply _))
 
-  def autoId = id ~ name ~ task ~ creator ~ assignee ~ ccList ~
-    status ~ osVersion ~ created ~ updated returning id
-
   def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
     ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
 
+  /**
+   * Packages do not have unique names and instead need to be queried
+   * by both their task and their package name.
+   * @param task
+   * @param pack
+   * @return The queried package
+   */
   def findByTask(task: String, pack: String): Package = DB.withSession {
     implicit session: Session =>
       val t = Tasks.find(task)
       val p = Packages.find(pack)
       Query(this).where(_.name === p.name).where(_.task === t.id).first
   }
-  /**
-   * Call this if you want to explicitly set your own id.
-   */
-//  def insertWithId(id: UUID, p: NewPackage): UUID =
-//    Packages.insert(Package(
-//      id,
-//      p.name,
-//      uuid(p.task),
-//      uuid(p.creator),
-//      uuid(p.assignee),
-//      p.ccList,
-//      Tasks.getStartingStatus(uuid(p.task)),
-//      p.osVersion,
-//      currentTimestamp,
-//      currentTimestamp))
 
+  /**
+   * Implements the Queriable trait's mapToEntity method.
+   * @param p
+   * @param nid
+   * @return
+   */
   def mapToEntity(p: NewPackage, nid: UUID = newId): Package =
-    Package(nid,
-    p.name,
-    uuid(p.task),
-    uuid(p.creator),
-    uuid(p.assignee),
-    p.ccList,
-    Tasks.getStartingStatus(uuid(p.task)),
-    p.osVersion,
-    currentTimestamp,
-    currentTimestamp)
+    Package(nid, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee),
+    p.ccList, Tasks.getStartingStatus(uuid(p.task)), p.osVersion,
+    currentTimestamp, currentTimestamp)
 
   /**
-   * Call this to auto-create id.
-   */
-//  def insert(p: NewPackage): UUID = {
-//    insertWithId(newId, p)
-//  }
-
-  /**
-   * This method returns a NewPackage type created from a queried
-   * Package. Useful during updates to fill a form with the current
-   * values.
+   * Implements the Queriable trait's mapToNew method.
    */
   def mapToNew(id: UUID): NewPackage = {
     val p = find(id)
-    NewPackage(
-      p.name,
-      p.task.toString,
-      p.creator.toString,
-      p.assignee.toString,
-      p.ccList,
-      p.status.toString,
-      p.osVersion)
+    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
+      p.ccList, p.status.toString, p.osVersion)
   }
-
-  /**
-   * This method maps from NewPackage to Package in order to
-   * create an update.
-   */
-  def updatePackage(id: UUID, p: NewPackage, o: Package) =
-    update(id, Package(
-      id,
-      p.name,
-      uuid(p.task),
-      uuid(p.creator),
-      uuid(p.assignee),
-      p.ccList,
-      uuid(p.status),
-      p.osVersion,
-      o.created,
-      currentTimestamp))
 }

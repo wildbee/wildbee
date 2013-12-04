@@ -45,8 +45,8 @@ object StatusesController extends Controller {
     val oldStatus = Statuses.find(id)
     StatusForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
-      updatedPack => {
-        Statuses.updateStatus(oldStatus.id, updatedPack, oldStatus)
+      updatedStatus => {
+        Statuses.update(oldStatus.id, Statuses.mapToEntity(updatedStatus))
         Redirect(routes.StatusesController.show(oldStatus.id.toString))
       })
   }

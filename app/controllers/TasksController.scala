@@ -24,7 +24,7 @@ object TasksController extends Controller {
     Ok(views.html.tasks.show(Tasks.find(task)))
   }
 
-  def newTask() = Action { implicit request =>
+  def newTask = Action { implicit request =>
     Ok(views.html.tasks.newEntity(taskForm))
   }
 

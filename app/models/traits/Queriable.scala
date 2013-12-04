@@ -110,11 +110,23 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
   /**
    * Delete an entity from its table.
    */
-  def delete(id: UUID) = DB.withSession {
-    implicit session: Session =>
+  def delete(eid: AnyRef) = {
+    def del(id: UUID) = DB.withSession {
+      implicit session: Session =>
       queryToDeleteInvoker(
         tableToQuery(this).where(_.id === id)).delete
   }
+    eid match {
+      case eid : UUID => del(eid)
+      case eid : String => {
+        if (vidP(eid)) {
+          del(uuid(eid))
+        } else {
+          del(findByName(eid).id)
+        }
+      }
+    }
+}
 
   /**
    * A map of UUID to name for all entities in the table. Useful for filling out

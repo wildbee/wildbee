@@ -83,6 +83,28 @@ trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
   }
 }
 
+trait UniquelyNamedTable[T <: Entity, Y <: NewEntity] {
+  /**
+   * This trait is used by entity models with Tables of type T with EntityTable trait of type T.
+   */
+  self: Table[T] with EntityTable[T, Y] =>
+
+  /**
+   * Specifies that this Entity table has unique name constraint.
+   * @return
+   */
+  def uniqueName = index("idx_name_" + idxName, name, unique = true)
+
+  /**
+   * Simply finds the suffix for idx_name by grabbing the table name
+   * as a string.
+   * @return
+   */
+  private def idxName =
+    this.getClass.getName.toString.toLowerCase.
+      replace("$","").replace("models.","")
+}
+
 /**
  * Used by models that keep time in their respective db table.
  * @tparam T

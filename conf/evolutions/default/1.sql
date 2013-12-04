@@ -5,9 +5,9 @@
 
 create table "packages" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"task_id" UUID NOT NULL,"creator_id" UUID NOT NULL,"assignee_id" UUID NOT NULL,"cc_list" VARCHAR(254) DEFAULT 'None' NOT NULL,"status" UUID NOT NULL,"os_version" VARCHAR(254) NOT NULL,"created" TIMESTAMP NOT NULL,"updated" TIMESTAMP NOT NULL);
 create table "statuses" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL);
-create unique index "idx_status_name" on "statuses" ("name");
+create unique index "idx_name_statuses" on "statuses" ("name");
 create table "tasks" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"owner_id" UUID NOT NULL,"created" TIMESTAMP NOT NULL,"workflow_id" UUID NOT NULL,"updated" TIMESTAMP NOT NULL);
-create unique index "idx_name" on "tasks" ("name");
+create unique index "idx_name_tasks" on "tasks" ("name");
 create table "transitions" ("id" UUID NOT NULL PRIMARY KEY,"workflow" UUID NOT NULL,"state" UUID NOT NULL,"next_state" UUID NOT NULL);
 create table "users" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL);
 create unique index "idx_email" on "users" ("email");
