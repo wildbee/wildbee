@@ -19,8 +19,7 @@ object Transitions extends Table[Transition]("transitions") {
   def autoId = id ~ workflow ~ presentState ~ futureState returning id
 
   def getLogic(workflow: UUID): Map[UUID, List[UUID]] = DB.withSession {
-    implicit session: Session =>
-      {
+    implicit session: Session => {
         val transistions = Transitions
           .filter(_.workflow === workflow)
           .map(w => (w.presentState, w.futureState))
@@ -32,6 +31,13 @@ object Transitions extends Table[Transition]("transitions") {
 
         transistionMapping
       }
+  }
+
+  /** Get all possible statuses for a workflow mapping for statuses UUID to statuses name */
+  def transitionMap(workflow: UUID): Map[String, String] ={
+    val logic = getLogic(workflow)
+    val statuses = logic.keys map( id => (id.toString, Statuses.idToName(id)) )
+    statuses.toMap
   }
 
   /** In this case update is just re-creating the workflow */

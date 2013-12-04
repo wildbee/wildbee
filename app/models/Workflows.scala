@@ -23,8 +23,9 @@ object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,Ne
 
   def mapToNew(id: UUID): NewWorkflow = {
     val w = find(id)
-    // TODO: Add logic to grab all statuses, not just starting one.
-    NewWorkflow(w.name, List(w.startStatus.toString))
+    val transitions = Transitions.transitionMap(id)
+    val statuses = (transitions.keys map (_.toString) ).toList
+    NewWorkflow(w.name, statuses)
   }
 
   def insert(w: NewWorkflow): UUID = {
@@ -42,6 +43,8 @@ object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,Ne
       Workflows filter (_.name === name) delete
   }
 
-  def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) =
+  def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) ={
+    Transitions.create(id, w.status)
     update(id, Workflow(id, w.name, uuid(w.status(0))))
+  }
 }
