@@ -10,18 +10,6 @@ import java.util.UUID
 import helpers._
 
 /**
- * Entity case class traits
- */
-
-/**
- * For any entities that we wish to record times for.
- */
-trait Timekeeping {
-  def created: java.sql.Timestamp
-  def updated: java.sql.Timestamp
-}
-
-/**
  * Table object traits
  */
 
@@ -29,7 +17,7 @@ trait Timekeeping {
  * Main trait for any entity model table.
  * @tparam T
  */
-trait EntityTable[T <: Entity] extends Table[T] {
+trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
 
@@ -51,6 +39,33 @@ trait EntityTable[T <: Entity] extends Table[T] {
    */
   def uuid(id: String): UUID = {
     Config.pkGenerator.fromString(id)
+  }
+
+  /**
+   * All entity table types should implement a method mapping a NewEntity class
+   * to an Entity class.
+   * @param item
+   * @return
+   */
+  def mapToEntity(item: Y, nid: UUID): T
+
+  /**
+   * Must implement a method to map from an entity to a NewEntity.
+   * Used to pack forms for updates.
+   * @param id
+   * @return
+   */
+  def mapToNew(id: UUID) : Y
+
+  /**
+   * This wrapper for mapToNew just handles the pattern matching
+   * for passing in a string id or a UUID id.
+   * @param id
+   * @return
+   */
+  def mapToNew(id: AnyRef): Y = id match {
+    case id: String => mapToNew(uuid(id))
+    case id: UUID => mapToNew(id)
   }
 
   /**

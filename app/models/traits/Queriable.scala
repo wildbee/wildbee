@@ -25,33 +25,7 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
   /**
    * This trait is used by entity models with Tables of type T with EntityTable trait of type T.
    */
-  self: Table[T] with EntityTable[T] =>
-
-  /**
-   * All Queriables should have a method mapping a NewEntity class
-   * to an Entity class.
-   * @param item
-   * @return
-   */
-  def mapToEntity(item: Y, nid: UUID): T
-
-  /**
-   * This method maps an entity to its new case class.
-   * Used to pack forms for updates.
-   * @param id
-   * @return
-   */
-  def mapToNew(id: UUID) : Y
-
-  /**
-   *
-   * @param id
-   * @return
-   */
-  def mapToNew(id: AnyRef): Y = id match {
-    case id: String => mapToNew(uuid(id))
-    case id: UUID => mapToNew(id)
-  }
+  self: Table[T] with EntityTable[T, Y] =>
 
   /**
    * Return the UUID of the entity with this name in this table.
@@ -79,20 +53,6 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
   }
 
   /**
-   * Find entity by its id.
-   */
-  def findById(id: AnyRef): T = {
-    def get(id: UUID): T = DB.withSession {
-      implicit session: Session =>
-        Query(this).where(_.id === id).first
-    }
-    id match {
-      case id: String => get(uuid(id))
-      case id: UUID => get(id)
-    }
-  }
-
-  /**
    * General find query searches by id if given a
    * valid UUID (in UUID or string format), or by
    * name if given a non-uuid string.
@@ -111,13 +71,9 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
   }
 
   /**
-   * Find an entity by name rather then by UUID.
-   */
-  def findByName(name: String): T = findById(nameToId(name))
-
-  /**
-   * To use this generalized insert trait, you need to pass
-   * the correct case class T into it.
+   * Inserts this entity item into the database table.
+   * @param item An Entity item.
+   * @return The UUID of the item.
    */
   def insert(item: T): UUID = {
       DB.withSession {
@@ -127,10 +83,12 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
     }
 
   /**
-   * To use this generalized insert trait, you need to pass
-   * the correct 'New' case class Y into it. That means that the model
-   * needs to implement its own mapping from user inputs to
-   * case class.
+   * Insert a new entity into the db table created from the values
+   * in the NewEntity type item. If an UUID is not specified, an id
+   * will be generated inside the mapToEntity item.
+   * @param item A NewEntity containing values to insert.
+   * @param nid an explicit UUID to use.
+   * @return the UUID of the new item.
    */
   def insert(item: Y, nid: UUID = newId): UUID = {
     DB.withSession {
@@ -138,7 +96,6 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
         returnID.insert(mapToEntity(item, nid))
     }
   }
-
 
   /**
    * Same as insert above. Need to map your inputs to the correct
@@ -160,7 +117,7 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
   }
 
   /**
-   * A map of UUID to name. Useful for filling out
+   * A map of UUID to name for all entities in the table. Useful for filling out
    * combo boxes in forms, for example.
    */
   def mapIdToName: Map[String, String] = DB.withSession {
@@ -175,4 +132,23 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
     implicit session: Session =>
         tableToQuery(this).delete
   }
+
+  /**
+   * Find entity by its id.
+   */
+  private def findById(id: AnyRef): T = {
+    def get(id: UUID): T = DB.withSession {
+      implicit session: Session =>
+        Query(this).where(_.id === id).first
+    }
+    id match {
+      case id: String => get(uuid(id))
+      case id: UUID => get(id)
+    }
+  }
+
+  /**
+   * Find an entity by name rather then by UUID.
+   */
+  private def findByName(name: String): T = findById(nameToId(name))
 }

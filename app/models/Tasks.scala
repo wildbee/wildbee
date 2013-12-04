@@ -14,7 +14,7 @@ case class NewTask(name: String, owner: String, workflow: String) extends NewEnt
 case class Task(id: UUID, name: String, owner: UUID,
   created: Timestamp, workflow: UUID, updated: Timestamp) extends Entity with Timekeeping
 
-object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] with EntityTable[Task] with TimekeepingTable[Task]{
+object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] with EntityTable[Task, NewTask] with TimekeepingTable[Task]{
   def owner = column[UUID]("owner_id")
   def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)
   def workflow = column[UUID]("workflow_id")
@@ -76,7 +76,7 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task,NewTask] with Enti
    * @return
    */
   def getStartingStatus(id: UUID): UUID = {
-    val workflow = Tasks.findById(id).workflow
-    Workflows.findById(workflow).startStatus
+    val workflow = Tasks.find(id).workflow
+    Workflows.find(workflow).startStatus
   }
 }

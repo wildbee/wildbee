@@ -41,7 +41,7 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] with EntityTable[Package] with TimekeepingTable[Package] {
+object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] with EntityTable[Package, NewPackage] with TimekeepingTable[Package] {
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")

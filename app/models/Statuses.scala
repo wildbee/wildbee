@@ -11,7 +11,7 @@ import models.traits.Queriable
 
 case class NewStatus(name: String) extends NewEntity
 case class Status(id: UUID, name: String) extends Entity
-object Statuses extends Table[Status]("statuses") with Queriable[Status, NewStatus] with EntityTable[Status]{
+object Statuses extends Table[Status]("statuses") with Queriable[Status, NewStatus] with EntityTable[Status, NewStatus]{
   def uniqueName = index("idx_status_name", name, unique = true)
   def * = id ~ name  <> (Status, Status.unapply _)
   def autoId = id ~ name returning id
@@ -35,7 +35,7 @@ object Statuses extends Table[Status]("statuses") with Queriable[Status, NewStat
 
 
   def mapToNewStatus(id: String): NewStatus = {
-    val s = findById(id)
+    val s = find(id)
     NewStatus(s.name)
   }
 

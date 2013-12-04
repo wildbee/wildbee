@@ -17,7 +17,7 @@ case class User(id: UUID, name: String, email: String) extends Entity
  * Note: cannot name the table as simply 'user' since it conflicts
  * with the 'user' table already created in the database by default
  */
-object Users extends Table[User]("users")  with Queriable[User, NewUser] with EntityTable[User] {
+object Users extends Table[User]("users")  with Queriable[User, NewUser] with EntityTable[User, NewUser] {
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
   def * = id ~ name ~ email <>(User, User.unapply _)

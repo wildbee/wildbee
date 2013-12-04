@@ -42,7 +42,7 @@ object StatusesController extends Controller {
   }
 
   def update(id: String) = Action { implicit request =>
-    val oldStatus = Statuses.findById(id)
+    val oldStatus = Statuses.find(id)
     StatusForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
       updatedPack => {

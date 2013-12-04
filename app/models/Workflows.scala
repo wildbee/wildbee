@@ -11,7 +11,7 @@ import models.traits.Queriable
 
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
-object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,NewWorkflow] with EntityTable[Workflow] {
+object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,NewWorkflow] with EntityTable[Workflow, NewWorkflow] {
   def startStatus = column[UUID]("start_status")
   def uniqueName = index("idx_workflow_name", name, unique = true)
 

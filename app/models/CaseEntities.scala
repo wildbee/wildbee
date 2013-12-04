@@ -18,3 +18,14 @@ abstract class NewEntity{
   def name: String
 }
 
+/**
+ * Entity case class traits
+ */
+
+/**
+ * For any entities that we wish to record times for.
+ */
+trait Timekeeping {
+  def created: java.sql.Timestamp
+  def updated: java.sql.Timestamp
+}
