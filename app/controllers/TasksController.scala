@@ -30,15 +30,25 @@ object TasksController extends Controller {
 
   def create = Action { implicit request =>
     taskForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
+      formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)).flashing("success" -> "Package Created!"),
       newTask => {
         Tasks.insert(newTask)
-        Redirect(routes.TasksController.show(newTask.name))
+        Redirect(routes.TasksController.show(newTask.name)).flashing("success" -> "Task Created!")
       })
   }
 
   def delete(name: String) = Action { implicit request =>
-    Tasks.delete(name)
-    Redirect(routes.TasksController.index)
+    val dependentPackages = Packages.findAll filter (_.task == Tasks.find(name).id)
+    if (!dependentPackages.isEmpty){
+      Redirect(routes.TasksController.show(name))
+      .flashing("failure" ->
+        (s"Packages: ${
+          dependentPackages map (_.name) mkString ","} depend on this task."
+        + "You must remove these packages if you would like to delete this Task."))
+    }
+    else {
+      Tasks.delete(name)
+      Redirect(routes.TasksController.index)
+    }
   }
 }

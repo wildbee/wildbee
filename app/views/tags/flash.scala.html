@@ -6,4 +6,10 @@
             @flash("success")
         </div>
     }
+    @if(flash.get("failure")) {
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            @flash("failure")
+        </div>
+    }
 }
