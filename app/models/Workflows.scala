@@ -37,7 +37,8 @@ object Workflows extends Table[Workflow]("workflows")
    */
   def mapToNew(id: UUID): NewWorkflow = {
     val w = find(id)
-    // TODO: Add logic to grab all statuses, not just starting one.
-    NewWorkflow(w.name, List(w.startStatus.toString))
+    val transitions = Transitions.transitionMap(id)
+    val statuses = (transitions.keys map (_.toString) ).toList
+    NewWorkflow(w.name, statuses)
   }
 }

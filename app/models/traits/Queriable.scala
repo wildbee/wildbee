@@ -127,7 +127,6 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
       }
     }
 }
-
   /**
    * A map of UUID to name for all entities in the table. Useful for filling out
    * combo boxes in forms, for example.
