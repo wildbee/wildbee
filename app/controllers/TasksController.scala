@@ -43,7 +43,7 @@ object TasksController extends Controller {
       Redirect(routes.TasksController.show(name))
       .flashing("failure" ->
         (s"Packages: ${
-          dependentPackages map (_.name) mkString ","} depend on this task."
+          dependentPackages map (_.name) mkString("[",",","]") } depend on this task."
         + "You must remove these packages if you would like to delete this Task."))
     }
     else {

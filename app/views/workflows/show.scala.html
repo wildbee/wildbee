@@ -1,6 +1,7 @@
-@(workflow: Workflow)(implicit session: play.api.mvc.Session)
+@(workflow: Workflow)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
 
 @main("Show Workflow") {
+	@tags.flash()
       <p>
         <h1>@workflow.name</h1>
   		================================================= <br/>
