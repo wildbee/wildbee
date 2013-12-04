@@ -29,16 +29,16 @@ object TasksController extends Controller {
   }
 
   def create = Action { implicit request =>
-      taskForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
-        newTask => {
-          Tasks.insert(newTask)
-          Redirect(routes.TasksController.show(newTask.name))
-        })
+    taskForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
+      newTask => {
+        Tasks.insert(newTask)
+        Redirect(routes.TasksController.show(newTask.name))
+      })
   }
 
   def delete(name: String) = Action { implicit request =>
-      Tasks.delete(name)
-      Redirect(routes.TasksController.index)
+    Tasks.delete(name)
+    Redirect(routes.TasksController.index)
   }
 }
