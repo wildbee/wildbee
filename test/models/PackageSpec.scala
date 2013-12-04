@@ -35,6 +35,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       Packages.findAll.size === 10
       packageFactory.generate(uuid = uuids(intBetween(0, 10))) must throwA[PSQLException]
     }
+
     "be able to add workflows without an ID" in new WithApplication(fakeAppGen) {
       val packages = for (i <- 0 until 10) yield packageFactory.generate
       Packages.findAll.size === 10

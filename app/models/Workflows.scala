@@ -38,9 +38,17 @@ object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,Ne
     )
   }
 
-  def delete(name: String): Unit = DB.withSession {
+  def delete(name: String): Option[String] = DB.withSession {
     implicit session: Session =>
-      Workflows filter (_.name === name) delete
+      val dependentTasks = Tasks.findAll filter ( _.workflow == name)
+      if(!dependentTasks.isEmpty)
+        Some(dependentTasks map (_.name) mkString("[",",","]"))
+      else {
+        Transitions.delete(nameToId(name))
+        (Workflows filter (_.name === name)).delete
+        None
+      }
+
   }
 
   def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) ={
