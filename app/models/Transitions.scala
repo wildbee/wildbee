@@ -54,9 +54,15 @@ object Transitions extends Table[Transition]("transitions") {
       }
   }
 
-  def delete(workflow: UUID): Unit = DB.withSession {
+  def delete(workflow: UUID): Option[String] = DB.withSession {
     implicit session: Session =>
-      Transitions filter (_.workflow === workflow) delete
+      val dependentTasks = Tasks.findAll filter ( _.workflow == workflow)
+      if(!dependentTasks.isEmpty)
+        Some(dependentTasks map (_.name) mkString("[",",","]"))
+      else {
+        (Transitions filter (_.workflow === workflow)).delete
+        None
+      }
   }
 
   /** Return mapping of status.uuid.toString -> status.uuid

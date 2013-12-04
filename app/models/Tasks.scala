@@ -56,9 +56,15 @@ object Tasks extends Table[Task]("tasks") with Queriable[Task, NewTask] {
       task map (_.lastUpdated) update (currentTime)
   }
 
-  def delete(task: String): Unit = DB.withSession {
+  def delete(task: String): Option[String] = DB.withSession {
     implicit session: Session =>
-      Tasks where (_.name === task) delete
+    val dependentPackages = Packages.findAll filter (_.task == nameToId(task))
+    if (!dependentPackages.isEmpty)
+      Some(dependentPackages map (_.name) mkString("[",",","]"))
+    else{
+      (Tasks where (_.name === task)).delete
+      None
+    }
   }
 
   /**

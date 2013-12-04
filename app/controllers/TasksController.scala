@@ -38,17 +38,14 @@ object TasksController extends Controller {
   }
 
   def delete(name: String) = Action { implicit request =>
-    val dependentPackages = Packages.findAll filter (_.task == Tasks.find(name).id)
-    if (!dependentPackages.isEmpty){
-      Redirect(routes.TasksController.show(name))
-      .flashing("failure" ->
-        (s"Packages: ${
-          dependentPackages map (_.name) mkString("[",",","]") } depend on this task."
-        + "You must remove these packages if you would like to delete this Task."))
+    Tasks.delete(name) match {
+      case Some(violatedDeps) =>
+        Redirect(routes.TasksController.show(name))
+        .flashing("failure" ->
+          (s"Packages: ${violatedDeps} depend on this task."
+          + "You must remove these packages if you would like to delete this Task."))
+      case None => Redirect(routes.TasksController.index)
     }
-    else {
-      Tasks.delete(name)
-      Redirect(routes.TasksController.index)
-    }
+
   }
 }

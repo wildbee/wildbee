@@ -40,22 +40,17 @@ object WorkflowController extends Controller {
   }
 
   /** When deleting a workflow delete its logic first */
-  def delete(name: String) = Action { implicit request => {
-    val dependentTasks = Tasks.findAll filter ( _.workflow == Workflows.nameToId(name))
-    if(!dependentTasks.isEmpty) {
-      Redirect(routes.WorkflowController.show(name))
-      .flashing("failure" ->
-      (s"Tasks: ${
-        dependentTasks map (_.name) mkString("[",",","]") } depend on this workflow."
-      + "You must remove or modify these tasks if you would like to delete this workflow."))
-    }
-    else {
-      Transitions.delete(Workflows.nameToId(name))
-      Workflows.delete(name)
-      Redirect(routes.WorkflowController.index)
-    }
-  }
-
+  def delete(name: String) = Action { implicit request =>
+     Transitions.delete(Workflows.nameToId(name)) match {
+       case Some(violatedDeps) =>
+         Redirect(routes.WorkflowController.show(name))
+         .flashing("failure" ->
+         (s"Tasks: $violatedDeps depend on this workflow."
+         + "You must remove or modify these tasks if you would like to delete this workflow."))
+       case None =>
+         Workflows.delete(name)
+         Redirect(routes.WorkflowController.index)
+     }
   }
 
   def edit(workflow: String) = Action { implicit request =>

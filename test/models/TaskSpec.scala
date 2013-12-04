@@ -49,6 +49,10 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
       Tasks delete tasks(intBetween(0, 10)).id //must throwA[java.util.NoSuchElementException] ??
     }
 
+    "Testing" in new WithApplication(fakeAppGen) {
+
+    }
+
     /**
      * I want this to work, right now data is receiving an iterator
      * "This is for testing" in new WithApplication(fakeAppGen){
