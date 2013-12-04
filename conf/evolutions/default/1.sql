@@ -12,7 +12,7 @@ create table "transitions" ("id" UUID NOT NULL PRIMARY KEY,"workflow" UUID NOT N
 create table "users" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"email" VARCHAR(254) NOT NULL);
 create unique index "idx_email" on "users" ("email");
 create table "workflows" ("id" UUID NOT NULL PRIMARY KEY,"name" VARCHAR(254) NOT NULL,"start_status" UUID NOT NULL);
-create unique index "idx_workflow_name" on "workflows" ("name");
+create unique index "idx_name_workflows" on "workflows" ("name");
 alter table "packages" add constraint "assignee_fk" foreign key("assignee_id") references "users"("id") on update NO ACTION on delete NO ACTION;
 alter table "packages" add constraint "creator_fk" foreign key("creator_id") references "users"("id") on update NO ACTION on delete NO ACTION;
 alter table "packages" add constraint "task_fk" foreign key("task_id") references "tasks"("id") on update NO ACTION on delete NO ACTION;
