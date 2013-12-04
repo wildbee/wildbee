@@ -13,15 +13,45 @@ import scala.language.reflectiveCalls
  * The Entity trait can be shared by entities in our
  * models since it will define all of the basic CRUD operations
  * in a generalized way.
+ *
+ * T is the case class used to map from a row in the DB table to a scala object.
+ * Y is the case class used to map from all string user input to a scala object.
  */
 trait Queriable[T <: AnyRef { val id: UUID; val name: String },
                 Y <: AnyRef { val name: String }] {
+
+  /**
+   * This trait is used by entity models with Tables of type T.
+   */
   self: Table[T] =>
 
+  /**
+   * The default projection for any entity model table.
+   * @return
+   */
+  def * : scala.slick.lifted.ColumnBase[T]
+
+  /**
+   * A default projection that returns the id. Used
+   * for inserting new entities.
+   * @return
+   */
+  def returnID = * returning id
+
+  /**
+   * All entities must have both a UUID id, and a
+   * String name.
+   * @return
+   */
   def id: Column[UUID]
   def name: Column[String]
-  def * : scala.slick.lifted.ColumnBase[T]
-  def returnID = * returning id
+
+  /**
+   * This method maps an entity to its new case class.
+   * Used to pack forms for updates.
+   * @param id
+   * @return
+   */
   def mapToNew(id: UUID) : Y
 
   /**
@@ -33,12 +63,7 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
   }
 
   /**
-   * Returns the name of the entity given by the string id.
-   */
-  //def idToName(id: String): String = idToName(uuid(id))
-
-  /**
-   * Returns the name of the entity given by this UUID.
+   * Returns the name of the entity given by this UUID/String id.
    */
   def idToName(id: AnyRef): String = id match {
     case id: String => findById(uuid(id)).name
@@ -90,11 +115,6 @@ trait Queriable[T <: AnyRef { val id: UUID; val name: String },
    * Find an entity by name rather then by UUID.
    */
   def findByName(name: String): T = findById(nameToId(name))
-
-  //  def findMappedById(id: String): Y = DB.withSession {
-  //    implicit session: Session =>
-  //      tableToQuery(this).filter(_.id === uuid(id)).map(item => mappedEntity).first
-  //  }
 
   /**
    * To use this generalized insert trait, you need to pass

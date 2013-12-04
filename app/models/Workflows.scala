@@ -41,4 +41,7 @@ object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,Ne
     implicit session: Session =>
       Workflows filter (_.name === name) delete
   }
+
+  def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) =
+    update(id, Workflow(id, w.name, uuid(w.status(0))))
 }

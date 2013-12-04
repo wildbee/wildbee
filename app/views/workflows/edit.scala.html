@@ -1,0 +1,7 @@
+@(workForm: Form[NewWorkflow],
+id: String)(implicit session: play.api.mvc.Session)
+
+@main("Update a Workflow") {
+@helpers.input_form(workForm = workForm,
+formAction = routes.WorkflowController.update(id))
+}
