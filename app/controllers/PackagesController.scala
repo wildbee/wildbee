@@ -24,16 +24,17 @@ object PackagesController extends Controller {
   }
 
   def newPackage = Action { implicit request =>
-    Ok(views.html.packages.new_entity(packageForm))
+    Ok(views.html.packages.newEntity(packageForm))
   }
 
   def create = Action { implicit request =>
     packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.new_entity(formWithErrors)),
+      formWithErrors => BadRequest(views.html.packages.newEntity(formWithErrors)),
       pack => {
         val uuid = Packages.insert(pack)
         val newPack = Packages.find(uuid)
         Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
+            .flashing("success" -> "Package Created!")
       })
   }
 
@@ -55,19 +56,20 @@ object PackagesController extends Controller {
       updatedPack => {
         Packages.update(oldPack.id, Packages.mapToEntity(updatedPack,oldPack.id))
         Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
+            .flashing("success" -> "Package Updated!")
       })
   }
 
   def delete(id: String) = Action { implicit request =>
     Packages.delete(Packages.uuid(id))
-    Redirect(routes.PackagesController.index)
+    Redirect(routes.PackagesController.index).flashing("success" -> "Package Deleted!")
   }
 
   def copy(tid: String, pid: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
     val filledForm = packageForm.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
-    Ok(views.html.packages.new_entity(filledForm,statuses))
+    Ok(views.html.packages.newEntity(filledForm,statuses))
   }
 
 }
