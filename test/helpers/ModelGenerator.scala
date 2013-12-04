@@ -146,4 +146,38 @@ trait ModelGenerator extends {
     }
   }
 
+  /**
+   * Package Generator
+   *  Default Usage Side Effects
+   *  1. Generates user
+   *  2. Generates status
+   *  3. Generates workflow
+   *  ========================
+   *  Options
+   *  uuid: Specify a UUID for your new package
+   *  name: Specify a name for your new package
+   *  taskID: Specify which task the package should be assigned to by a task id
+   *  creatorId: Specify which user the package should mark as created by a user id
+   *  asigneeId: Specify which user the  package should mark as assigned by a user id
+   *  ccList: Specify the CC List for the package
+   *  statusId: Specify the status of the packae
+   *  osVersion: Specify the os version of the package
+   *  currentTime: Specify the timestamp for your task
+   *  withId: Choose if you want to use the withId implementation
+   */
+  val packageFactory = new Generator[Package] {
+    def generate(): Package = generate(uuid = uuidFactory.generate)
+    def generate(
+      uuid: UUID = uuidFactory.generate, name: String = randString,
+      taskId: UUID = taskFactory.generate.id, creatorId: UUID = userFactory.generate.id,
+      asigneeId: UUID = userFactory.generate.id, ccList: String = randString, statusId: UUID = statusFactory.generate.id,
+      osVersion: String = randString, currentTime: Timestamp = Packages.currentTimestamp, withId: Boolean = false): Package = {
+      val packageId =
+        if (withId) Packages.insertWithId(
+          uuid,
+          NewPackage(name, taskId.toString, creatorId.toString, asigneeId.toString, ccList, statusId.toString, osVersion))
+        else Packages.insert(Package(uuid, name, taskId, creatorId, asigneeId, ccList, statusId, osVersion, currentTime, currentTime))
+      Packages.find(packageId)
+    }
+  }
 }
