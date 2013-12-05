@@ -90,7 +90,7 @@ trait ModelGenerator extends {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString, withId: Boolean = false) = {
       val statusId =
-        if (withId) Statuses.insert(uuid, NewStatus(name), uuid)
+        if (withId) Statuses.insert(NewStatus(name), uuid)
         else Statuses.insert(Status(uuid, name))
       Statuses find statusId
     }
