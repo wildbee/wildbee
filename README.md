@@ -29,14 +29,23 @@ Finally, touch your `~/.bashrc` file in a terminal to reflect those changes:
 ```
 
 Then clone this repository, `cd` to it, and deploy the app!
-```bashrc
+```bash
 git clone https://github.com/wildbee/wildbee.git
 cd wildbee
 play run
+
+# use `play ~run` for continuous compilation after a file change
 ```
 
 Now if you point your browser to `http://localhost:9000`, you should see our web
 application. Wasn't that easy?
+
+# How to run tests
+```bash
+play test
+
+# use `play ~test` for continous compilation and test runs after a file change
+```
 
 #### Database Setup
 These instructions are valid for Fedora 19.
@@ -62,15 +71,18 @@ create user wildbee with password '1234';
 alter user wildbee createdb;
 ```
 
-- Create the database that our web application will use:
+- Create the databases that our web application will use:
 ```
 createdb wildbeehive -U wildbee
+createdb wildbeehivetest -U wildbee
 ```
 _wildbeehive_ is the name of the database we will be using.
+_wildbeehivetest_ is the name of the database we will be using when running
+tests so as not to affect the main database..
 
 - To be inside the database, type in the terminal:
 ```
-psql <database_name>
+psql <database_name> -U wildbee
 ```
 
 For configuration of the database servers, click [here][scaladatabase].
@@ -83,42 +95,3 @@ For configuration of the database servers, click [here][scaladatabase].
 [playframework]: http://www.playframework.com/
 [scaladatabase]: http://www.playframework.com/documentation/2.2.1/ScalaDatabase
 
-### Template controller setup with database access
-```scala
-package controllers
-
-import play.api._
-import play.api.mvc._
-import views._
-
-import models._
-import play.api.db.DB
-import play.api.Play.current
-import scala.slick.session.Database.threadLocalSession
-import scala.slick.driver.PostgresDriver.simple._
-
-object Application extends Controller {
-  lazy val database = Database.forDataSource(DB.getDataSource())
-
-  def index = Action {
-    database withSession {
-      Cocktails.insert(1, "haha", "hoho")
-    }
-    Ok("commited!")
-  }
-}
-```
-
-### Template model
-```scala
-package models
-
-import scala.slick.driver.PostgresDriver.simple._
-
-object Cocktails extends Table[(Long, String, String)]("cocktails") {
-  def id = column[Long]("ID")
-  def name = column[String]("NAME")
-  def xxx = column[String]("beauty")
-  def * = id ~ name ~ xxx
-}
-```
