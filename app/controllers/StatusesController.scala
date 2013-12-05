@@ -36,17 +36,17 @@ object StatusesController extends Controller {
   }
 
   def edit(id: String) = Action { implicit request =>
-    val pack = Statuses.mapToNewStatus(id)
+    val pack = Statuses.mapToNew(id)
     val filledForm = StatusForm.fill(pack)
     Ok(views.html.statuses.edit(filledForm, id))
   }
 
   def update(id: String) = Action { implicit request =>
-    val oldStatus = Statuses.findById(id)
+    val oldStatus = Statuses.find(id)
     StatusForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
-      updatedPack => {
-        Statuses.updateStatus(oldStatus.id, updatedPack, oldStatus)
+      updatedStatus => {
+        Statuses.update(Statuses.mapToEntity(updatedStatus, oldStatus.id))
         Redirect(routes.StatusesController.show(oldStatus.id.toString))
       })
   }

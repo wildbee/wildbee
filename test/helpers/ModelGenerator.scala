@@ -73,7 +73,7 @@ trait ModelGenerator extends {
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString,
       email: String, withId: Boolean = false) = {
       val userId =
-        if (withId) Users.insertWithId(uuid, NewUser(name, email))
+        if (withId) Users.insert(NewUser(name, email), uuid)
         else Users.insert(User(uuid, name, email))
       Users find userId
     }
@@ -90,7 +90,7 @@ trait ModelGenerator extends {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString, withId: Boolean = false) = {
       val statusId =
-        if (withId) Statuses.insertWithId(uuid, NewStatus(name))
+        if (withId) Statuses.insert(NewStatus(name), uuid)
         else Statuses.insert(Status(uuid, name))
       Statuses find statusId
     }
@@ -112,7 +112,7 @@ trait ModelGenerator extends {
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString,
       statusId: UUID = statusFactory.generate.id, withId: Boolean = false) = {
       val workflowId =
-        if (withId) Workflows.insertWithId(uuid, NewWorkflow(name, List(statusId.toString())))
+        if (withId) Workflows.insert(NewWorkflow(name, List(statusId.toString())), uuid)
         else Workflows.insert(Workflow(uuid, name, statusId))
       Workflows find workflowId
     }
@@ -140,8 +140,8 @@ trait ModelGenerator extends {
       userId: UUID = userFactory.generate.id, workflowId: UUID = workflowFactory.generate.id,
       currentTime: Timestamp = Tasks.currentTimestamp, withId: Boolean = false): Task = {
       val taskId =
-        if (withId) Tasks.insertWithId(uuid, NewTask(name, userId.toString(), workflowId.toString()))
-        else Tasks.insert(Task(uuid, name, userId, workflowId, currentTime, currentTime))
+        if (withId) Tasks.insert(NewTask(name, userId.toString(), workflowId.toString()), uuid)
+        else Tasks.insert(Task(uuid, name, userId, currentTime, workflowId, currentTime))
       Tasks.find(taskId)
     }
   }

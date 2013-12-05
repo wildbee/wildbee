@@ -7,44 +7,38 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
+import models.traits.Queriable
 
-case class NewWorkflow(name: String, status: List[String])
-case class Workflow(id: UUID, name: String, startStatus: UUID)
-object Workflows extends Table[Workflow]("workflows") with Queriable[Workflow,NewWorkflow] {
-  def id = column[UUID]("id", O.PrimaryKey)
-  def name = column[String]("name")
+case class NewWorkflow(name: String, status: List[String]) extends NewEntity
+case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
+object Workflows extends Table[Workflow]("workflows")
+  with Queriable[Workflow,NewWorkflow]
+  with EntityTable[Workflow, NewWorkflow]
+  with UniquelyNamedTable[Workflow,NewWorkflow] {
   def startStatus = column[UUID]("start_status")
-
-//  def statusFk = foreignKey("status_fk", name, AllowedStatuses)(_.workflow)
-  def uniqueName = index("idx_workflow_name", name, unique = true)
 
   def * = id ~ name ~ startStatus <> (Workflow, Workflow.unapply _)
   def autoId = id ~ name ~ startStatus returning id
 
+  /**
+   * Implements Queriable's mapToEntity.
+   * @param w
+   * @param nid
+   * @return
+   */
+  def mapToEntity(w: NewWorkflow, nid: UUID = newId): Workflow = {
+    Workflow(nid, w.name, uuid(w.status(0)))
+  }
+
+  /**
+   * Implements Queriable's mapToNew.
+   * @param id
+   * @return
+   */
   def mapToNew(id: UUID): NewWorkflow = {
     val w = find(id)
     val transitions = Transitions.transitionMap(id)
     val statuses = (transitions.keys map (_.toString) ).toList
     NewWorkflow(w.name, statuses)
-  }
-
-  def insert(w: NewWorkflow): UUID = {
-    insertWithId(newId, w)
-  }
-
-  def insertWithId(id: UUID, w: NewWorkflow): UUID = {
-    Workflows.insert(
-      Workflow(id, w.name, uuid(w.status(0)))
-    )
-  }
-
-  def delete(name: String): Unit = DB.withSession {
-    implicit session: Session =>
-      Workflows filter (_.name === name) delete
-  }
-
-  def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) ={
-    Transitions.create(id, w.status)
-    update(id, Workflow(id, w.name, uuid(w.status(0))))
   }
 }
