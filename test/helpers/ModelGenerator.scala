@@ -56,7 +56,7 @@ trait ModelGenerator extends {
     lo + nextInt().abs % (hi - lo)
 
   /** Random uuid generator */
-  val uuidFactory = new Generator[UUID] {
+  object uuidFactory extends Generator[UUID] {
     def generate = Config.pkGenerator.newKey
   }
 
@@ -67,7 +67,7 @@ trait ModelGenerator extends {
    *  name: Specify a name for your new user
    *  email: Specify a email address for your new user
    */
-  val userFactory = new Generator[User] {
+  object userFactory extends Generator[User] {
     def generate() = generate(email = (randString + "@" + randString))
     def generate(uuid: UUID = uuidFactory.generate,
         name: String = randString, email: String = (randString + "@" + randString)) = {
@@ -82,7 +82,7 @@ trait ModelGenerator extends {
    *  uuid: Specify a UUID for your new status
    *  name: Specify a name for your new status
    */
-  val statusFactory = new Generator[Status] {
+  object statusFactory extends Generator[Status] {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString) = {
       val statusId = Statuses.insert(Status(uuid, name))
@@ -100,10 +100,9 @@ trait ModelGenerator extends {
    *  name: Specify a name for your new workflow
    *  statusId: Specify which default status ID to use with your workflow
    */
-  val workflowFactory = new Generator[Workflow] {
+  object workflowFactory extends Generator[Workflow] {
     def generate() = generate(uuid = uuidFactory.generate)
-    def generate(uuid: UUID = uuidFactory.generate, name: String = randString,
-      statusId: UUID = statusFactory.generate.id) = {
+    def generate(uuid: UUID = uuidFactory.generate, name: String = randString, statusId: UUID = statusFactory.generate.id) = {
       val workflowId =  Workflows.insert(Workflow(uuid, name, statusId))
       Workflows find workflowId
     }
@@ -123,7 +122,7 @@ trait ModelGenerator extends {
    *  workflowId: Specify which workflow the task should be assigned to by using a workflow if
    *  currentTime: Specify the timestamp for your task
    */
-  val taskFactory = new Generator[Task] {
+  object taskFactory extends Generator[Task] {
     def generate(): Task = generate(uuid = uuidFactory.generate)
     def generate(
       uuid: UUID = uuidFactory.generate, name: String = randString,
@@ -152,7 +151,7 @@ trait ModelGenerator extends {
    *  osVersion: Specify the os version of the package
    *  currentTime: Specify the timestamp for your task
    */
-  val packageFactory = new Generator[Package] {
+  object packageFactory extends Generator[Package] {
     def generate(): Package = generate(uuid = uuidFactory.generate)
     def generate(
       uuid: UUID = uuidFactory.generate, name: String = randString,
