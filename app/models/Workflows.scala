@@ -17,6 +17,7 @@ object Workflows extends Table[Workflow]("workflows")
   with Queriable[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
   with UniquelyNamedTable[Workflow,NewWorkflow] {
+
   def startStatus = column[UUID]("start_status")
 
   def * = id ~ name ~ startStatus <> (Workflow, Workflow.unapply _)
@@ -69,5 +70,4 @@ object Workflows extends Table[Workflow]("workflows")
     Transitions.create(id, w.status)
     update(id, Workflow(id, w.name, uuid(w.status(0))))
   }*/
-
 }

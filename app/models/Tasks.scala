@@ -8,6 +8,7 @@ import models.traits.Queriable
 import play.api.db.slick.DB
 import play.api.Play.current
 
+
 case class NewTask(name: String, owner: String, workflow: String) extends NewEntity
 case class Task(id: UUID, name: String, owner: UUID,
   created: Timestamp, workflow: UUID, updated: Timestamp) extends Entity with Timekeeping
@@ -43,7 +44,6 @@ object Tasks extends Table[Task]("tasks")
     val t = find(id)
     NewTask(t.name, t.owner.toString, t.workflow.toString)
   }
-
 
   def delete(task: String): Option[String] = DB.withSession {
     implicit session: Session =>
