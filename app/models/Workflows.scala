@@ -41,4 +41,22 @@ object Workflows extends Table[Workflow]("workflows")
     val statuses = (transitions.keys map (_.toString) ).toList
     NewWorkflow(w.name, statuses)
   }
+
+  /** create transitions after inserting a new workflow */
+  override def afterInsert(id: UUID, workflow: NewWorkflow) = {
+    play.api.Logger.debug("Workflow override afterInsert Lifecycle Op on " + workflow.name)
+    Transitions.create(id,  workflow.status)
+  }
+
+  /** update the transitions before doing a workflow update **/
+  override def beforeUpdate(id: UUID, workflow: NewWorkflow) {
+    play.api.Logger.debug("Workflow override beforeUpdate Lifecycle Op on " + workflow.name)
+    Transitions.create(id, workflow.status)
+  }
+
+  /** When deleting a workflow delete its logic first */
+  override def beforeDelete(id: UUID) {
+    play.api.Logger.debug("Workflow override beforeDelete Lifecycle Op on " + id.toString)
+    Transitions.delete(id)
+  }
 }
