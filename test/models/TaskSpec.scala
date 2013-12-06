@@ -20,9 +20,8 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
     resetModelGenerator()
   }
 
-  /*
+
   "Task model" should {
-    /*
     "be able to add a new Tasks with an ID and throw error on conflicting IDs" in
       new WithApplication(fakeAppGen) {
         val data =
@@ -59,7 +58,7 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
         case None => failure
       }
       Tasks.findAll.size === 1
-    }*/
+    }
     /**
      * I want this to work, right now data is receiving an iterator
      * "This is for testing" in new WithApplication(fakeAppGen){
@@ -69,5 +68,5 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
      * println(data.size)
      * }
      */
-  }*/
+  }
 }

@@ -121,17 +121,17 @@ trait ModelGenerator extends {
    *  workflowId: Specify which workflow the task should be assigned to by using a workflow if
    *  currentTime: Specify the timestamp for your task
    */
-  /*
+
   object taskFactory extends Generator[Task] {
     def generate(): Task = generate(uuid = uuidFactory.generate)
     def generate(
       uuid: UUID = uuidFactory.generate, name: String = randString,
       userId: UUID = userFactory.generate.id, workflowId: UUID = workflowFactory.generate.id,
       currentTime: Timestamp = Tasks.currentTimestamp): Task = {
-      val taskId = Tasks.insert(Task(uuid, name, userId, workflowId, currentTime, currentTime))
+      val taskId = Tasks.insert(Task(uuid, name, userId, currentTime, workflowId, currentTime))
       Tasks.find(taskId)
     }
-  }*/
+  }
 
   /**
    * Package Generator
@@ -151,7 +151,6 @@ trait ModelGenerator extends {
    *  osVersion: Specify the os version of the package
    *  currentTime: Specify the timestamp for your task
    */
-  /*
   object packageFactory extends Generator[Package] {
     def generate(): Package = generate(uuid = uuidFactory.generate)
     def generate(
@@ -162,5 +161,5 @@ trait ModelGenerator extends {
       val packageId = Packages.insert(Package(uuid, name, taskId, creatorId, asigneeId, ccList, statusId, osVersion, currentTime, currentTime))
       Packages.find(packageId)
     }
-  }*/
+  }
 }

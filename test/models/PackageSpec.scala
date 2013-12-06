@@ -19,9 +19,8 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
     resetModelGenerator()
   }
 
-  /*
+
   "Package model" should {
-    /*
     "be able to add new workflows with specified ID and throw error on conflicting IDs" in
     new WithApplication(fakeAppGen) {
       val data =
@@ -36,9 +35,8 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       uuids map (Packages.find(_)) must not(throwA[NoSuchElementException])
       Packages.findAll.size === 10
       packageFactory.generate(uuid = uuids(intBetween(0, 10))) must throwA[PSQLException]
-    }*/
+    }
 
-    /*
     "be able to add workflows without an ID" in new WithApplication(fakeAppGen) {
       val packages = for (i <- 0 until 10) yield packageFactory.generate
       Packages.findAll.size === 10
@@ -48,7 +46,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       val packages = for (i <- 0 until 10) yield packageFactory.generate
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
-    }*/
-  }*/
+    }
+  }
 
 }
