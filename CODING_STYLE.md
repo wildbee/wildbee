@@ -66,4 +66,6 @@ For example, user table should be named 'users', and the join table between task
 
 
 
-
+### Coding convention
+- Spaces over tabs. We should only use spaces.
+- Two spaces for indentation

@@ -41,7 +41,7 @@ object WorkflowController extends Controller {
 
   /** When deleting a workflow delete its logic first */
   def delete(name: String) = Action { implicit request =>
-     Workflows.delete(name) match {
+     Workflows.delete(name) /*match {
        case Some(violatedDeps) =>
          Redirect(routes.WorkflowController.show(name))
          .flashing("failure" ->
@@ -49,7 +49,8 @@ object WorkflowController extends Controller {
          + "You must remove or modify these tasks if you would like to delete this workflow."))
        case None =>
          Redirect(routes.WorkflowController.index)
-     }
+     }*/
+     Redirect(routes.WorkflowController.index)
   }
 
   def edit(workflow: String) = Action { implicit request =>
@@ -63,7 +64,7 @@ object WorkflowController extends Controller {
     workForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.workflows.edit(formWithErrors, old.id.toString)),
     updatedWorkflow => {
-       Workflows.updateWorkflow(old.id, updatedWorkflow, old)
+      Workflows.update(Workflows.mapToEntity(updatedWorkflow, old.id))
       Redirect(routes.WorkflowController.show(updatedWorkflow.name))
     })
 
