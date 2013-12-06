@@ -27,7 +27,7 @@ object WorkflowController extends Controller {
     Ok(views.html.workflows.show(Workflows.find(name)))
   }
 
-  /** When creating a workflow creat its logic first */
+  /** When creating a workflow create its logic first */
   def create() = Action { implicit request =>
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
@@ -40,11 +40,16 @@ object WorkflowController extends Controller {
   }
 
   /** When deleting a workflow delete its logic first */
-  def delete(name: String) = Action { implicit request => {
-      Transitions.delete(Workflows.nameToId(name))
-      Workflows.delete(name)
-    }
-    Redirect(routes.WorkflowController.index)
+  def delete(name: String) = Action { implicit request =>
+     Workflows.delete(name) match {
+       case Some(violatedDeps) =>
+         Redirect(routes.WorkflowController.show(name))
+         .flashing("failure" ->
+         (s"Tasks: $violatedDeps depend on this workflow."
+         + "You must remove or modify these tasks if you would like to delete this workflow."))
+       case None =>
+         Redirect(routes.WorkflowController.index)
+     }
   }
 
   def edit(workflow: String) = Action { implicit request =>

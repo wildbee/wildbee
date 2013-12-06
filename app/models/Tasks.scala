@@ -5,6 +5,9 @@ import java.util.UUID
 import java.sql.Timestamp
 import scala.language.postfixOps
 import models.traits.Queriable
+import play.api.db.slick.DB
+import play.api.Play.current
+
 
 case class NewTask(name: String, owner: String, workflow: String) extends NewEntity
 case class Task(id: UUID, name: String, owner: UUID,
@@ -40,6 +43,17 @@ object Tasks extends Table[Task]("tasks")
   def mapToNew(id: UUID): NewTask = {
     val t = find(id)
     NewTask(t.name, t.owner.toString, t.workflow.toString)
+  }
+
+  def delete(task: String): Option[String] = DB.withSession {
+    implicit session: Session =>
+    val dependentPackages = Packages.findAll filter (_.task == nameToId(task))
+    if (!dependentPackages.isEmpty)
+      Some(dependentPackages map (_.name) mkString("[",",","]"))
+    else{
+      (Tasks where (_.name === task)).delete
+      None
+    }
   }
 
   /**

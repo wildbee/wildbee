@@ -1,9 +1,6 @@
 package helpers
 import play.api.test.FakeApplication
-import models.Statuses
-import models.Tasks
-import models.Users
-import models.Workflows
+import models._
 
 trait TestUtilities {
 
@@ -11,6 +8,7 @@ trait TestUtilities {
   "db.default.url" -> "jdbc:postgresql://localhost/wildbeehivetest"))
 
   def clearDB() { //Order Matters
+    Packages.deleteAll
     Workflows.deleteAll
     Statuses.deleteAll
     Tasks.deleteAll
