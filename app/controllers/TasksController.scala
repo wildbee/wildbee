@@ -38,15 +38,13 @@ object TasksController extends Controller {
   }
 
   def delete(name: String) = Action { implicit request =>
-    Tasks.delete(name)/* match {
+    Tasks.delete(name) match {
       case Some(violatedDeps) =>
         Redirect(routes.TasksController.show(name))
         .flashing("failure" ->
           (s"Packages: ${violatedDeps} depend on this task."
           + "You must remove these packages if you would like to delete this Task."))
       case None => Redirect(routes.TasksController.index)
-    }*/
-    Redirect(routes.TasksController.index)
-
+    }
   }
 }

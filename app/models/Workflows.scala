@@ -8,6 +8,8 @@ import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
 import models.traits.Queriable
+import play.api.db.slick.DB
+import play.api.Play.current
 
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
@@ -42,10 +44,9 @@ object Workflows extends Table[Workflow]("workflows")
     NewWorkflow(w.name, statuses)
   }
 
-/*
   def delete(name: String): Option[String] = DB.withSession {
     implicit session: Session =>
-      val dependentTasks = Tasks.findAll filter ( _.workflow == name)
+      val dependentTasks = Tasks.findAll filter ( _.workflow == nameToId(name))
       if(!dependentTasks.isEmpty)
         Some(dependentTasks map (_.name) mkString("[",",","]"))
       else {
@@ -56,13 +57,14 @@ object Workflows extends Table[Workflow]("workflows")
   }
 
   // Define own deleteAll since we want to delete transistions also
+  /*
   override def deleteAll() = DB.withSession {
     implicit session: Session =>
       val allNames= this.findAll map (_.name)
       allNames map (name => Transitions.delete(nameToId(name)))
       queryToDeleteInvoker(tableToQuery(this)) delete
-  }
-
+  }*/
+  /*
   def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) ={
     Transitions.create(id, w.status)
     update(id, Workflow(id, w.name, uuid(w.status(0))))
