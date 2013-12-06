@@ -56,7 +56,7 @@ object Transitions extends Table[Transition]("transitions") {
 
   def delete(workflow: UUID): Unit = DB.withSession {
     implicit session: Session =>
-      Transitions filter (_.workflow === workflow) delete
+      (Transitions filter (_.workflow === workflow)).delete
   }
 
   /** Return mapping of status.uuid.toString -> status.uuid

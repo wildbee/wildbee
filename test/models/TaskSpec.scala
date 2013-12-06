@@ -1,17 +1,14 @@
 package models
 
-import org.specs2.mutable._
-import org.specs2.runner._
-import org.specs2.specification._
-import org.junit.runner._
-import play.api.test._
-import play.api.test.Helpers._
-import models._
+import org.junit.runner.RunWith
+import org.specs2.runner.JUnitRunner
+import org.specs2.mutable.Specification
+import org.specs2.specification.BeforeExample
 import org.postgresql.util.PSQLException
-import helpers.Config
-import helpers.ModelGenerator
-import java.util.UUID
-import helpers.TestUtilities
+
+import play.api.test.WithApplication
+import helpers.{TestUtilities, ModelGenerator}
+
 
 @RunWith(classOf[JUnitRunner])
 class TaskSpec extends Specification with TestUtilities with BeforeExample with ModelGenerator {
@@ -23,6 +20,7 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
     resetModelGenerator()
   }
 
+
   "Task model" should {
     "be able to add a new Tasks with an ID and throw error on conflicting IDs" in
       new WithApplication(fakeAppGen) {
@@ -30,7 +28,7 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
           for {
             i <- 0 until 10
             u = uuidFactory.generate
-            t = taskFactory.generate(uuid = u, withId = true)
+            t = taskFactory.generate(uuid = u)
           } yield (u, t)
         val uuids = data.map(_._1)
         val tasks = data.map(_._2)
@@ -49,9 +47,18 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
       val tasks = for (i <- 0 until 10) yield taskFactory.generate()
       tasks map (t => Tasks delete (t.id))
       Tasks.findAll.size === 0
-      Tasks delete tasks(intBetween(0, 10)).id //must throwA[java.util.NoSuchElementException] ??
+      Tasks delete tasks(intBetween(0, 10)).name//must throwA[java.util.NoSuchElementException] ??
     }
 
+    "not allow you to delete a task if a package depends on it" in new WithApplication(fakeAppGen) {
+      val task = taskFactory.generate()
+      val myPackage = packageFactory.generate(taskId = task.id)
+      Tasks.delete(task.name) match {
+        case Some(msg) => success
+        case None => failure
+      }
+      Tasks.findAll.size === 1
+    }
     /**
      * I want this to work, right now data is receiving an iterator
      * "This is for testing" in new WithApplication(fakeAppGen){

@@ -37,10 +37,22 @@ object WorkflowController extends Controller {
     )
   }
 
-  def delete(name: String) = Action { implicit request => {
-      Workflows.delete(name)
-    }
-    Redirect(routes.WorkflowController.index)
+//  def delete(name: String) = Action { implicit request => {
+//      Workflows.delete(name)
+//    }
+//    Redirect(routes.WorkflowController.index)
+
+  /** When deleting a workflow delete its logic first */
+  def delete(name: String) = Action { implicit request =>
+     Workflows.delete(name) match {
+       case Some(violatedDeps) =>
+         Redirect(routes.WorkflowController.show(name))
+         .flashing("failure" ->
+         (s"Tasks: $violatedDeps depend on this workflow."
+         + "You must remove or modify these tasks if you would like to delete this workflow."))
+       case None =>
+         Redirect(routes.WorkflowController.index)
+     }
   }
 
   def edit(workflow: String) = Action { implicit request =>
