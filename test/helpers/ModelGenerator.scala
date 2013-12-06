@@ -28,7 +28,6 @@ abstract class Generator[T] extends Iterator[T] {
     else { toggle = 0; false }
 
   }
-
   /* Maybe not necessary
   override def map[S](f: T => S): Generator[S] = new Generator[S] {
     def generate = f(self.generate)

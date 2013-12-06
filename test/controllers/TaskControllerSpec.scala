@@ -8,8 +8,7 @@ import org.postgresql.util.PSQLException
 
 import play.api.test.Helpers._
 import play.api.test.{FakeApplication,FakeRequest, WithApplication}
-import helpers.{TestUtilities, ModelGenerator}
-
+import helpers.{ TestUtilities, ModelGenerator }
 
 @RunWith(classOf[JUnitRunner])
 class TaskControllerSpec extends Specification with TestUtilities with BeforeExample with ModelGenerator {
@@ -22,18 +21,10 @@ class TaskControllerSpec extends Specification with TestUtilities with BeforeExa
   }
 
   "Task controller" should {
+
     "be able to show you the task index" in new WithApplication {
       val tasks =  route(FakeRequest(GET, "/tasks")).get
       status(tasks) === OK
-    }
-
-    "etes" in new WithApplication(fakeAppGen) {
-      println("IM HERRRRRRRRRRRRRRRRRRRRRRRRE")
-      val user = userFactory.generate
-      println("NOW IM HWEREREREERER")
-      println("user.id :: " + user.id)
-      //val task = taskFactory.generate(userId = user.id)
-      //val myPackage = packageFactory.generate(taskId = task.id, asigneeId = user.id, creatorId= user.id)
     }
   }
 
