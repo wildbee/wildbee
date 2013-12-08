@@ -42,7 +42,11 @@ object WorkflowController extends Controller {
 //    }
 //    Redirect(routes.WorkflowController.index)
 
-  /** When deleting a workflow delete its logic first */
+  /**
+   * We should get the specialized validation logic out of the delete controller method and into
+   * a method that just does the validation. Then we can start creating generalized validators that
+   * work with all CRUDeable entity models.
+   */
   def delete(name: String) = Action { implicit request =>
      Workflows.delete(name) match {
        case Some(violatedDeps) =>

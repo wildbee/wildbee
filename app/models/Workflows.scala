@@ -63,6 +63,10 @@ object Workflows extends Table[Workflow]("workflows")
     Transitions.delete(id)
   }
 
+  /**
+   * We should try to take this logic out of delete and put it into either:
+   * the lifecycle beforeDelete, or create a new set of traits for input validation.
+   */
   def delete(name: String): Option[String] = DB.withSession {
     implicit session: Session =>
       val dependentTasks = Tasks.findAll filter ( _.workflow == nameToId(name))
