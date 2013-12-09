@@ -20,7 +20,7 @@ import models.{EntityTable, NewEntity, Entity}
  * T is the case class used to map from a row in the DB table to a scala object.
  * Y is the case class used to map from all string user input to a scala object.
  */
-trait Queriable[T <: Entity, Y <: NewEntity]{
+trait Queriable[T <: Entity, Y <: NewEntity] extends Lifecycles[T, Y] {
 
   /**
    * This trait is used by entity models with Tables of type T with EntityTable trait of type T.
@@ -91,20 +91,35 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
    * @return the UUID of the new item.
    */
   def insert(item: Y, nid: UUID = newId): UUID = {
-    DB.withSession {
-      implicit session: Session =>
-        returnID.insert(mapToEntity(item, nid))
-    }
+    play.api.Logger.debug("nid: " + nid.toString)
+    beforeInsert(nid, item)
+    val id = insert(mapToEntity(item, nid))
+    afterInsert(nid, item)
+    id
   }
 
   /**
    * Same as insert above. Need to map your inputs to the correct
    * class of type T, then pass that into this method.
    */
-  def update(item: T) = DB.withSession {
+  def update(item: T): Unit = {
+    DB.withSession {
     implicit session: Session =>
       tableQueryToUpdateInvoker(
         tableToQuery(this).where(_.id === item.id)).update(item)
+    }
+  }
+
+  /**
+   * Update takes a NewEntity instance and its id, then
+   * maps it to an Entity and updates the db.
+   * @param id
+   * @param item
+   */
+  def update(id: UUID, item: Y): Unit = {
+    beforeUpdate(id, item)
+    update(mapToEntity(item, id))
+    afterUpdate(id, item)
   }
 
   /**
@@ -112,9 +127,11 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
    */
   def delete(eid: AnyRef) = {
     def del(id: UUID) = DB.withSession {
+      beforeDelete(id)
       implicit session: Session =>
       queryToDeleteInvoker(
         tableToQuery(this).where(_.id === id)).delete
+      afterDelete(id)
   }
     eid match {
       case eid : UUID => del(eid)
@@ -140,8 +157,10 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
    * Helper method to delete all the rows in a table
    */
   def deleteAll: Unit = DB.withSession {
+    beforeDeleteAll
     implicit session: Session =>
         tableToQuery(this).delete
+    afterDeleteAll
   }
 
   /**
@@ -149,8 +168,12 @@ trait Queriable[T <: Entity, Y <: NewEntity]{
    */
   private def findById(id: AnyRef): T = {
     def get(id: UUID): T = DB.withSession {
-      implicit session: Session =>
+      beforeGet(id)
+      val item = { implicit session: Session =>
         Query(this).where(_.id === id).first
+      }
+      afterGet(id)
+      item // return value
     }
     id match {
       case id: String => get(uuid(id))

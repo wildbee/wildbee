@@ -27,19 +27,26 @@ object WorkflowController extends Controller {
     Ok(views.html.workflows.show(Workflows.find(name)))
   }
 
-  /** When creating a workflow create its logic first */
   def create() = Action { implicit request =>
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
           Workflows.insert(workflow)
-          Transitions.create(Workflows.nameToId(workflow.name),  workflow.status)
           Redirect(routes.WorkflowController.show(workflow.name))
         }
     )
   }
 
-  /** When deleting a workflow delete its logic first */
+//  def delete(name: String) = Action { implicit request => {
+//      Workflows.delete(name)
+//    }
+//    Redirect(routes.WorkflowController.index)
+
+  /**
+   * We should get the specialized validation logic out of the delete controller method and into
+   * a method that just does the validation. Then we can start creating generalized validators that
+   * work with all CRUDeable entity models.
+   */
   def delete(name: String) = Action { implicit request =>
      Workflows.delete(name) match {
        case Some(violatedDeps) =>
@@ -63,7 +70,7 @@ object WorkflowController extends Controller {
     workForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.workflows.edit(formWithErrors, old.id.toString)),
     updatedWorkflow => {
-      Workflows.update(Workflows.mapToEntity(updatedWorkflow, old.id))
+      Workflows.update(old.id, updatedWorkflow)
       Redirect(routes.WorkflowController.show(updatedWorkflow.name))
     })
 

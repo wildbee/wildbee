@@ -45,6 +45,28 @@ object Workflows extends Table[Workflow]("workflows")
     NewWorkflow(w.name, statuses)
   }
 
+  /** create transitions after inserting a new workflow */
+  override def afterInsert(id: UUID, workflow: NewWorkflow) = {
+    play.api.Logger.debug("Workflow override afterInsert Lifecycle Op on " + workflow.name)
+    Transitions.create(id,  workflow.status)
+  }
+
+  /** update the transitions before doing a workflow update **/
+  override def beforeUpdate(id: UUID, workflow: NewWorkflow) {
+    play.api.Logger.debug("Workflow override beforeUpdate Lifecycle Op on " + workflow.name)
+    Transitions.create(id, workflow.status)
+  }
+
+  /** When deleting a workflow delete its logic first */
+  override def beforeDelete(id: UUID) {
+    play.api.Logger.debug("Workflow override beforeDelete Lifecycle Op on " + id.toString)
+    Transitions.delete(id)
+  }
+
+  /**
+   * We should try to take this logic out of delete and put it into either:
+   * the lifecycle beforeDelete, or create a new set of traits for input validation.
+   */
   def delete(name: String): Option[String] = DB.withSession {
     implicit session: Session =>
       val dependentTasks = Tasks.findAll filter ( _.workflow == nameToId(name))
@@ -56,18 +78,4 @@ object Workflows extends Table[Workflow]("workflows")
         None
       }
   }
-
-  // Define own deleteAll since we want to delete transistions also
-  /*
-  override def deleteAll() = DB.withSession {
-    implicit session: Session =>
-      val allNames= this.findAll map (_.name)
-      allNames map (name => Transitions.delete(nameToId(name)))
-      queryToDeleteInvoker(tableToQuery(this)) delete
-  }*/
-  /*
-  def updateWorkflow(id: UUID, w: NewWorkflow, o: Workflow) ={
-    Transitions.create(id, w.status)
-    update(id, Workflow(id, w.name, uuid(w.status(0))))
-  }*/
 }
