@@ -20,7 +20,9 @@ import models.{EntityTable, NewEntity, Entity}
  * T is the case class used to map from a row in the DB table to a scala object.
  * Y is the case class used to map from all string user input to a scala object.
  */
-trait Queriable[T <: Entity, Y <: NewEntity] extends Lifecycles[T, Y] {
+trait Queriable[T <: Entity, Y <: NewEntity]
+  extends Lifecycles[T, Y]
+  with Validators[T,Y]{
 
   /**
    * This trait is used by entity models with Tables of type T with EntityTable trait of type T.
@@ -125,24 +127,34 @@ trait Queriable[T <: Entity, Y <: NewEntity] extends Lifecycles[T, Y] {
   /**
    * Delete an entity from its table.
    */
-  def delete(eid: AnyRef) = {
-    def del(id: UUID) = DB.withSession {
-      beforeDelete(id)
-      implicit session: Session =>
-      queryToDeleteInvoker(
-        tableToQuery(this).where(_.id === id)).delete
-      afterDelete(id)
-  }
-    eid match {
-      case eid : UUID => del(eid)
-      case eid : String => {
-        if (vidP(eid)) {
-          del(uuid(eid))
-        } else {
-          del(findByName(eid).id)
-        }
-      }
+  def delete(eid: AnyRef): Option[String] = {
+    def del(id: UUID): Option[String] = DB.withSession {
+        beforeDelete(id)
+        implicit session: Session =>
+        queryToDeleteInvoker(
+          tableToQuery(this).where(_.id === id)).delete
+        afterDelete(id)
+        None
     }
+
+    deleteValidator(eid) match {
+      case Some(error) =>
+        return Some(error)
+      case None =>
+        eid match {
+          case eid : UUID => {
+            del(eid)
+          }
+          case eid : String => {
+            if (vidP(eid)) {
+              del(uuid(eid))
+            } else {
+              del(findByName(eid).id)
+            }
+          }
+        }
+    }
+
 }
   /**
    * A map of UUID to name for all entities in the table. Useful for filling out
