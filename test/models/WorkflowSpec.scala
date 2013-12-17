@@ -42,8 +42,10 @@ class WorkflowSpec extends Specification with TestUtilities with BeforeExample w
 
     "be able to delete workflows" in new WithApplication(fakeAppGen){
       val workflows = for (i <- 0 until 10) yield workflowFactory.generate
+      val uuids = workflows map ( _.id )
       workflows map (w => Workflows delete (w.id))
       Workflows.findAll.size === 0
+      uuids map (uuid => Transitions getLogic (uuid) must be empty)
     }
   }
 
