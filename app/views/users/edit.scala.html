@@ -1,12 +1,5 @@
 @(userForm: Form[NewUser], user: User)(implicit session: play.api.mvc.Session)
 
 @main("Product Form") {
-@helper.form(action = routes.UsersController.update(user.email)) {
-@helper.textarea(userForm("name"))
-@helper.inputText(userForm("email"))
-
-<div class="form-actions">
-    <button type="submit">Update User</button>
-</div>
-}
+    @helpers.inputForm(userForm)
 }
