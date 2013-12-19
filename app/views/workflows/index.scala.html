@@ -3,16 +3,20 @@
 @import helper._
 
 @main("Listing Tasks") {
-
-   <h1>ETT</h1>
-
-   <h1> List of Workflows</h1>
-   @workflows.map { workflow =>
-       <p>
-       		================================================= <br/>
-       		Workflow ID: @workflow.id<br/>
-       		Workflow Name: @workflow.name<br/>
-       		=================================================
-       </p>
-   }
+    <div class="col-sm-offset-4 col-sm-4">
+    <table class="table table-condensed table-striped">
+        <thead>
+        <tr>
+            <th>Workflow Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @workflows.map { workflow =>
+            <tr>
+                <td>@workflow.name</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
 }
