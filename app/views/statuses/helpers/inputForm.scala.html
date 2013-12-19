@@ -1,6 +1,6 @@
 @(statusForm: Form[NewStatus],
-workForm: Form[NewWorkflow]=null,
-formAction: Call = routes.StatusesController.create)
+  workForm: Form[NewWorkflow]=null,
+  formAction: Call = routes.StatusesController.create)
 @import helpers.BootstrapViewHelper._
 @helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
     @helper.inputText((statusForm("name")))

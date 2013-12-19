@@ -1,6 +1,9 @@
-@(userForm: Form[NewUser])(implicit session: play.api.mvc.Session)
+@(userForm: Form[NewUser],
+  formAction: Call = routes.UsersController.create)
+(implicit session: play.api.mvc.Session)
+
 @import helpers.BootstrapViewHelper._
-@helper.form(action = routes.UsersController.create, 'class -> "form-horizontal", 'role -> "form") {
+@helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
     @helper.inputText((userForm("name")))
     @helper.inputText(userForm("email"))
 

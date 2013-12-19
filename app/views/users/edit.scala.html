@@ -1,5 +1,5 @@
 @(userForm: Form[NewUser], user: User)(implicit session: play.api.mvc.Session)
 
 @main("Product Form") {
-    @helpers.inputForm(userForm)
+    @helpers.inputForm(userForm, routes.UsersController.update(user.email))
 }
