@@ -17,7 +17,7 @@ import java.util.UUID
  * @tparam T
  * @tparam Y
  */
-trait Lifecycles[T <: Entity, Y <: NewEntity] {
+trait Lifecycles[T <: Entity, Y <: NewEntity] extends Observable {
 
   /**
    * Called right before an insert into DB.
@@ -30,6 +30,8 @@ trait Lifecycles[T <: Entity, Y <: NewEntity] {
    * Called right after an insert into DB.
    */
   def afterInsert(id: UUID, item: Y) = {
+    println("Number of observers: " + countObservers)
+    notifyObservers()
     play.api.Logger.debug("afterInsert Lifecycle Op on " + item.name)
   }
 

@@ -6,6 +6,8 @@ import play.api.Play.current
 import java.util.UUID
 import helpers._
 import models.traits.Queriable
+import models.traits.Observable
+import observers.TestObserver
 
 case class NewUser(name: String, email: String) extends NewEntity
 
@@ -19,7 +21,9 @@ case class User(id: UUID, name: String, email: String) extends Entity
  */
 object Users extends Table[User]("users")
   with Queriable[User, NewUser]
-  with EntityTable[User, NewUser] {
+  with EntityTable[User, NewUser]
+  {
+
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
   def * = id ~ name ~ email <>(User, User.unapply _)
@@ -65,5 +69,9 @@ object Users extends Table[User]("users")
       val user = query.first
       query.update(User(user.id, editUser.name, editUser.email))
       findByEmail(editUser.email)
+  }
+
+  def registerObserver() {
+    addObserver(TestObserver)
   }
 }

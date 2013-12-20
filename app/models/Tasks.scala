@@ -7,6 +7,7 @@ import scala.language.postfixOps
 import models.traits.Queriable
 import play.api.db.slick.DB
 import play.api.Play.current
+import models.traits.Observable
 
 
 case class NewTask(name: String, owner: String, workflow: String) extends NewEntity
