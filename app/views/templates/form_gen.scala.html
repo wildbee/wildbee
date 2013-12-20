@@ -1,0 +1,17 @@
+@(elements: helper.FieldElements)
+
+<div class="form-group">
+    <label for="@elements.id" class="col-sm-3 control-label">@elements.label</label>
+    <div class="col-sm-3">
+        <!-- Done to add ' class="form-control" ' to the input element -->
+        @if(elements.input.toString().contains("class=")) {
+            @Html(elements.input.toString().replaceFirst("(class=[\"'])", "$1form-control "))
+        } else {
+            @Html(elements.input.toString().replaceFirst("(<\\w+ )", "$1class=\"form-control\" "))
+        }
+        <span class="help-block text-muted">@elements.infos.mkString(", ")</span>
+    </div>
+    <div class="col-sm-2">
+        <span class="text-warning">@elements.errors.mkString(", ")</span>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+@(userForm: Form[NewUser],
+  formAction: Call = routes.UsersController.create)
+(implicit session: play.api.mvc.Session)
+
+@import helpers.BootstrapViewHelper._
+@helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
+    @helper.inputText((userForm("name")))
+    @helper.inputText(userForm("email"))
+
+    <div class="col-sm-offset-3 col-sm-9">
+      <button type="submit" class="btn btn-default">Submit</button>
+    </div>
+}

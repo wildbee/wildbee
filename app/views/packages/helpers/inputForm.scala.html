@@ -1,67 +1,25 @@
 @(packForm: Form[NewPackage],
   formAction: Call = routes.PackagesController.create,
-    statuses: Map[String,String] = Map())
+  statuses: Map[String,String] = Map())
+@import helpers.BootstrapViewHelper._
 
-<table>
-  	@helper.form(action = formAction) {
-	<tr>	
-    	@helper.inputText((packForm("name")))
-    </tr>
-    <tr>
-        <td>
-            @helper.select(packForm("task"),
-                helper.options(Tasks.mapIdToName)
-            )
-        </td>
-        <td>
-            @helper.select(packForm("creator"),
-                helper.options(Users.mapIdToName)
-            )
-        </td>
-        <td>
-            @helper.select(packForm("assignee"),
-                helper.options(Users.mapIdToName)
-            )
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @helper.inputText((packForm("ccList")))
-        </td>
-        <td>
-            @helper.inputText((packForm("osVersion")))
-        </td>
-        <td>
-            @if(packForm.data.contains("task")) {
-                    @if(statuses.isEmpty) {
-                        <input type="hidden" name="status" value="None">
-                    } else {
-                        @helper.select(packForm("status"),helper.options(statuses))
-                    }
-            } else {
-                <input type="hidden" name="status" value="None">
-            }
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="form-actions">
-                    <button type="submit">Submit</button>
-            </div>
-        </td>
-    </tr>
-  }
- @if(packForm.hasErrors) {
-    <div class="alert alert-error">
-        <a class="close" data-dismiss="alert">
-		Errors:
-        </a>
-        @if(packForm.errors.size > 0) {
-            @for(e <- packForm.errors) {
-            	<br>
-            		@e.key : @e.message
-            }
-        } else {No error returned.}
+@helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
+    @helper.inputText((packForm("name")))
+    @helper.select(packForm("task"), helper.options(Tasks.mapIdToName))
+    @helper.select(packForm("creator"), helper.options(Users.mapIdToName))
+    @helper.select(packForm("assignee"), helper.options(Users.mapIdToName))
+    @helper.inputText((packForm("ccList")))
+    @helper.inputText((packForm("osVersion")))
+    @if(packForm.data.contains("task")) {
+        @if(statuses.isEmpty) {
+            <input type="hidden" name="status" value="None">
+        } else {
+            @helper.select(packForm("status"),helper.options(statuses))
+        }
+    } else {
+        <input type="hidden" name="status" value="None">
+    }
+    <div class="col-sm-offset-3 col-sm-9">
+        <button type="submit" class="btn btn-default">Submit</button>
     </div>
 }
-</table>
