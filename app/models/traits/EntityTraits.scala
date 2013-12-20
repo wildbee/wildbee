@@ -103,6 +103,20 @@ trait UniquelyNamedTable[T <: Entity, Y <: NewEntity] {
   private def idxName =
     this.getClass.getName.toString.toLowerCase.
       replace("$","").replace("models.","")
+
+}
+
+trait MapsToIdsToNames[T <: Entity]{
+
+  self: Table[T] =>
+  /**
+   * A map of UUID to name for all entities in the table. Useful for filling out
+   * combo boxes in forms, for example.
+   */
+  def mapIdToName: Map[String, String] = DB.withSession {
+    implicit session: Session =>
+      Query(this).list.map(item => (item.id.toString, item.name)).toMap
+  }
 }
 
 /**

@@ -16,7 +16,8 @@ case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
 object Workflows extends Table[Workflow]("workflows")
   with Queriable[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
-  with UniquelyNamedTable[Workflow,NewWorkflow] {
+  with UniquelyNamedTable[Workflow,NewWorkflow]
+  with MapsToIdsToNames[Workflow]{
 
   def startStatus = column[UUID]("start_status")
 
