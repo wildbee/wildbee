@@ -52,8 +52,15 @@ object StatusesController extends Controller {
   }
 
   def delete(status: String) = Action { implicit request =>
+    println("Deleting??")
     val uuid = Statuses.nameToId(status)
     Statuses.delete(uuid)
+    Redirect(routes.StatusesController.index)
+  }
+
+  def register() = Action {
+    println("Registering?")
+    Statuses.registerObserver()
     Redirect(routes.StatusesController.index)
   }
 }

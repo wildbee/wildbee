@@ -9,6 +9,7 @@ import java.util.Date
 import java.util.UUID
 import helpers._
 import models.traits.Queriable
+import models.traits.Observable
 
 /*
  * This class is for creating new packages from string inputs:
@@ -20,7 +21,7 @@ case class NewPackage(
   assignee: String,
   ccList: String = "None",
   status: String = "None",
-  osVersion: String) extends NewEntity
+  osVersion: String) extends NewEntity with Observable
 
 /**
  * This is the main case class that we will map projections to.
@@ -41,7 +42,7 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] with EntityTable[Package, NewPackage] with TimekeepingTable[Package] {
+object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observable{
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
@@ -93,5 +94,10 @@ object Packages extends Table[Package]("packages") with Queriable[Package,NewPac
     val p = find(id)
     NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
       p.ccList, p.status.toString, p.osVersion)
+  }
+
+  override def afterUpdate(id: UUID, item: NewPackage) = {
+    println("Overriding after Update on Packages")
+    notifyObservers()
   }
 }

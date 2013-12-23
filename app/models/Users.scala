@@ -6,7 +6,6 @@ import play.api.Play.current
 import java.util.UUID
 import helpers._
 import models.traits.Queriable
-import models.traits.Observable
 import observers.TestObserver
 
 case class NewUser(name: String, email: String) extends NewEntity
@@ -69,9 +68,5 @@ object Users extends Table[User]("users")
       val user = query.first
       query.update(User(user.id, editUser.name, editUser.email))
       findByEmail(editUser.email)
-  }
-
-  def registerObserver() {
-    addObserver(TestObserver)
   }
 }

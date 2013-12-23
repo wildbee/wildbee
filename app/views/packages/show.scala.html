@@ -33,6 +33,10 @@
             <button type="submit">Delete Package</button>
         </div>
     }
+    @helper.form(routes.PackagesController.register(pack.id.toString)) {
+        <button type="submit">Add Test Observer</button>
+    }
+
 }
 
 

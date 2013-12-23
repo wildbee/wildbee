@@ -6,6 +6,7 @@ import models._
 import java.util.UUID
 import play.api.data._
 import play.api.data.Forms._
+import observers.TestObserver
 
 object PackagesController extends Controller {
 
@@ -38,15 +39,15 @@ object PackagesController extends Controller {
       })
   }
 
-  def show(tid: String, pid: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(tid, pid)))
+  def show(taskId: String, packId: String) = Action { implicit request =>
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packId)))
   }
 
-  def edit(tid: String, pid: String) = Action { implicit request =>
-    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
+  def edit(taskId: String, packId: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(taskId, packId).id)
     val filledForm = packageForm.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
-    Ok(views.html.packages.edit(filledForm, pid, statuses))
+    Ok(views.html.packages.edit(filledForm, packId, statuses))
   }
 
   def update(id: String) = Action { implicit request =>
@@ -54,7 +55,7 @@ object PackagesController extends Controller {
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
-        Packages.update(Packages.mapToEntity(updatedPack,oldPack.id))
+        Packages.update(Packages.uuid(id), updatedPack)
         Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
             .flashing("success" -> "Package Updated!")
       })
@@ -70,6 +71,13 @@ object PackagesController extends Controller {
     val filledForm = packageForm.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
     Ok(views.html.packages.newEntity(filledForm,statuses))
+  }
+
+  def register(id: String) = Action {
+    println("Registering " + id)
+    Packages.addObserver(TestObserver)
+    val pack = Packages.find(id)
+    Redirect(routes.PackagesController.show(pack.task.toString, pack.name))
   }
 
 }

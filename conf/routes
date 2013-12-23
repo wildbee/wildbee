@@ -11,8 +11,9 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Packages
 GET     /packages                   controllers.PackagesController.index
 GET     /package/new                controllers.PackagesController.newPackage
-POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package                    controllers.PackagesController.create
+POST    /package/register            controllers.PackagesController.register(id: String)
+POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package/:id/delete         controllers.PackagesController.delete(id: String)
 
 POST    /signup                     controllers.Application.signIn
@@ -53,7 +54,7 @@ GET     /status/new                 controllers.StatusesController.newStatus
 GET     /status/:status             controllers.StatusesController.show(status: String)
 GET     /statuses                   controllers.StatusesController.index
 POST    /status                     controllers.StatusesController.create
+POST    /status/register            controllers.StatusesController.register
 POST    /status/:id                 controllers.StatusesController.update(id: String)
 POST    /status/:status/delete      controllers.StatusesController.delete(status: String)
-
 
