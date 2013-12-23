@@ -38,27 +38,45 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       packageFactory.generate(uuid = uuids(intBetween(0, 10))) must throwA[PSQLException]
     }
 
-    "be able to add workflows without an ID" in new WithApplication(fakeAppGen) {
+    "be able to add packages without an ID" in new WithApplication(fakeAppGen) {
       val packages = for (i <- 0 until 10) yield packageFactory.generate
       Packages.findAll.size === 10
     }
 
-    "be able to delete workflows" in new WithApplication(fakeAppGen){
+    "be able to delete packages" in new WithApplication(fakeAppGen){
       val packages = for (i <- 0 until 10) yield packageFactory.generate
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
     }
 
-    //TODO: Make more robust/random
     "be able to add unique observer" in new WithApplication(fakeAppGen){
       val names = List("duplicate", "duplicate", "second", "duplicate")
-      var testObservers: List[Observer] = List.empty
-      for (name <- names ){
-        testObservers ::= TestObserver(name)
-        Packages.addObserver(testObservers.head)
-        Packages.countObservers === testObservers.groupBy(_.name).size
+      def uniqueObserverTest(names: List[String], observers: List[Observer] = List.empty) {
+        names match {
+          case(name :: rest ) =>
+            val newObservers = TestObserver(name, false) :: observers
+            Packages.addObserver(newObservers.head)
+            Packages.countObservers === newObservers.groupBy(_.name).size
+            uniqueObserverTest(rest, newObservers)
+          case(Nil) => //Test Passed!
+        }
       }
+      uniqueObserverTest(names)
     }
-  }
+    //TODO: Find out how to ret
+    "notify observers when updated info" in new WithApplication(fakeAppGen){
+      val names = List("duplicate", "duplicate", "second", "duplicate")
+      val newOs = "NEW_OS"
+      val observers = names map ( TestObserver(_, false) )
+      observers foreach ( Packages.addObserver( _ ) )
+      val pack = packageFactory.generate
+      val newPack = NewPackage(pack.name, pack.task.toString(), //We need a one to make one...
+          pack.creator.toString(), pack.assignee.toString(),
+          pack.ccList, pack.status.toString(), newOs)
+      Packages.update(pack.id, newPack)
+      Packages.find(pack.id).osVersion === newOs
+      Packages.getObservers foreach{ case o: TestObserver  => o.updated == true }
+    }
 
+  }
 }

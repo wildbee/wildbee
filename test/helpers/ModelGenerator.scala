@@ -18,11 +18,11 @@ import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
  *  val booleans = (x: Int => x > 0)
  *  val booleans = rand.nextInt > 0
  */
-abstract class Generator[T] extends Iterator[T] {
+abstract class Generator[Model, NewModel] extends Iterator[Model] {
   self =>
   private var toggle = 0
-  def generate: T
-  def next: T = self.generate
+  def generate: Model
+  def next: Model = self.generate
   def hasNext() = { //Generate 10 T's by default
     if (toggle <= 10) { toggle += 1; true }
     else { toggle = 0; false }
@@ -55,7 +55,7 @@ trait ModelGenerator extends {
     lo + nextInt().abs % (hi - lo)
 
   /** Random uuid generator */
-  object uuidFactory extends Generator[UUID] {
+  object uuidFactory extends Generator[UUID, UUID] {
     def generate = Config.pkGenerator.newKey
   }
 
@@ -66,7 +66,7 @@ trait ModelGenerator extends {
    *  name: Specify a name for your new user
    *  email: Specify a email address for your new user
    */
-  object userFactory extends Generator[User] {
+  object userFactory extends Generator[User, NewUser] {
     def generate() = generate(email = (randString + "@" + randString))
     def generate(uuid: UUID = uuidFactory.generate,
         name: String = randString, email: String = (randString + "@" + randString)) = {
@@ -81,7 +81,7 @@ trait ModelGenerator extends {
    *  uuid: Specify a UUID for your new status
    *  name: Specify a name for your new status
    */
-  object statusFactory extends Generator[Status] {
+  object statusFactory extends Generator[Status, NewStatus] {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString) = {
       val statusId = Statuses.insert(Status(uuid, name))
@@ -99,7 +99,7 @@ trait ModelGenerator extends {
    *  name: Specify a name for your new workflow
    *  statusId: Specify which default status ID to use with your workflow
    */
-  object workflowFactory extends Generator[Workflow] {
+  object workflowFactory extends Generator[Workflow, NewWorkflow] {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString, statusId: UUID = statusFactory.generate.id) = {
       val workflowId =  Workflows.insert(Workflow(uuid, name, statusId))
@@ -122,7 +122,7 @@ trait ModelGenerator extends {
    *  currentTime: Specify the timestamp for your task
    */
 
-  object taskFactory extends Generator[Task] {
+  object taskFactory extends Generator[Task, NewTask] {
     def generate(): Task = generate(uuid = uuidFactory.generate)
     def generate(
       uuid: UUID = uuidFactory.generate, name: String = randString,
@@ -151,7 +151,7 @@ trait ModelGenerator extends {
    *  osVersion: Specify the os version of the package
    *  currentTime: Specify the timestamp for your task
    */
-  object packageFactory extends Generator[Package] {
+  object packageFactory extends Generator[Package, NewPackage] {
     def generate(): Package = generate(uuid = uuidFactory.generate)
     def generate(
       uuid: UUID = uuidFactory.generate, name: String = randString,
@@ -160,6 +160,16 @@ trait ModelGenerator extends {
       osVersion: String = randString, currentTime: Timestamp = Packages.currentTimestamp): Package = {
       val packageId = Packages.insert(Package(uuid, name, taskId, creatorId, asigneeId, ccList, statusId, osVersion, currentTime, currentTime))
       Packages.find(packageId)
+    }
+    //TODO: Make this return a named function
+    def modifyModel(pack: Package): (String, String, String, String, String, String, String) => NewPackage = {
+      def modifyModelD  (name: String = pack.name, task:String = Tasks.idToName(pack.task),
+          creator:String = Users.idToName(pack.creator), assignee: String = Users.idToName(pack.assignee),
+          ccList: String = pack.ccList, status:String = Statuses.idToName(pack.status),
+          osVersion: String = pack.osVersion): NewPackage = {
+            NewPackage(name, task, creator, assignee, ccList, status ,osVersion)
+      }
+      modifyModelD
     }
   }
 }

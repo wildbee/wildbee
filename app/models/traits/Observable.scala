@@ -14,6 +14,8 @@ trait Observable {
     observers = observers filter( _ != o )
   }
 
+  def getObservers: List[Observer] = observers
+
   def countObservers: Int = {
     observers.size
   }

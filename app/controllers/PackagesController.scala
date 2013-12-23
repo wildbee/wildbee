@@ -56,7 +56,7 @@ object PackagesController extends Controller {
       formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
         Packages.update(Packages.uuid(id), updatedPack)
-        Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
+        Redirect(routes.PackagesController.show(updatedPack.task, oldPack.name))
             .flashing("success" -> "Package Updated!")
       })
   }
