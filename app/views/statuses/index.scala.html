@@ -1,12 +1,19 @@
 @(statuses: List[Status], statusForm: Form[NewStatus])(implicit session: play.api.mvc.Session)
 @main("Show Statuses") {
-    <h1>Statuses</h1>
-    <ul>
-        @helpers.inputForm(statusForm)
-    </ul>
-    @statuses.map { status =>
-        <ul>
-            name: @status.name
-        </ul>
-    }
+    <div class="col-sm-offset-4 col-sm-4">
+    <table class="table table-condensed table-striped">
+        <thead>
+        <tr>
+            <th>Status Name</th>
+        </tr>
+        </thead>
+        <tbody>
+            @statuses.map { status =>
+                <tr>
+                    <td>@status.name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
 }

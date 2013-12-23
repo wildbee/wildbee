@@ -1,16 +1,14 @@
 @(workForm: Form[NewWorkflow],
     s: Map[String,String]=Statuses.mapIdToName,
     formAction: Call = routes.WorkflowController.create)
-<p>
-<h2>Add a new Workflow</h2>
-@helper.form(action = formAction) {
-@helper.inputText(workForm("name"))
-@helper.select(workForm("status[0]"), helper.options(s))
-@helper.select(workForm("status[1]"), helper.options(s))
-@helper.select(workForm("status[2]"), helper.options(s))
-@helper.select(workForm("status[3]"), helper.options(s))
-<div class="form-actions">
-        <button type="submit">Submit</button>
-</div>
+@import helpers.BootstrapViewHelper._
+@helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
+    @helper.inputText(workForm("name"))
+    @helper.select(workForm("status[0]"), helper.options(s))
+    @helper.select(workForm("status[1]"), helper.options(s))
+    @helper.select(workForm("status[2]"), helper.options(s))
+    @helper.select(workForm("status[3]"), helper.options(s))
+    <div class="col-sm-offset-3 col-sm-9">
+            <button type="submit" class="btn btn-default">Submit</button>
+    </div>
 }
-</p>
