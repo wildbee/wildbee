@@ -78,10 +78,12 @@ trait Queriable[T <: Entity, Y <: NewEntity]
    * @return The UUID of the item.
    */
   def insert(item: T): UUID = {
+      beforeInsert(item)
       DB.withSession {
         implicit session: Session =>
           returnID.insert(item)
       }
+      item.id
     }
 
   /**
@@ -92,12 +94,19 @@ trait Queriable[T <: Entity, Y <: NewEntity]
    * @param nid an explicit UUID to use.
    * @return the UUID of the new item.
    */
-  def insert(item: Y, nid: UUID = newId): UUID = {
+  def insert(item: Y, nid: UUID = newId): Either[String,UUID] = {
     play.api.Logger.debug("nid: " + nid.toString)
-    beforeInsert(nid, item)
-    val id = insert(mapToEntity(item, nid))
-    afterInsert(nid, item)
-    id
+    insertValidator(item) match {
+      case Some(error) =>
+        Left(error)
+      case None => {
+        insert(mapToEntity(item, nid))
+        // TODO: refactor workflow creation so we can avoid
+        // this odd hack with the NewWorkflow.status info
+        afterInsert(nid, item)
+        Right(nid)
+      }
+    }
   }
 
   /**
@@ -118,10 +127,21 @@ trait Queriable[T <: Entity, Y <: NewEntity]
    * @param id
    * @param item
    */
-  def update(id: UUID, item: Y): Unit = {
-    beforeUpdate(id, item)
-    update(mapToEntity(item, id))
-    afterUpdate(id, item)
+  def update(id: UUID, item: Y): Option[String] = {
+    def upd(id: UUID, item: Y) = {
+      beforeUpdate(id, item)
+      update(mapToEntity(item, id))
+      afterUpdate(id, item)
+    }
+
+    updateValidator(id, item) match {
+      case Some(error) =>
+         Some(error)
+      case None => {
+        upd(id, item)
+        None
+      }
+    }
   }
 
   /**
@@ -139,7 +159,7 @@ trait Queriable[T <: Entity, Y <: NewEntity]
 
     deleteValidator(eid) match {
       case Some(error) =>
-        return Some(error)
+        Some(error)
       case None =>
         eid match {
           case eid : UUID => {
@@ -154,17 +174,27 @@ trait Queriable[T <: Entity, Y <: NewEntity]
           }
         }
     }
-
-}
+  }
 
   /**
    * Helper method to delete all the rows in a table
    */
-  def deleteAll: Unit = DB.withSession {
-    beforeDeleteAll
-    implicit session: Session =>
-        tableToQuery(this).delete
-    afterDeleteAll
+  def deleteAll: Option[String] = {
+    def del = DB.withSession {
+      beforeDeleteAll
+      implicit session: Session =>
+          tableToQuery(this).delete
+      afterDeleteAll
+    }
+
+    deleteAllValidator match {
+      case Some(error) =>
+        Some(error)
+      case None => {
+        del
+        None
+      }
+    }
   }
 
   /**
@@ -189,4 +219,21 @@ trait Queriable[T <: Entity, Y <: NewEntity]
    * Find an entity by name rather then by UUID.
    */
   private def findByName(name: String): T = findById(nameToId(name))
+
+  /**
+   * Helper that finds the UUID for some entity given its
+   * name, or string UUID.
+   * @param item
+   * @return
+   */
+  def findUUID(item: AnyRef): UUID = item match {
+    case item: String => {
+      if (vidP(item)) {
+        uuid(item)
+      } else {
+        find(item).id
+      }
+    }
+    case item: UUID => item
+  }
 }

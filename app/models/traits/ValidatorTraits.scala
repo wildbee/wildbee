@@ -1,7 +1,9 @@
 package models.traits
 
 import models.Entity;
-import models.NewEntity;
+import models.NewEntity
+import java.util.UUID
+;
 
 
 /**
@@ -19,7 +21,9 @@ import models.NewEntity;
  */
 trait Validators[T <: Entity, Y <: NewEntity] {
 
-  def updateValidator(item: AnyRef): Option[String] = None
+  def insertValidator(item: Y): Option[String] = None
+
+  def updateValidator(id: UUID, item: AnyRef): Option[String] = None
 
   def deleteValidator(item: AnyRef): Option[String] = None
 

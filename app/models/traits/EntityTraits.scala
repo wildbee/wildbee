@@ -103,7 +103,6 @@ trait UniquelyNamedTable[T <: Entity, Y <: NewEntity] {
   private def idxName =
     this.getClass.getName.toString.toLowerCase.
       replace("$","").replace("models.","")
-
 }
 
 trait MapsToIdsToNames[T <: Entity]{
