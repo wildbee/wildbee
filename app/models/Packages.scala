@@ -97,7 +97,8 @@ object Packages extends Table[Package]("packages") with Queriable[Package,NewPac
   }
 
   override def afterUpdate(id: UUID, item: NewPackage) = {
-    println("Overriding after Update on Packages")
+    println("Overriding after Update on Packages" + countObservers)
+
     notifyObservers()
   }
 }

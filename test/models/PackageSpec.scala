@@ -5,9 +5,10 @@ import org.specs2.runner.JUnitRunner
 import org.specs2.mutable.Specification
 import org.specs2.specification.BeforeExample
 import org.postgresql.util.PSQLException
-
 import play.api.test.WithApplication
 import helpers.{ TestUtilities, ModelGenerator }
+import helpers.TestObserver
+import models.traits.Observer
 
 @RunWith(classOf[JUnitRunner])
 class PackageSpec extends Specification with TestUtilities with BeforeExample with ModelGenerator {
@@ -46,6 +47,17 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       val packages = for (i <- 0 until 10) yield packageFactory.generate
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
+    }
+
+    //TODO: Make more robust/random
+    "be able to add unique observer" in new WithApplication(fakeAppGen){
+      val names = List("duplicate", "duplicate", "second", "duplicate")
+      var testObservers: List[Observer] = List.empty
+      for (name <- names ){
+        testObservers ::= TestObserver(name)
+        Packages.addObserver(testObservers.head)
+        Packages.countObservers === testObservers.groupBy(_.name).size
+      }
     }
   }
 

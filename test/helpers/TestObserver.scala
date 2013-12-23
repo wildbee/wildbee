@@ -1,13 +1,10 @@
-package observers
+package helpers
 
-import models.Entity
 import models.traits.Observer
 import models.traits.Observable
 
-
-
 case class TestObserver(name: String) extends Observer {
   def update(s: Observable){
-    println(s"I have observed a change in the '$s'")
+    println(s"I $name have observed a change in the '$s'")
   }
 }
