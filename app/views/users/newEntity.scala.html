@@ -1,11 +1,4 @@
 @(userForm: Form[NewUser])(implicit session: play.api.mvc.Session)
 @main("Product Form") {
-  @helper.form(action = routes.UsersController.create) {
-    @helper.textarea((userForm("name")))
-    @helper.inputText(userForm("email"))
-
-    <div class="form-actions">
-      <button type="submit">Create User</button>
-    </div>
-  }
+    @helpers.inputForm(userForm)
 }
