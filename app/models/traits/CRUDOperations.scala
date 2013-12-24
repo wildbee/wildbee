@@ -37,10 +37,10 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * General find query searches by id if given a
    * valid UUID (in UUID or string format), or by
    * name if given a non-uuid string.
-   * @param atty
+   * @param identifier
    * @return
    */
-  def find(atty: AnyRef): T = atty match {
+  def find(identifier: AnyRef): T = identifier match {
     case atty: UUID => findById(atty)
     case atty: String => {
       if (vidP(atty)) {
@@ -52,38 +52,38 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
   }
 
   /**
-   * Inserts this entity item into the database table.
-   * @param item An Entity item.
-   * @return The UUID of the item.
+   * Inserts this entity instance into the database table.
+   * @param instance An Entity instance.
+   * @return The UUID of the instance.
    */
-  def insert(item: T): UUID = {
-      beforeInsert(item)
+  def insert(instance: T): UUID = {
+      beforeInsert(instance)
       DB.withSession {
         implicit session: Session =>
-          returnID.insert(item)
+          returnID.insert(instance)
       }
-      item.id
+      instance.id
     }
 
   /**
    * Insert a new entity into the db table created from the values
-   * in the NewEntity type item. If an UUID is not specified, an id
-   * will be generated inside the mapToEntity item.
-   * @param item A NewEntity containing values to insert.
-   * @param nid an explicit UUID to use.
-   * @return the UUID of the new item.
+   * in the NewEntity type instance. If an UUID is not specified, an id
+   * will be generated inside the mapToEntity instance.
+   * @param newInstance A NewEntity containing values to insert.
+   * @param id an explicit UUID to use.
+   * @return the UUID of the new instance.
    */
-  def insert(item: Y, nid: UUID = newId): Either[String,UUID] = {
-    play.api.Logger.debug("nid: " + nid.toString)
-    insertValidator(item) match {
+  def insert(id: UUID = newId, newInstance: Y): Either[String,UUID] = {
+    play.api.Logger.debug("id: " + id.toString)
+    insertValidator(newInstance) match {
       case Some(error) =>
         Left(error)
       case None => {
-        insert(mapToEntity(item, nid))
+        insert(mapToEntity(newInstance, id))
         // TODO: refactor workflow creation so we can avoid
         // this odd hack with the NewWorkflow.status info
-        afterInsert(nid, item)
-        Right(nid)
+        afterInsert(id, newInstance)
+        Right(id)
       }
     }
   }
@@ -92,11 +92,11 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * Same as insert above. Need to map your inputs to the correct
    * class of type T, then pass that into this method.
    */
-  def update(item: T): Unit = {
+  def update(instance: T): Unit = {
     DB.withSession {
     implicit session: Session =>
       tableQueryToUpdateInvoker(
-        tableToQuery(this).where(_.id === item.id)).update(item)
+        tableToQuery(this).where(_.id === instance.id)).update(instance)
     }
   }
 
@@ -104,20 +104,20 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * Update takes a NewEntity instance and its id, then
    * maps it to an Entity and updates the db.
    * @param id
-   * @param item
+   * @param newInstance
    */
-  def update(id: UUID, item: Y): Option[String] = {
+  def update(id: UUID, newInstance: Y): Option[String] = {
     def upd(id: UUID, item: Y) = {
       beforeUpdate(id, item)
       update(mapToEntity(item, id))
       afterUpdate(id, item)
     }
 
-    updateValidator(id, item) match {
+    updateValidator(id, newInstance) match {
       case Some(error) =>
          Some(error)
       case None => {
-        upd(id, item)
+        upd(id, newInstance)
         None
       }
     }
@@ -126,7 +126,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
   /**
    * Delete an entity from its table.
    */
-  def delete(eid: AnyRef): Option[String] = {
+  def delete(identifier: AnyRef): Option[String] = {
     def del(id: UUID): Option[String] = DB.withSession {
         beforeDelete(id)
         implicit session: Session =>
@@ -136,11 +136,11 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
         None
     }
 
-    deleteValidator(eid) match {
+    deleteValidator(identifier) match {
       case Some(error) =>
         Some(error)
       case None =>
-        eid match {
+        identifier match {
           case eid : UUID => {
             del(eid)
           }

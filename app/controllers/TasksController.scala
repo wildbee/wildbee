@@ -32,7 +32,7 @@ object TasksController extends Controller {
     taskForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)).flashing("success" -> "Package Created!"),
       newTask => {
-        Tasks.insert(newTask)
+        Tasks.insert(newInstance = newTask)
         Redirect(routes.TasksController.show(newTask.name)).flashing("success" -> "Task Created!")
       })
   }

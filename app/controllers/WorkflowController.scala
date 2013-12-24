@@ -31,7 +31,7 @@ object WorkflowController extends Controller {
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
         workflow => {
-          Workflows.insert(workflow)
+          Workflows.insert(newInstance = workflow)
           Redirect(routes.WorkflowController.show(workflow.name))
         }
     )
