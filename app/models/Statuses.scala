@@ -10,7 +10,8 @@ case class Status(id: UUID, name: String) extends Entity
 object Statuses extends Table[Status]("statuses")
   with Queriable[Status, NewStatus]
   with EntityTable[Status, NewStatus]
-  with UniquelyNamedTable[Status, NewStatus]{
+  with UniquelyNamedTable[Status, NewStatus]
+  with MapsToIdsToNames[Status]{
 
   def * = id ~ name  <> (Status, Status.unapply _)
 

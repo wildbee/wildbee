@@ -22,7 +22,7 @@ trait Lifecycles[T <: Entity, Y <: NewEntity] {
   /**
    * Called right before an insert into DB.
    */
-  def beforeInsert(id: UUID, item: Y) = {
+  def beforeInsert(item: T) = {
     play.api.Logger.debug("beforeInsert Lifecycle Op on " + item.name)
   }
 
