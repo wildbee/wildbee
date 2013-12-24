@@ -75,7 +75,7 @@ object PackagesController extends Controller {
 
   def register(id: String) = Action {
     println("Registering " + id)
-    Packages.addObserver(new TestObserver("Test"))
+    Packages.addObserver(new TestObserver)
     val pack = Packages.find(id)
     Redirect(routes.PackagesController.show(pack.task.toString, pack.name))
   }

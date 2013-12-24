@@ -8,7 +8,8 @@ libraryDependencies ++= Seq(
   cache,
   "com.typesafe.slick" %% "slick" % "1.0.1",
   "org.postgresql" % "postgresql" % "9.3-1100-jdbc4",
-  "com.typesafe.play" %% "play-slick" % "0.5.0.8"
+  "com.typesafe.play" %% "play-slick" % "0.5.0.8",
+  "org.clapper" % "classutil_2.10" % "1.0.2"
 )
 
 play.Project.playScalaSettings

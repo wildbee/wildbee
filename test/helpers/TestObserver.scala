@@ -3,7 +3,9 @@ package helpers
 import models.traits.Observer
 import models.traits.Observable
 
-case class TestObserver(name: String, var updated: Boolean) extends Observer {
+case class TestObserver extends Observer {
+  var updated = false
+  val name = "Specs2 Observer"
   def update(s: Observable){
     this.updated = true
 

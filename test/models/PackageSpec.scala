@@ -48,6 +48,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
     }
+    /*
 
     "be able to add unique observer" in new WithApplication(fakeAppGen){
       val names = List("duplicate", "duplicate", "second", "duplicate")
@@ -76,7 +77,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       Packages.update(pack.id, newPack)
       Packages.find(pack.id).osVersion === newOs
       Packages.getObservers foreach{ case o: TestObserver  => o.updated == true }
-    }
+    }*/
 
   }
 }

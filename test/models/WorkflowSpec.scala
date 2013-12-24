@@ -19,6 +19,9 @@ class WorkflowSpec extends Specification with TestUtilities with BeforeExample w
     resetModelGenerator()
   }
 
+  /** TODO: Tests to add
+   * Check that validation for deleting workflow that is being used as a dependency cannot be deleted
+   */
   "Workflow model" should {
     "be able to add new workflows with specified ID and throw error on conflicting IDs" in
     new WithApplication(fakeAppGen) {

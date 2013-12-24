@@ -42,6 +42,6 @@ object Statuses extends Table[Status]("statuses")
     notifyObservers()
   }
   def registerObserver() {
-    addObserver(new TestObserver("TEST"))
+    addObserver(new TestObserver)
   }
 }
