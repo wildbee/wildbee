@@ -9,6 +9,7 @@ import play.api.data.Forms._
 import observers.TestObserver
 
 object PackagesController extends Controller {
+case class Obvs(name: String)
 
   val packageForm = Form(
     mapping(
@@ -19,6 +20,11 @@ object PackagesController extends Controller {
       "ccList" -> text,
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
+
+  val obverserForm = Form(
+    mapping(
+      "obverser" -> nonEmptyText
+    )(Obvs.apply)(Obvs.unapply))
 
   def index = Action { implicit request =>
     Ok(views.html.packages.index(Packages.findAll, packageForm))
@@ -40,7 +46,7 @@ object PackagesController extends Controller {
   }
 
   def show(taskId: String, packId: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(taskId, packId)))
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packId),  List("TestObserver")))
   }
 
   def edit(taskId: String, packId: String) = Action { implicit request =>
@@ -73,7 +79,8 @@ object PackagesController extends Controller {
     Ok(views.html.packages.newEntity(filledForm,statuses))
   }
 
-  def register(id: String) = Action {
+  def register(id: String) = Action {implicit request =>
+    println(request)
     println("Registering " + id)
     Packages.addObserver(new TestObserver)
     val pack = Packages.find(id)
