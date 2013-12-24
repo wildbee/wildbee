@@ -8,7 +8,7 @@ import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
-import models.traits.Queriable
+import models.traits.CRUDOperations
 
 /*
  * This class is for creating new packages from string inputs:
@@ -42,7 +42,7 @@ case class Package(
  * we can map our projections to the Package case class.
  */
 object Packages extends Table[Package]("packages")
-  with Queriable[Package,NewPackage]
+  with CRUDOperations[Package,NewPackage]
   with EntityTable[Package, NewPackage]
   with TimekeepingTable[Package]
   with MapsToIdsToNames[Package]{

@@ -7,14 +7,14 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
-import models.traits.Queriable
+import models.traits.CRUDOperations
 import play.api.db.slick.DB
 import play.api.Play.current
 
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
 object Workflows extends Table[Workflow]("workflows")
-  with Queriable[Workflow,NewWorkflow]
+  with CRUDOperations[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
   with UniquelyNamedTable[Workflow,NewWorkflow]
   with MapsToIdsToNames[Workflow]{
