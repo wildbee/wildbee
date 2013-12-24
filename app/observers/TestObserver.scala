@@ -19,19 +19,11 @@ case class TestObserver extends Observer {
   def init() {
     val classpath = List(".").map(new File(_))
     val finder = ClassFinder(classpath)
-    val classes = finder.getClasses                                                 //Iterator[ClassInfo]
-    val plugins = ClassFinder.concreteSubclasses("models.traits.Observer", classes) //Iterator[ClassInfo]
-    val dd = plugins filter (x => !x.toString().startsWith("helpers"))
-    //dd foreach println
-    val foo = (dd map (x => Class.forName(x.toString()).newInstance().asInstanceOf[Observer]) ).toList
-    println("WHAT")
+    val classes = finder.getClasses  //Iterator[ClassInfo]
+    val plugins = (ClassFinder concreteSubclasses("models.traits.Observer", classes) toList)
+                  .filter(!_.toString().startsWith("helpers")) //Filter out the test observers
+    val foo = (plugins map (x => Class.forName(x.toString()).newInstance().asInstanceOf[Observer]) )//.toList
     foo foreach (o => println(o.name))
-    println("WHAT")
-    /*
-    val hum = foo(0).setAccessible(true)
-    println("HUM " + hum)
-    foo(0).newInstance().asInstanceOf[Observer]*/
-    //println("FOO " + foo)
   }
 }
 
