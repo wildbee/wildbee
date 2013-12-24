@@ -17,7 +17,7 @@ import models.{EntityTable, NewEntity, Entity}
  * Y is the case class used to map from all string user input to a scala object.
  */
 trait CRUDOperations[T <: Entity, Y <: NewEntity]
-  extends CRUDHelpers[T,Y]
+  extends NameIdMethods[T,Y]
   with Validators[T,Y]{
 
   /**

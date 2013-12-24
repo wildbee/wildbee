@@ -8,7 +8,7 @@ import java.util.UUID
 import scala.language.reflectiveCalls
 import models.{EntityTable, NewEntity, Entity}
 
-trait CRUDHelpers[T <: Entity, Y <: NewEntity]
+trait NameIdMethods[T <: Entity, Y <: NewEntity]
   extends Lifecycles[T, Y] {
 
   /**
@@ -55,7 +55,6 @@ trait CRUDHelpers[T <: Entity, Y <: NewEntity]
    * Find an entity by name rather then by UUID.
    */
   protected def findByName(name: String): T = findById(nameToId(name))
-
 
   /**
    * Helper that finds the UUID for some entity given its
