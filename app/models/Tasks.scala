@@ -31,7 +31,7 @@ object Tasks extends Table[Task]("tasks")
    * @param nid
    * @return
    */
-  def mapToEntity(t: NewTask, nid: UUID = newId): Task = {
+  def mapToEntity(nid: UUID = newId, t: NewTask): Task = {
     Task(nid,t.name, uuid(t.owner), currentTimestamp, uuid(t.workflow),
       currentTimestamp)
   }

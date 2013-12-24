@@ -30,7 +30,7 @@ object Workflows extends Table[Workflow]("workflows")
    * @param nid
    * @return
    */
-  def mapToEntity(w: NewWorkflow, nid: UUID = newId): Workflow = {
+  def mapToEntity(nid: UUID = newId, w: NewWorkflow ): Workflow = {
     Workflow(nid, w.name, uuid(w.status(0)))
   }
 

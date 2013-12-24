@@ -79,7 +79,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
       case Some(error) =>
         Left(error)
       case None => {
-        insert(mapToEntity(newInstance, id))
+        insert(mapToEntity(id,newInstance))
         // TODO: refactor workflow creation so we can avoid
         // this odd hack with the NewWorkflow.status info
         afterInsert(id, newInstance)
@@ -109,7 +109,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
   def update(id: UUID, newInstance: Y): Option[String] = {
     def upd(id: UUID, item: Y) = {
       beforeUpdate(id, item)
-      update(mapToEntity(item, id))
+      update(mapToEntity(id,item))
       afterUpdate(id, item)
     }
 

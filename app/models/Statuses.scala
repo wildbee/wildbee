@@ -31,7 +31,7 @@ object Statuses extends Table[Status]("statuses")
    * @param nid
    * @return
    */
-  def mapToEntity(p: NewStatus, nid: UUID = newId): Status = {
+  def mapToEntity(nid: UUID = newId, p: NewStatus): Status = {
     Status(nid,p.name)
   }
 }

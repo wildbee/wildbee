@@ -86,7 +86,7 @@ object Packages extends Table[Package]("packages")
    * @param nid
    * @return
    */
-  def mapToEntity(p: NewPackage, nid: UUID = newId): Package =
+  def mapToEntity(nid: UUID = newId, p: NewPackage): Package =
     Package(nid, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee),
     p.ccList, Tasks.getStartingStatus(uuid(p.task)), p.osVersion,
     currentTimestamp, currentTimestamp)

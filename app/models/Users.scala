@@ -37,7 +37,7 @@ object Users extends Table[User]("users")
    * @param nid
    * @return
    */
-  def mapToEntity(u: NewUser, nid: UUID = newId): User = {
+  def mapToEntity(nid: UUID = newId, u: NewUser): User = {
     User(nid, u.name, u.email)
   }
 
@@ -51,7 +51,7 @@ object Users extends Table[User]("users")
     NewUser(u.name, u.email)
   }
 
- def insertWithId(id: UUID, u: NewUser): UUID = {
+ def insertWithId(u: NewUser, id: UUID): UUID = {
     Users.insert(User(id, u.name, u.email))
   }
 
