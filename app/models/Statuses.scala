@@ -11,7 +11,7 @@ object Statuses extends Table[Status]("statuses")
   with CRUDOperations[Status, NewStatus]
   with EntityTable[Status, NewStatus]
   with UniquelyNamedTable[Status, NewStatus]
-  with MapsToIdsToNames[Status]{
+  with MapsIdsToNames[Status]{
 
   def * = id ~ name  <> (Status, Status.unapply _)
 

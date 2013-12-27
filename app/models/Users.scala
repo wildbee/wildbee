@@ -20,7 +20,7 @@ case class User(id: UUID, name: String, email: String) extends Entity
 object Users extends Table[User]("users")
   with CRUDOperations[User, NewUser]
   with EntityTable[User, NewUser]
-  with MapsToIdsToNames[User]{
+  with MapsIdsToNames[User]{
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
   def * = id ~ name ~ email <>(User, User.unapply _)

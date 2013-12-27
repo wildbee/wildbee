@@ -105,7 +105,7 @@ trait UniquelyNamedTable[T <: Entity, Y <: NewEntity] {
       replace("$","").replace("models.","")
 }
 
-trait MapsToIdsToNames[T <: Entity]{
+trait MapsIdsToNames[T <: Entity]{
 
   self: Table[T] =>
   /**

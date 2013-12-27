@@ -45,7 +45,7 @@ object Packages extends Table[Package]("packages")
   with CRUDOperations[Package,NewPackage]
   with EntityTable[Package, NewPackage]
   with TimekeepingTable[Package]
-  with MapsToIdsToNames[Package]{
+  with MapsIdsToNames[Package]{
 
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")

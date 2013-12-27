@@ -18,7 +18,7 @@ object Tasks extends Table[Task]("tasks")
   with EntityTable[Task, NewTask]
   with TimekeepingTable[Task]
   with UniquelyNamedTable[Task,NewTask]
-  with MapsToIdsToNames[Task]{
+  with MapsIdsToNames[Task]{
 
   def owner = column[UUID]("owner_id")
   def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)

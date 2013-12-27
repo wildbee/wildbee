@@ -17,7 +17,7 @@ object Workflows extends Table[Workflow]("workflows")
   with CRUDOperations[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
   with UniquelyNamedTable[Workflow,NewWorkflow]
-  with MapsToIdsToNames[Workflow]{
+  with MapsIdsToNames[Workflow]{
 
   def startStatus = column[UUID]("start_status")
 
