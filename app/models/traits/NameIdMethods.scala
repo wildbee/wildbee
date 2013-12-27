@@ -9,7 +9,7 @@ import scala.language.reflectiveCalls
 import models.{EntityTable, NewEntity, Entity}
 
 trait NameIdMethods[T <: Entity, Y <: NewEntity]
-  extends Lifecycles[T, Y] {
+  extends CRUDLifecycles[T, Y] {
 
   /**
    * This trait is used by entity models with Tables of type T with EntityTable trait of type T.

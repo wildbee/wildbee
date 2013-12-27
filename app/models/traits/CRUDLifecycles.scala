@@ -17,7 +17,7 @@ import java.util.UUID
  * @tparam T
  * @tparam Y
  */
-trait Lifecycles[T <: Entity, Y <: NewEntity] {
+trait CRUDLifecycles[T <: Entity, Y <: NewEntity] {
 
   /**
    * Called right before an insert into DB.
