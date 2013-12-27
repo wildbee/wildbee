@@ -18,7 +18,7 @@ import models.{EntityTable, NewEntity, Entity}
  */
 trait CRUDOperations[T <: Entity, Y <: NewEntity]
   extends NameIdMethods[T,Y]
-  with Validators[T,Y]{
+  with CRUDValidators[T,Y]{
 
   /**
    * This trait is used by entity models with Tables of type T with EntityTable trait of type T.

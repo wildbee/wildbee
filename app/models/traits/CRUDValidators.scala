@@ -19,7 +19,7 @@ import java.util.UUID
  * @tparam T
  * @tparam Y
  */
-trait Validators[T <: Entity, Y <: NewEntity] {
+trait CRUDValidators[T <: Entity, Y <: NewEntity] {
 
   def insertValidator(item: Y): Option[String] = None
 
