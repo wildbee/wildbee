@@ -83,11 +83,11 @@ object Packages extends Table[Package]("packages")
   /**
    * Implements the Queriable trait's mapToEntity method.
    * @param p
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(nid: UUID = newId, p: NewPackage): Package =
-    Package(nid, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee),
+  def mapToEntity(id: UUID = newId, p: NewPackage): Package =
+    Package(id, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee),
     p.ccList, Tasks.getStartingStatus(uuid(p.task)), p.osVersion,
     currentTimestamp, currentTimestamp)
 

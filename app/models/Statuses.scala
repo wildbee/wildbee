@@ -28,10 +28,10 @@ object Statuses extends Table[Status]("statuses")
   /**
    * Implements Queriable trait's mapToEntity.
    * @param p
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(nid: UUID = newId, p: NewStatus): Status = {
-    Status(nid,p.name)
+  def mapToEntity(id: UUID = newId, p: NewStatus): Status = {
+    Status(id,p.name)
   }
 }

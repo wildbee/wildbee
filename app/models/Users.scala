@@ -34,11 +34,11 @@ object Users extends Table[User]("users")
   /**
    * Implements Queriable's mapToEntity.
    * @param u
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(nid: UUID = newId, u: NewUser): User = {
-    User(nid, u.name, u.email)
+  def mapToEntity(id: UUID = newId, u: NewUser): User = {
+    User(id, u.name, u.email)
   }
 
   /**

@@ -28,11 +28,11 @@ object Tasks extends Table[Task]("tasks")
   /**
    * Implements Queriable's mapToEntity requirement.
    * @param t
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(nid: UUID = newId, t: NewTask): Task = {
-    Task(nid,t.name, uuid(t.owner), currentTimestamp, uuid(t.workflow),
+  def mapToEntity(id: UUID = newId, t: NewTask): Task = {
+    Task(id,t.name, uuid(t.owner), currentTimestamp, uuid(t.workflow),
       currentTimestamp)
   }
 
