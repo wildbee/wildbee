@@ -62,6 +62,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
         implicit session: Session =>
           returnID.insert(instance)
       }
+      afterInsert(instance)
       instance.id
     }
 
@@ -75,13 +76,13 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    */
   def insert(id: UUID = newId, newInstance: Y): Either[String,UUID] = {
     play.api.Logger.debug("id: " + id.toString)
+
     insertValidator(newInstance) match {
       case Some(error) =>
         Left(error)
       case None => {
+        beforeInsert(id, newInstance)
         insert(mapToEntity(id,newInstance))
-        // TODO: refactor workflow creation so we can avoid
-        // this odd hack with the NewWorkflow.status info
         afterInsert(id, newInstance)
         Right(id)
       }
@@ -93,11 +94,13 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * class of type T, then pass that into this method.
    */
   def update(instance: T): Unit = {
+    beforeUpdate(instance)
     DB.withSession {
     implicit session: Session =>
       tableQueryToUpdateInvoker(
         tableToQuery(this).where(_.id === instance.id)).update(instance)
     }
+    afterUpdate(instance)
   }
 
   /**

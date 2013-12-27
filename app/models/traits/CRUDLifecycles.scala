@@ -27,6 +27,20 @@ trait CRUDLifecycles[T <: Entity, Y <: NewEntity] {
   }
 
   /**
+   * Called right before an insert into DB.
+   */
+  def beforeInsert(id: UUID, newInstance: Y) = {
+    play.api.Logger.debug("beforeInsert Lifecycle Op on " + newInstance.name)
+  }
+
+  /**
+   * Called right after an insert into DB.
+   */
+  def afterInsert(instance: T) = {
+    play.api.Logger.debug("afterInsert Lifecycle Op on " + instance.name)
+  }
+
+  /**
    * Called right after an insert into DB.
    */
   def afterInsert(id: UUID, newInstance: Y) = {
@@ -52,6 +66,20 @@ trait CRUDLifecycles[T <: Entity, Y <: NewEntity] {
    */
   def beforeUpdate(id: UUID, newInstance: Y) = {
     play.api.Logger.debug("beforeUpdate Lifecycle Op on " + newInstance.name)
+  }
+
+  /**
+   * Called right before an update into DB.
+   */
+  def beforeUpdate(instance: T) = {
+    play.api.Logger.debug("beforeUpdate Lifecycle Op on " + instance.name)
+  }
+
+  /**
+   * Called right after an update into DB.
+   */
+  def afterUpdate(instance: T) = {
+    play.api.Logger.debug("afterUpdate Lifecycle Op on " + instance.name)
   }
 
   /**
