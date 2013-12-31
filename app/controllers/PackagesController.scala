@@ -31,10 +31,17 @@ object PackagesController extends Controller {
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.newEntity(formWithErrors)),
       pack => {
-        val uuid = Packages.insert(pack)
-        val newPack = Packages.find(uuid)
-        Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
-            .flashing("success" -> "Package Created!")
+        Packages.insert(newInstance = pack) match {
+          case Right(id) => {
+            val newPack = Packages.find(id)
+            Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
+              .flashing("success" -> "Package Created!")
+          }
+          case Left(error) => {
+            BadRequest(views.html.packages.newEntity(packageForm))
+              .flashing("failure" -> error)
+          }
+        }
       })
   }
 
@@ -54,7 +61,7 @@ object PackagesController extends Controller {
     packageForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
       updatedPack => {
-        Packages.update(Packages.mapToEntity(updatedPack,oldPack.id))
+        Packages.update(Packages.mapToEntity(oldPack.id, updatedPack))
         Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
             .flashing("success" -> "Package Updated!")
       })

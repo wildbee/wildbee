@@ -7,17 +7,17 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
-import models.traits.Queriable
+import models.traits.CRUDOperations
 import play.api.db.slick.DB
 import play.api.Play.current
 
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
 object Workflows extends Table[Workflow]("workflows")
-  with Queriable[Workflow,NewWorkflow]
+  with CRUDOperations[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
   with UniquelyNamedTable[Workflow,NewWorkflow]
-  with MapsToIdsToNames[Workflow]{
+  with MapsIdsToNames[Workflow]{
 
   def startStatus = column[UUID]("start_status")
 
@@ -30,7 +30,7 @@ object Workflows extends Table[Workflow]("workflows")
    * @param nid
    * @return
    */
-  def mapToEntity(w: NewWorkflow, nid: UUID = newId): Workflow = {
+  def mapToEntity(nid: UUID = newId, w: NewWorkflow ): Workflow = {
     Workflow(nid, w.name, uuid(w.status(0)))
   }
 

@@ -30,10 +30,18 @@ object TasksController extends Controller {
 
   def create = Action { implicit request =>
     taskForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)).flashing("success" -> "Package Created!"),
+      formWithErrors => BadRequest(views.html.tasks.newEntity(formWithErrors)),
       newTask => {
-        Tasks.insert(newTask)
-        Redirect(routes.TasksController.show(newTask.name)).flashing("success" -> "Task Created!")
+        Tasks.insert(newInstance = newTask) match {
+          case Right(id) => {
+            Redirect(routes.TasksController.show(newTask.name))
+              .flashing("success" -> "Task Created!")
+          }
+          case Left(error) => {
+            BadRequest(views.html.tasks.newEntity(taskForm))
+              .flashing("failure" -> error)
+          }
+        }
       })
   }
 

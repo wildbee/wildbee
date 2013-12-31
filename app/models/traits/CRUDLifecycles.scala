@@ -17,20 +17,34 @@ import java.util.UUID
  * @tparam T
  * @tparam Y
  */
-trait Lifecycles[T <: Entity, Y <: NewEntity] {
+trait CRUDLifecycles[T <: Entity, Y <: NewEntity] {
 
   /**
    * Called right before an insert into DB.
    */
-  def beforeInsert(item: T) = {
-    play.api.Logger.debug("beforeInsert Lifecycle Op on " + item.name)
+  def beforeInsert(instance: T) = {
+    play.api.Logger.debug("beforeInsert Lifecycle Op on " + instance.name)
+  }
+
+  /**
+   * Called right before an insert into DB.
+   */
+  def beforeInsert(id: UUID, newInstance: Y) = {
+    play.api.Logger.debug("beforeInsert Lifecycle Op on " + newInstance.name)
   }
 
   /**
    * Called right after an insert into DB.
    */
-  def afterInsert(id: UUID, item: Y) = {
-    play.api.Logger.debug("afterInsert Lifecycle Op on " + item.name)
+  def afterInsert(instance: T) = {
+    play.api.Logger.debug("afterInsert Lifecycle Op on " + instance.name)
+  }
+
+  /**
+   * Called right after an insert into DB.
+   */
+  def afterInsert(id: UUID, newInstance: Y) = {
+    play.api.Logger.debug("afterInsert Lifecycle Op on " + newInstance.name)
   }
 
   /**
@@ -50,15 +64,29 @@ trait Lifecycles[T <: Entity, Y <: NewEntity] {
   /**
    * Called right before an update into DB.
    */
-  def beforeUpdate(id: UUID, item: Y) = {
-    play.api.Logger.debug("beforeUpdate Lifecycle Op on " + item.name)
+  def beforeUpdate(id: UUID, newInstance: Y) = {
+    play.api.Logger.debug("beforeUpdate Lifecycle Op on " + newInstance.name)
+  }
+
+  /**
+   * Called right before an update into DB.
+   */
+  def beforeUpdate(instance: T) = {
+    play.api.Logger.debug("beforeUpdate Lifecycle Op on " + instance.name)
   }
 
   /**
    * Called right after an update into DB.
    */
-  def afterUpdate(id: UUID, item: Y) = {
-    play.api.Logger.debug("afterUpdate Lifecycle Op on " + item.name)
+  def afterUpdate(instance: T) = {
+    play.api.Logger.debug("afterUpdate Lifecycle Op on " + instance.name)
+  }
+
+  /**
+   * Called right after an update into DB.
+   */
+  def afterUpdate(id: UUID, newInstance: Y) = {
+    play.api.Logger.debug("afterUpdate Lifecycle Op on " + newInstance.name)
   }
 
   /**
