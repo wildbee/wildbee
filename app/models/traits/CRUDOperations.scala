@@ -41,12 +41,12 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * @return
    */
   def find(identifier: AnyRef): T = identifier match {
-    case atty: UUID => findById(atty)
-    case atty: String => {
-      if (vidP(atty)) {
-        findById(atty)
+    case identifier: UUID => findById(identifier)
+    case identifier: String => {
+      if (vidP(identifier)) {
+        findById(identifier)
       } else {
-        findByName(atty)
+        findByName(identifier)
       }
     }
   }
