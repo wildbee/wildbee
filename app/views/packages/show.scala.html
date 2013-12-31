@@ -15,6 +15,7 @@
         <ul>task : @Tasks.idToName(pack.task)</ul>
         <ul>creator : @Users.idToName(pack.creator)</ul>
         <ul>assignee : @Users.idToName(pack.assignee)</ul>
+        <ul>observer : @pack.observer</ul>
         <ul>status : @Statuses.idToName(pack.status)</ul>
         <ul>os version: @pack.osVersion</ul>
 	=================================================
@@ -35,10 +36,13 @@
             <button type="submit">Delete Package</button>
         </div>
     }
+    @*
     @helper.form(routes.PackagesController.register(pack.id.toString)) {
         <button type="submit">Add Test Observer</button>
     }
+    *@
 
+    @*
     @helper.form(routes.PackagesController.register(pack.id.toString)) {
         @helper.select(
             field = observerForm("observer"),
@@ -55,8 +59,8 @@
                     }
                 </select>
         <button type="submit">Add Test Observer</button>
-        *@
     }
+        *@
 
 }
 

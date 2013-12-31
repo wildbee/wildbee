@@ -14,6 +14,10 @@ trait Observable {
     observers = observers filter( _ != o )
   }
 
+  def setObservers(observers: List[Observer])() {
+    this.observers = observers
+  }
+
   def getObservers: List[Observer] = observers
 
   def countObservers: Int = {

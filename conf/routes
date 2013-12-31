@@ -12,7 +12,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /packages                   controllers.PackagesController.index
 GET     /package/new                controllers.PackagesController.newPackage
 POST    /package                    controllers.PackagesController.create
-POST    /package/register            controllers.PackagesController.register(id: String)
+#POST    /package/register            controllers.PackagesController.register(id: String)
 POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package/:id/delete         controllers.PackagesController.delete(id: String)
 

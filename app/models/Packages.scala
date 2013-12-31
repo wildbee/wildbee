@@ -10,6 +10,7 @@ import java.util.UUID
 import helpers._
 import models.traits.Queriable
 import models.traits.Observable
+import models.traits.Observer
 
 /*
  * This class is for creating new packages from string inputs:
@@ -19,9 +20,10 @@ case class NewPackage(
   task: String,
   creator: String,
   assignee: String,
+  observer: String = "None",
   ccList: String = "None",
   status: String = "None",
-  osVersion: String) extends NewEntity with Observable
+  osVersion: String) extends NewEntity //with Observable
 
 case class NewObserver(name: String)
 
@@ -34,6 +36,7 @@ case class Package(
   task: UUID,
   creator: UUID,
   assignee: UUID,
+  observer: String,
   ccList: String = "None",
   status: UUID,
   osVersion: String,
@@ -49,6 +52,7 @@ with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observ
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
+  def observer = column[String]("observer")
   def ccList = column[String]("cc_list", O.Default("None"))
   def status = column[UUID]("status")
   def osVersion = column[String]("os_version")
@@ -59,10 +63,10 @@ with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observ
   /**
    * The default projection is mapped to the Package case class.
    */
-  def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
+  def * = (id ~ name ~ task ~ creator ~ assignee ~ observer ~ ccList ~
     status ~ osVersion ~ created ~ updated <> (Package, Package.unapply _))
 
-  def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
+  def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~ observer ~
     ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
 
   /**
@@ -86,7 +90,7 @@ with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observ
    * @return
    */
   def mapToEntity(p: NewPackage, nid: UUID = newId): Package =
-    Package(nid, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee),
+    Package(nid, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee), p.observer,
     p.ccList, Tasks.getStartingStatus(uuid(p.task)), p.osVersion,
     currentTimestamp, currentTimestamp)
 
@@ -95,12 +99,18 @@ with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observ
    */
   def mapToNew(id: UUID): NewPackage = {
     val p = find(id)
-    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
+    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString, p.observer,
       p.ccList, p.status.toString, p.osVersion)
   }
 
   override def afterUpdate(id: UUID, item: NewPackage) = {
     println("Overriding after Update on Packages" + countObservers)
+    Packages.setObservers(List(Class.forName(item.observer).newInstance().asInstanceOf[Observer]))
     notifyObservers()
+  }
+
+  override def afterInsert(id: UUID, item: NewPackage) = {
+    println("Overriding after Insert on Packages" + countObservers) //Not overriding?
+    Packages.setObservers(List(Class.forName(item.observer).newInstance().asInstanceOf[Observer]))
   }
 }

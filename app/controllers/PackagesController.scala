@@ -18,6 +18,7 @@ object PackagesController extends Controller {
       "task" -> nonEmptyText,
       "creator" -> nonEmptyText,
       "assignee" -> nonEmptyText,
+      "observer" -> text,
       "ccList" -> text,
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
@@ -82,24 +83,19 @@ object PackagesController extends Controller {
     Ok(views.html.packages.newEntity(filledForm,statuses))
   }
 
-
+  /*
   def register(id: String) = Action {implicit request =>
-    import scala.reflect.runtime.{universe => ru}
-    import org.clapper.classutil.ClassFinder
-    import scala.reflect.api.TypeTags
-
-    println("no observer form?")
     observerForm.bindFromRequest.fold(
       formWithErrors =>Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name)),
-      updatedPack => {
+      observer => {
         println("Anything???")
         val pack = Packages.find(id)
-        Packages.addObserver(Class.forName(updatedPack.name).newInstance().asInstanceOf[Observer])
+        Packages.addObserver(Class.forName(observer.name).newInstance().asInstanceOf[Observer])
 
-        println(updatedPack.name)
+        println(observer.name)
         Redirect(routes.PackagesController.show(pack.task.toString, pack.name))
       }
     )
-  }
+  }*/
 
 }
