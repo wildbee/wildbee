@@ -3,16 +3,17 @@ package models
 import play.api.db.slick.Config.driver.simple._
 import java.util.UUID
 import scala.language.postfixOps
-import models.traits.Queriable
-import models.traits.Observable
+
+import models.traits.CRUDOperations
+
 
 case class NewStatus(name: String) extends NewEntity
 case class Status(id: UUID, name: String) extends Entity
 object Statuses extends Table[Status]("statuses")
-  with Queriable[Status, NewStatus]
+  with CRUDOperations[Status, NewStatus]
   with EntityTable[Status, NewStatus]
   with UniquelyNamedTable[Status, NewStatus]
-  with Observable {
+  with MapsIdsToNames[Status] {
 
   def * = id ~ name  <> (Status, Status.unapply _)
 
@@ -29,18 +30,10 @@ object Statuses extends Table[Status]("statuses")
   /**
    * Implements Queriable trait's mapToEntity.
    * @param p
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(p: NewStatus, nid: UUID = newId): Status = {
-    Status(nid,p.name)
-  }
-
-  override def afterInsert(id: UUID, item: NewStatus) = {
-    println("Overriding after Insert on statuses")
-    notifyObservers()
-  }
-  def registerObserver() {
-    //addObserver(new TestObserver)
+  def mapToEntity(id: UUID = newId, p: NewStatus): Status = {
+    Status(id,p.name)
   }
 }

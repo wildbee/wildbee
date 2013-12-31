@@ -5,8 +5,7 @@ import play.api.db.slick.DB
 import play.api.Play.current
 import java.util.UUID
 import helpers._
-import models.traits.Queriable
-import observers.TestObserver
+import models.traits.CRUDOperations
 
 case class NewUser(name: String, email: String) extends NewEntity
 
@@ -19,9 +18,9 @@ case class User(id: UUID, name: String, email: String) extends Entity
  * with the 'user' table already created in the database by default
  */
 object Users extends Table[User]("users")
-  with Queriable[User, NewUser]
+  with CRUDOperations[User, NewUser]
   with EntityTable[User, NewUser]
-  {
+  with MapsIdsToNames[User] {
 
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
@@ -36,11 +35,11 @@ object Users extends Table[User]("users")
   /**
    * Implements Queriable's mapToEntity.
    * @param u
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(u: NewUser, nid: UUID = newId): User = {
-    User(nid, u.name, u.email)
+  def mapToEntity(id: UUID = newId, u: NewUser): User = {
+    User(id, u.name, u.email)
   }
 
   /**
@@ -53,7 +52,7 @@ object Users extends Table[User]("users")
     NewUser(u.name, u.email)
   }
 
- def insertWithId(id: UUID, u: NewUser): UUID = {
+ def insertWithId(u: NewUser, id: UUID): UUID = {
     Users.insert(User(id, u.name, u.email))
   }
 

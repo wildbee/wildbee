@@ -8,9 +8,10 @@ import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
-import models.traits.Queriable
+import models.traits.CRUDOperations
 import models.traits.Observable
 import models.traits.Observer
+
 
 /*
  * This class is for creating new packages from string inputs:
@@ -47,8 +48,14 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage]
-with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observable{
+
+object Packages extends Table[Package]("packages")
+  with CRUDOperations[Package,NewPackage]
+  with EntityTable[Package, NewPackage]
+  with TimekeepingTable[Package]
+  with MapsIdsToNames[Package]
+  with Observable {
+
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
@@ -86,11 +93,11 @@ with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observ
   /**
    * Implements the Queriable trait's mapToEntity method.
    * @param p
-   * @param nid
+   * @param id
    * @return
    */
-  def mapToEntity(p: NewPackage, nid: UUID = newId): Package =
-    Package(nid, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee), p.observer,
+  def mapToEntity(id: UUID = newId, p: NewPackage): Package =
+    Package(id, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee), p.observer,
     p.ccList, Tasks.getStartingStatus(uuid(p.task)), p.osVersion,
     currentTimestamp, currentTimestamp)
 

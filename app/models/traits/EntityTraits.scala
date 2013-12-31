@@ -37,8 +37,8 @@ trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
   /**
    * UUID string to UUID.
    */
-  def uuid(id: String): UUID = {
-    Config.pkGenerator.fromString(id)
+  def uuid(identifier: String): UUID = {
+    Config.pkGenerator.fromString(identifier)
   }
 
   /**
@@ -47,7 +47,7 @@ trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
    * @param item
    * @return
    */
-  def mapToEntity(item: Y, nid: UUID): T
+  def mapToEntity(id: UUID, newInstance: Y): T
 
   /**
    * Must implement a method to map from an entity to a NewEntity.
@@ -63,9 +63,9 @@ trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
    * @param id
    * @return
    */
-  def mapToNew(id: AnyRef): Y = id match {
-    case id: String => mapToNew(uuid(id))
-    case id: UUID => mapToNew(id)
+  def mapToNew(identifier: AnyRef): Y = identifier match {
+    case identifier: String => mapToNew(uuid(identifier))
+    case identifier: UUID => mapToNew(identifier)
   }
 
   /**
@@ -73,7 +73,7 @@ trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
    * @param id
    * @return
    */
-  def vidP(id: String) = Config.pkGenerator.validP(id)
+  def vidP(identifier: String) = Config.pkGenerator.validP(identifier)
 
   /**
    * Helper for generating a new UUID.
@@ -103,6 +103,19 @@ trait UniquelyNamedTable[T <: Entity, Y <: NewEntity] {
   private def idxName =
     this.getClass.getName.toString.toLowerCase.
       replace("$","").replace("models.","")
+}
+
+trait MapsIdsToNames[T <: Entity]{
+
+  self: Table[T] =>
+  /**
+   * A map of UUID to name for all entities in the table. Useful for filling out
+   * combo boxes in forms, for example.
+   */
+  def mapIdToName: Map[String, String] = DB.withSession {
+    implicit session: Session =>
+      Query(this).list.map(item => (item.id.toString, item.name)).toMap
+  }
 }
 
 /**

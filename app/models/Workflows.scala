@@ -7,7 +7,7 @@ import helpers._
 import java.util.Random
 import java.util.UUID
 import scala.language.postfixOps
-import models.traits.Queriable
+import models.traits.CRUDOperations
 import play.api.db.slick.DB
 import play.api.Play.current
 import models.traits.Observable
@@ -15,10 +15,10 @@ import models.traits.Observable
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
 object Workflows extends Table[Workflow]("workflows")
-  with Queriable[Workflow,NewWorkflow]
+  with CRUDOperations[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
   with UniquelyNamedTable[Workflow,NewWorkflow]
-  {
+  with MapsIdsToNames[Workflow]{
 
   def startStatus = column[UUID]("start_status")
 
@@ -31,7 +31,7 @@ object Workflows extends Table[Workflow]("workflows")
    * @param nid
    * @return
    */
-  def mapToEntity(w: NewWorkflow, nid: UUID = newId): Workflow = {
+  def mapToEntity(nid: UUID = newId, w: NewWorkflow ): Workflow = {
     Workflow(nid, w.name, uuid(w.status(0)))
   }
 
@@ -65,19 +65,15 @@ object Workflows extends Table[Workflow]("workflows")
     Transitions.delete(id)
   }
 
-  /**
-   * We should try to take this logic out of delete and put it into either:
-   * the lifecycle beforeDelete, or create a new set of traits for input validation.
-   */
-  def delete(name: String): Option[String] = DB.withSession {
-    implicit session: Session =>
-      val dependentTasks = Tasks.findAll filter ( _.workflow == nameToId(name))
-      if(!dependentTasks.isEmpty)
-        Some(dependentTasks map (_.name) mkString("[",",","]"))
-      else {
-        Transitions.delete(nameToId(name))
-        (Workflows filter (_.name === name)).delete
-        None
-      }
+  /** custom delete validator */
+  override def deleteValidator(item: AnyRef): Option[String] = {
+    val uid = findUUID(item)
+    val dependentTasks = Tasks.findAll filter( _.workflow == uid)
+    if(!dependentTasks.isEmpty)
+      Some(dependentTasks map (_.name) mkString("[",",","]"))
+    else {
+      Transitions.delete(uid)
+      None
+    }
   }
 }

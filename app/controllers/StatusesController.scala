@@ -26,7 +26,7 @@ object StatusesController extends Controller {
     StatusForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.statuses.newEntity(formWithErrors)),
       status => {
-        val uuid = Statuses.insert(status)
+        val uuid = Statuses.insert(newInstance = status)
         Redirect(routes.WorkflowController.newWorkflow)
       })
   }
@@ -46,7 +46,7 @@ object StatusesController extends Controller {
     StatusForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
       updatedStatus => {
-        Statuses.update(Statuses.mapToEntity(updatedStatus, oldStatus.id))
+        Statuses.update(Statuses.mapToEntity(oldStatus.id, updatedStatus))
         Redirect(routes.StatusesController.show(oldStatus.id.toString))
       })
   }
