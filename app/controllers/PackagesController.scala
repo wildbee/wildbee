@@ -11,7 +11,6 @@ import models.traits.Observer
 
 object PackagesController extends Controller {
 
-
   val packageForm = Form(
     mapping(
       "name" -> nonEmptyText,
@@ -24,7 +23,7 @@ object PackagesController extends Controller {
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
 
-  val observerNames = ObserverHelper.getObserverNames
+  //val observerNames = ObserverHelper.getObserverNames => Only need if your going to uncomment stuff at the bottom of package show view
   val observerForm = Form(
     mapping(
       "observer" -> nonEmptyText
@@ -50,7 +49,7 @@ object PackagesController extends Controller {
   }
 
   def show(taskId: String, packId: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(taskId, packId), observerForm, observerNames))
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packId), observerForm))
   }
 
   def edit(taskId: String, packId: String) = Action { implicit request =>

@@ -110,11 +110,12 @@ object Packages extends Table[Package]("packages")
       p.ccList, p.status.toString, p.osVersion)
   }
 
-  override def afterUpdate(id: UUID, item: NewPackage) = {
-    println("Overriding after Update on Packages" + countObservers)
+  override def afterUpdate(item: Package) = {
+    println(s"Overriding after Update on Packages $item")
     Packages.setObservers(List(Class.forName(item.observer).newInstance().asInstanceOf[Observer]))
     notifyObservers()
   }
+
 
   override def afterInsert(id: UUID, item: NewPackage) = {
     println("Overriding after Insert on Packages" + countObservers) //Not overriding?
