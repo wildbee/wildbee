@@ -5,7 +5,7 @@ import org.clapper.classutil.ClassFinder
 import models.traits.Observer
 
 object ObserverHelper {
-  def getObserverNames: List[String]  = {
+  def getObserverNames: List[(String, String)]  = {
     val classpath = List(".") map (new File(_))
     println("CLASSPATH: " + classpath)
     val finder = ClassFinder(classpath)
@@ -17,6 +17,6 @@ object ObserverHelper {
     println("PLUGINS: " + plugins)
     val foo = (plugins map (x => Class.forName(x.toString()).newInstance().asInstanceOf[Observer]) )
     println("FOO: " + foo)
-    foo map (_.name)
+    foo map (o => (o.fullName, o.name))
   }
 }

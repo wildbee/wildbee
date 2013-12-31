@@ -7,6 +7,7 @@ import java.util.UUID
 import play.api.data._
 import play.api.data.Forms._
 import helpers.ObserverHelper
+import models.traits.Observer
 
 object PackagesController extends Controller {
 
@@ -81,22 +82,24 @@ object PackagesController extends Controller {
     Ok(views.html.packages.newEntity(filledForm,statuses))
   }
 
+
   def register(id: String) = Action {implicit request =>
+    import scala.reflect.runtime.{universe => ru}
+    import org.clapper.classutil.ClassFinder
+    import scala.reflect.api.TypeTags
+
     println("no observer form?")
     observerForm.bindFromRequest.fold(
-          formWithErrors =>Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name)),
-          updatedPack => {
-            println("Anything???")
-            println(updatedPack.name)
-            Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name))
-          }
-        )
-        /*
-    println(request)
-    println("Registering " + id)
-    //Packages.addObserver(new TestObserver)
-    val pack = Packages.find(id)*/
+      formWithErrors =>Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name)),
+      updatedPack => {
+        println("Anything???")
+        val pack = Packages.find(id)
+        Packages.addObserver(Class.forName(updatedPack.name).newInstance().asInstanceOf[Observer])
 
+        println(updatedPack.name)
+        Redirect(routes.PackagesController.show(pack.task.toString, pack.name))
+      }
+    )
   }
 
 }
