@@ -57,10 +57,4 @@ object StatusesController extends Controller {
     Statuses.delete(uuid)
     Redirect(routes.StatusesController.index)
   }
-
-  def register() = Action {
-    println("Registering?")
-    Statuses.registerObserver()
-    Redirect(routes.StatusesController.index)
-  }
 }

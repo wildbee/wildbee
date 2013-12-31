@@ -54,7 +54,6 @@ GET     /status/new                 controllers.StatusesController.newStatus
 GET     /status/:status             controllers.StatusesController.show(status: String)
 GET     /statuses                   controllers.StatusesController.index
 POST    /status                     controllers.StatusesController.create
-POST    /status/register            controllers.StatusesController.register
 POST    /status/:id                 controllers.StatusesController.update(id: String)
 POST    /status/:status/delete      controllers.StatusesController.delete(status: String)
 
