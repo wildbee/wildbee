@@ -1,4 +1,5 @@
 @(pack: Package,
+    observerForm: Form[NewObserver],
     observers: List[String],
 	names: List[String]=List("id","name", "task","creator","assignee",
 		"cc list", "status", "os version","creation time",
@@ -39,12 +40,22 @@
     }
 
     @helper.form(routes.PackagesController.register(pack.id.toString)) {
+        @helper.select(
+            field = observerForm("observer"),
+            observers.map { observer =>
+                observer -> observer
+            }
+        )
+        <input type="submit" value="Add Observer" />
+        @*
+        Unsure how to get combobox value
                 <select class="form-control" id="workflow" name="workflow" >
                     @observers.map { observer =>
                             <option value=@observer>@observer</option>
                     }
                 </select>
         <button type="submit">Add Test Observer</button>
+        *@
     }
 
 }

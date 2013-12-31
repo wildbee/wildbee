@@ -5,7 +5,6 @@ import java.util.UUID
 import scala.language.postfixOps
 import models.traits.Queriable
 import models.traits.Observable
-import observers.TestObserver
 
 case class NewStatus(name: String) extends NewEntity
 case class Status(id: UUID, name: String) extends Entity
@@ -42,6 +41,6 @@ object Statuses extends Table[Status]("statuses")
     notifyObservers()
   }
   def registerObserver() {
-    addObserver(new TestObserver)
+    //addObserver(new TestObserver)
   }
 }

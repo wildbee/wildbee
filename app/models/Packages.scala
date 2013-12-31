@@ -23,6 +23,8 @@ case class NewPackage(
   status: String = "None",
   osVersion: String) extends NewEntity with Observable
 
+case class NewObserver(name: String)
+
 /**
  * This is the main case class that we will map projections to.
  */
@@ -42,7 +44,8 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
-object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage] with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observable{
+object Packages extends Table[Package]("packages") with Queriable[Package,NewPackage]
+with EntityTable[Package, NewPackage] with TimekeepingTable[Package] with Observable{
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")

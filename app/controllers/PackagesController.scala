@@ -6,10 +6,10 @@ import models._
 import java.util.UUID
 import play.api.data._
 import play.api.data.Forms._
-import observers.TestObserver
+import helpers.ObserverHelper
 
 object PackagesController extends Controller {
-case class Obvs(name: String)
+
 
   val packageForm = Form(
     mapping(
@@ -21,10 +21,12 @@ case class Obvs(name: String)
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
-  val obverserForm = Form(
+
+  val observerNames = ObserverHelper.getObserverNames
+  val observerForm = Form(
     mapping(
-      "obverser" -> nonEmptyText
-    )(Obvs.apply)(Obvs.unapply))
+      "observer" -> nonEmptyText
+    )(NewObserver.apply)(NewObserver.unapply))
 
   def index = Action { implicit request =>
     Ok(views.html.packages.index(Packages.findAll, packageForm))
@@ -46,7 +48,7 @@ case class Obvs(name: String)
   }
 
   def show(taskId: String, packId: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(taskId, packId),  List("TestObserver")))
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packId), observerForm, observerNames))
   }
 
   def edit(taskId: String, packId: String) = Action { implicit request =>
@@ -80,11 +82,21 @@ case class Obvs(name: String)
   }
 
   def register(id: String) = Action {implicit request =>
+    println("no observer form?")
+    observerForm.bindFromRequest.fold(
+          formWithErrors =>Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name)),
+          updatedPack => {
+            println("Anything???")
+            println(updatedPack.name)
+            Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name))
+          }
+        )
+        /*
     println(request)
     println("Registering " + id)
-    Packages.addObserver(new TestObserver)
-    val pack = Packages.find(id)
-    Redirect(routes.PackagesController.show(pack.task.toString, pack.name))
+    //Packages.addObserver(new TestObserver)
+    val pack = Packages.find(id)*/
+
   }
 
 }
