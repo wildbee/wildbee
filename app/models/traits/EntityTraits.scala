@@ -73,7 +73,7 @@ trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
    * @param id
    * @return
    */
-  def vidP(identifier: String) = Config.pkGenerator.validP(identifier)
+  def isUUID(identifier: String) = Config.pkGenerator.validP(identifier)
 
   /**
    * Helper for generating a new UUID.
