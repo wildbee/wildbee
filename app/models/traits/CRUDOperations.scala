@@ -54,13 +54,13 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * @return The UUID of the instance.
    */
   def insert(instance: T): UUID = {
-      beforeInsert(instance)
-      DB.withSession { implicit session: Session =>
-        returnID.insert(instance)
-      }
-      afterInsert(instance)
-      instance.id
+    beforeInsert(instance)
+    DB.withSession { implicit session: Session =>
+      returnID.insert(instance)
     }
+    afterInsert(instance)
+    instance.id
+  }
 
   /**
    * Insert a new entity into the db table created from the values

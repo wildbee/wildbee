@@ -47,9 +47,9 @@ object PackagesController extends Controller {
             Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
               .flashing("success" -> "Package Created!")
           }
-          case Left(id) => {
+          case Left(error) => {
             BadRequest(views.html.packages.newEntity(packageForm))
-              .flashing("failure" -> "Unable to create!")
+              .flashing("failure" -> error)
           }
         }
       })
