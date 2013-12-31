@@ -5,9 +5,9 @@ import models.Entity
 trait Observable {
   private var observers: List[Observer] = Nil
 
-  def addObserver(o: Observer)(){
-    if(observers forall(_.name != o.name))
-      observers = o :: observers
+  def addObserver(o: String)(){
+    val observer = Class.forName(o).newInstance().asInstanceOf[Observer]
+    observers = observer :: observers
   }
 
   def clearObservers() { observers = Nil }

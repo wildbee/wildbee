@@ -20,7 +20,6 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
     resetModelGenerator()
   }
 
-
   "Package model" should {
     "be able to add new workflows with specified ID and throw error on conflicting IDs" in
     new WithApplication(fakeAppGen) {

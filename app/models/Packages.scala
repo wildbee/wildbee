@@ -115,13 +115,13 @@ object Packages extends Table[Package]("packages")
   override def afterUpdate(item: Package) = {
     clearObservers()
     val observers = item.observer.split(",")
-    observers map ( observer => addObserver(Class.forName(observer).newInstance().asInstanceOf[Observer]))
+    observers map ( observer => addObserver(observer) )
     notifyObservers()
   }
 
   override def afterInsert(id: UUID, item: NewPackage) = {
     clearObservers()
     val observers = item.observer.split(",")
-    observers map ( observer => addObserver(Class.forName(observer).newInstance().asInstanceOf[Observer]) )
+    observers map ( observer => addObserver(observer) )
   }
 }
