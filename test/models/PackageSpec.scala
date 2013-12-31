@@ -7,7 +7,6 @@ import org.specs2.specification.BeforeExample
 import org.postgresql.util.PSQLException
 import play.api.test.WithApplication
 import helpers.{ TestUtilities, ModelGenerator }
-import helpers.TestObserver
 import models.traits.Observer
 import helpers.ObserverHelper
 
@@ -50,38 +49,12 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       Packages.findAll.size === 0
     }
 
-
-    "be able to add unique observer" in new WithApplication(fakeAppGen){
-      val observers = ObserverHelper.getObserverNames("models")
-      /*
-      def uniqueObserverTest(names: List[String], observers: List[Observer] = List.empty) {
-        names match {
-          case(name :: rest ) =>
-            val newObservers = TestObserver(name, false) :: observers
-            Packages.addObserver(newObservers.head)
-            Packages.countObservers === newObservers.groupBy(_.name).size
-            uniqueObserverTest(rest, newObservers)
-          case(Nil) => //Test Passed!
-        }
-      }
-      uniqueObserverTest(names)*/
-      println("observers")
+    //Right now just print statement comes to to see that observer was notified need concrete test
+    "be able to add and notify observer" in new WithApplication(fakeAppGen){
+      val observers = ObserverHelper.getObserverNames("observers")
+      val packages = packageFactory.generate(observer = (observers head)._1)
+      Packages.update(packages)
     }
-    /*
-    //TODO: Find out how to ret
-    "notify observers when updated info" in new WithApplication(fakeAppGen){
-      val names = List("duplicate", "duplicate", "second", "duplicate")
-      val newOs = "NEW_OS"
-      val observers = names map ( TestObserver(_, false) )
-      observers foreach ( Packages.addObserver( _ ) )
-      val pack = packageFactory.generate
-      val newPack = NewPackage(pack.name, pack.task.toString(), //We need a one to make one...
-          pack.creator.toString(), pack.assignee.toString(),
-          pack.ccList, pack.status.toString(), newOs)
-      Packages.update(pack.id, newPack)
-      Packages.find(pack.id).osVersion === newOs
-      Packages.getObservers foreach{ case o: TestObserver  => o.updated == true }
-    }*/
 
   }
 }
