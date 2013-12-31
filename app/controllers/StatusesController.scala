@@ -12,7 +12,7 @@ object StatusesController extends Controller {
   val StatusForm = Form(
     mapping(
       "name" -> nonEmptyText
-    )(NewStatus.apply)(NewStatus.unapply))
+  )(NewStatus.apply)(NewStatus.unapply))
 
   def index = Action { implicit request =>
     Ok(views.html.statuses.index(Statuses.findAll, StatusForm))
@@ -51,7 +51,6 @@ object StatusesController extends Controller {
   }
 
   def delete(status: String) = Action { implicit request =>
-    println("Deleting??")
     val uuid = Statuses.nameToId(status)
     Statuses.delete(uuid)
     Redirect(routes.StatusesController.index)

@@ -10,22 +10,16 @@ trait Observable {
       observers = o :: observers
   }
 
-  def removeObserver(o: Observer){
-    observers = observers filter( _ != o )
-  }
+  def clearObservers() { observers = Nil }
 
-  def setObservers(observers: List[Observer])() {
-    this.observers = observers
-  }
+  def countObservers: Int = observers.size
 
   def getObservers: List[Observer] = observers
 
-  def countObservers: Int = {
-    observers.size
-  }
+  def notifyObservers() { observers foreach (_.update(this)) }
 
-  def notifyObservers(){
-    observers foreach (_.update(this))
-  }
+  def removeObserver(o: Observer){ observers = observers filter( _ != o ) }
+
+  def setObservers(observers: List[Observer])() { this.observers = observers }
 
 }

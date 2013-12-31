@@ -9,6 +9,7 @@ import play.api.test.WithApplication
 import helpers.{ TestUtilities, ModelGenerator }
 import helpers.TestObserver
 import models.traits.Observer
+import helpers.ObserverHelper
 
 @RunWith(classOf[JUnitRunner])
 class PackageSpec extends Specification with TestUtilities with BeforeExample with ModelGenerator {
@@ -48,10 +49,11 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
     }
-    /*
+
 
     "be able to add unique observer" in new WithApplication(fakeAppGen){
-      val names = List("duplicate", "duplicate", "second", "duplicate")
+      val observers = ObserverHelper.getObserverNames("models")
+      /*
       def uniqueObserverTest(names: List[String], observers: List[Observer] = List.empty) {
         names match {
           case(name :: rest ) =>
@@ -62,8 +64,10 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
           case(Nil) => //Test Passed!
         }
       }
-      uniqueObserverTest(names)
+      uniqueObserverTest(names)*/
+      println("observers")
     }
+    /*
     //TODO: Find out how to ret
     "notify observers when updated info" in new WithApplication(fakeAppGen){
       val names = List("duplicate", "duplicate", "second", "duplicate")

@@ -13,9 +13,7 @@ import models.traits.Observable
 import models.traits.Observer
 
 
-/*
- * This class is for creating new packages from string inputs:
- */
+/** This class is for creating new packages from string inputs: */
 case class NewPackage(
   name: String,
   task: String,
@@ -24,7 +22,7 @@ case class NewPackage(
   observer: String = "None",
   ccList: String = "None",
   status: String = "None",
-  osVersion: String) extends NewEntity //with Observable
+  osVersion: String) extends NewEntity
 
 case class NewObserver(name: String)
 
@@ -110,15 +108,20 @@ object Packages extends Table[Package]("packages")
       p.ccList, p.status.toString, p.osVersion)
   }
 
+  /** Planned incase we are using comma seperated string for observers
+   *  Not very good since we remove and add the observers everytime we update the package.
+   *  TODO: Decouple the adding of observers from the package edit screen and but maybe in the show screen
+   *        Some skeleton code for this in comments: Refer 'register' */
   override def afterUpdate(item: Package) = {
-    println(s"Overriding after Update on Packages $item")
-    Packages.setObservers(List(Class.forName(item.observer).newInstance().asInstanceOf[Observer]))
+    clearObservers()
+    val observers = item.observer.split(",")
+    observers map ( observer => addObserver(Class.forName(observer).newInstance().asInstanceOf[Observer]))
     notifyObservers()
   }
 
-
   override def afterInsert(id: UUID, item: NewPackage) = {
-    println("Overriding after Insert on Packages" + countObservers) //Not overriding?
-    Packages.setObservers(List(Class.forName(item.observer).newInstance().asInstanceOf[Observer]))
+    clearObservers()
+    val observers = item.observer.split(",")
+    observers map ( observer => addObserver(Class.forName(observer).newInstance().asInstanceOf[Observer]) )
   }
 }

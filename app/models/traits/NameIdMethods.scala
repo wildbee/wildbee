@@ -63,13 +63,10 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
    * @return
    */
   def findUUID(item: AnyRef): UUID = item match {
-    case item: String => {
-      if (vidP(item)) {
-        uuid(item)
-      } else {
-        findByName(item).id
-      }
+    case id: UUID => id
+    case str: String => {
+      if (isUUID(str)) uuid(str)
+      else findByName(str).id
     }
-    case item: UUID => item
   }
 }
