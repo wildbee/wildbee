@@ -22,7 +22,7 @@ POST    /logout                     controllers.Application.logout
 # Users
 GET     /users                      controllers.UsersController.index
 POST    /user                       controllers.UsersController.create
-GET     /user/new                   controllers.UsersController.newUser
+GET     /user/new                   controllers.UsersController.newEntity
 POST    /user/:email                controllers.UsersController.update(email: String)
 GET     /user/:email/edit           controllers.UsersController.edit(email: String)
 GET     /user/:email                controllers.UsersController.show(email: String)
