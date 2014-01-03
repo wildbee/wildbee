@@ -20,7 +20,9 @@ object PackagesController extends Controller {
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
   def index = Action { implicit request =>
-    Ok(views.html.packages.index(Packages.findAll, packageForm))
+    val i = views.html.packages.index
+    Ok(i(Packages.findAll,packageForm))
+   // Ok(views.html.packages.index(Packages.findAll, packageForm))
   }
 
   def newPackage = Action { implicit request =>

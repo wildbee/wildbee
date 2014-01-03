@@ -6,10 +6,17 @@ import play.api.mvc._
 import models._
 import play.api.data._
 import play.api.data.Forms._
+import play.mvc.Result
+import play.api.http.Writeable
 
 object UsersController extends EntityController[User, NewUser, Users.type ] {
 
-  val userForm = Form(
+  val indexView = views.html.users.index.f
+
+//  viewMap = Map[String,(Any) => Result](
+//    ("index",views.html.users.index))
+
+  val form = Form(
     mapping(
       "name" -> nonEmptyText,
       "email" -> email)(NewUser.apply)(NewUser.unapply))
