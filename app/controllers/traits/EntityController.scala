@@ -40,15 +40,11 @@ trait EntityController[T <: Entity,
   }
 
   def index = Action { implicit request =>
-    val all = table.findAll
-    val templateMethod = getViewTemplate("index")
-    Ok(templateMethod.apply(all,session).asInstanceOf[Html])
+    Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
   }
 
   def show(id: AnyRef) = Action { implicit request =>
-    val one = table.find(id)
-    val templateMethod = getViewTemplate("show")
-    Ok(templateMethod.apply(one, session, flash).asInstanceOf[Html])
+    Ok(getViewTemplate("show").apply(table.find(id), session, flash).asInstanceOf[Html])
   }
 
   def newEntity = Action { implicit request =>
@@ -74,7 +70,14 @@ trait EntityController[T <: Entity,
 
   def update(id: AnyRef) = TODO
 
-  def delete(id: String) = TODO
+  def delete(id: AnyRef) = Action { implicit request =>
+    table.delete(id) match {
+      case Some(violatedDeps) =>
+        BadRequest(getViewTemplate("show").apply(table.find(id), session, flash).asInstanceOf[Html])
+      case None =>
+        Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
+    }
+  }
 
   def copy = TODO
 
