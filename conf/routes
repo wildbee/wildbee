@@ -29,7 +29,7 @@ GET     /user/:email                controllers.UsersController.show(email: Stri
 
 # Tasks
 GET     /tasks                      controllers.TasksController.index
-GET     /task/new                   controllers.TasksController.newTask
+GET     /task/new                   controllers.TasksController.newEntity
 GET     /task/:task                 controllers.TasksController.show(task: String)
 GET     /task/:t/package/:p         controllers.PackagesController.show(t: String, p: String)
 GET     /task/:t/package/:p/edit    controllers.PackagesController.edit(t: String, p: String)

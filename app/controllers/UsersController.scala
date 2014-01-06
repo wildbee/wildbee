@@ -9,25 +9,33 @@ import play.api.data.Forms._
 import play.mvc.Result
 import play.api.http.Writeable
 
-object UsersController extends EntityController[User, NewUser, Users.type ] {
+object UsersController extends EntityController[User, NewUser] {
 
-  val indexView = views.html.users.index.f
+//  override val indexView: play.templates.BaseScalaTemplate = views.html.users.index
+val table = models.Users
+val model = "users"
+//  val modelName: String = "users"
 
 //  viewMap = Map[String,(Any) => Result](
 //    ("index",views.html.users.index))
+
 
   val form = Form(
     mapping(
       "name" -> nonEmptyText,
       "email" -> email)(NewUser.apply)(NewUser.unapply))
 
+
 //  def index() = Action { implicit request =>
 //    Ok(views.html.users.index())
 //  }
 //
-//  def show(email: String) = Action { implicit request =>
-//    Ok(views.html.users.show(Users.findByEmail(email)))
-//  }
+  override def show(id: AnyRef) = Action { implicit request =>
+    id match {
+      case id: String => Ok(views.html.users.show(Users.findByEmail(id)))
+      case _ => NotFound
+    }
+  }
 //
 //  def newUser() = Action { implicit request =>
 //    Ok(views.html.users.newEntity(userForm))

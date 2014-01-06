@@ -1,8 +1,5 @@
-@(taskForm: Form[NewTask], 
-	users: Map[String, String] = Users.mapIdToName,
-	workflows: Map[String, String] = Workflows.mapIdToName
-	)(implicit session: play.api.mvc.Session)
+@(taskForm: Form[NewTask])(implicit session: play.api.mvc.Session)
 
 @main("Product Form") {
-    @helpers.inputForm(taskForm, users, workflows)
+    @helpers.inputForm(taskForm)
 }
