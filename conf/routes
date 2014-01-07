@@ -51,8 +51,9 @@ GET     /workflow/:workflow/copy    controllers.WorkflowController.copy(workflow
 
 
 #Statuses
-GET     /status/new                 controllers.StatusesController.newStatus
+GET     /status/new                 controllers.StatusesController.newEntity
 GET     /status/:status             controllers.StatusesController.show(status: String)
+GET     /status/:status/edit        controllers.StatusesController.edit(status: String)
 GET     /statuses                   controllers.StatusesController.index
 POST    /status                     controllers.StatusesController.create
 POST    /status/:id                 controllers.StatusesController.update(id: String)
