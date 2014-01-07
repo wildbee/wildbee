@@ -156,18 +156,18 @@ trait ModelGenerator extends {
     def generate(
       uuid: UUID = uuidFactory.generate, name: String = randString,
       taskId: UUID = taskFactory.generate.id, creatorId: UUID = userFactory.generate.id,
-      asigneeId: UUID = userFactory.generate.id, observer: String = "helpers.TestObserver", ccList: String = randString, statusId: UUID = statusFactory.generate.id,
+      asigneeId: UUID = userFactory.generate.id, ccList: String = randString, statusId: UUID = statusFactory.generate.id,
       osVersion: String = randString, currentTime: Timestamp = Packages.currentTimestamp): Package = {
-      val packageId = Packages.insert(Package(uuid, name, taskId, creatorId, asigneeId, observer, ccList, statusId, osVersion, currentTime, currentTime))
+      val packageId = Packages.insert(Package(uuid, name, taskId, creatorId, asigneeId, ccList, statusId, osVersion, currentTime, currentTime))
       Packages.find(packageId)
     }
     //TODO: Make this return a named function
-    def modifyModel(pack: Package): (String, String, String, String, String, String, String, String) => NewPackage = {
+    def modifyModel(pack: Package): (String, String, String, String, String, String, String) => NewPackage = {
       def modifyModelD  (name: String = pack.name, task:String = Tasks.idToName(pack.task),
-          creator:String = Users.idToName(pack.creator), assignee: String = Users.idToName(pack.assignee), observer: String = "helpers.TestObserver",
+          creator:String = Users.idToName(pack.creator), assignee: String = Users.idToName(pack.assignee),
           ccList: String = pack.ccList, status:String = Statuses.idToName(pack.status),
           osVersion: String = pack.osVersion): NewPackage = {
-            NewPackage(name, task, creator, assignee, observer, ccList, status ,osVersion)
+            NewPackage(name, task, creator, assignee, ccList, status ,osVersion)
       }
       modifyModelD
     }

@@ -103,10 +103,6 @@ object Packages extends Table[Package]("packages")
       p.ccList, p.status.toString, p.osVersion)
   }
 
-  /** Planned incase we are using comma seperated string for observers
-   *  Not very good since we remove and add the observers everytime we update the package.
-   *  TODO: Decouple the adding of observers from the package edit screen and but maybe in the show screen
-   *        Some skeleton code for this in comments: Refer 'register' */
   override def afterUpdate(item: Package) = {
     notifyObservers(item.id)
   }

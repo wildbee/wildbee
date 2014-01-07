@@ -47,13 +47,5 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
     }
-
-    //Right now just print statement comes to to see that observer was notified need concrete test
-    "be able to add and notify observer" in new WithApplication(fakeAppGen){
-      val observers = ObserverHelper.getObserverNames("observers")
-      val packages = packageFactory.generate(observer = (observers head)._1)
-      Packages.update(packages)
-    }
-
   }
 }
