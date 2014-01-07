@@ -46,13 +46,12 @@ object Tasks extends Table[Task]("tasks")
     NewTask(t.name, t.owner.toString, t.workflow.toString)
   }
 
-  def delete(task: String): Option[String] = DB.withSession {
+  override def deleteValidator(id: AnyRef): Option[String] = DB.withSession {
     implicit session: Session =>
-    val dependentPackages = Packages.findAll filter (_.task == nameToId(task))
+    val dependentPackages = Packages.findAll filter (_.task == findUUID(id))
     if (!dependentPackages.isEmpty)
       Some(dependentPackages map (_.name) mkString("[",",","]"))
     else{
-      (Tasks where (_.name === task)).delete
       None
     }
   }
