@@ -7,9 +7,13 @@ import java.util.UUID
 import play.api.data._
 import play.api.data.Forms._
 
-object PackagesController extends Controller {
+object PackagesController extends EntityController[Package, NewPackage] {
 
-  val packageForm = Form(
+  val modelName = "packages"
+  val table = models.Packages
+  val controller = routes.PackagesController
+
+  val form = Form(
     mapping(
       "name" -> nonEmptyText,
       "task" -> nonEmptyText,
@@ -19,66 +23,46 @@ object PackagesController extends Controller {
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
-  def index = Action { implicit request =>
-    val i = views.html.packages.index
-    Ok(i(Packages.findAll,packageForm))
-   // Ok(views.html.packages.index(Packages.findAll, packageForm))
-  }
+//  override def newEntity = Action { implicit request =>
+//    Ok(views.html.packages.newEntity(form))
+//  }
 
-  def newPackage = Action { implicit request =>
-    Ok(views.html.packages.newEntity(packageForm))
-  }
-
-  def create = Action { implicit request =>
-    packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.newEntity(formWithErrors)),
-      pack => {
-        Packages.insert(newInstance = pack) match {
-          case Right(id) => {
-            val newPack = Packages.find(id)
-            Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
-              .flashing("success" -> "Package Created!")
-          }
-          case Left(id) => {
-            BadRequest(views.html.packages.newEntity(packageForm))
-              .flashing("failure" -> "Unable to create!")
-          }
-        }
-      })
-  }
-
+  /**
+   * Packages have their own show controller method because
+   * they rely on a foreign primary key (the task they belong to)
+   * @param tid
+   * @param pid
+   * @return
+   */
   def show(tid: String, pid: String) = Action { implicit request =>
     Ok(views.html.packages.show(Packages.findByTask(tid, pid)))
   }
 
+  /**
+   * Packages have their own edit controller method because
+   * of the task id foreign key.
+   * @param tid
+   * @param pid
+   * @return
+   */
   def edit(tid: String, pid: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
-    val filledForm = packageForm.fill(pack)
+    val filledForm = form.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
     Ok(views.html.packages.edit(filledForm, pid, statuses))
   }
 
-  def update(id: String) = Action { implicit request =>
-    val oldPack = Packages.find(id)
-    packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
-      updatedPack => {
-        Packages.update(Packages.mapToEntity(oldPack.id, updatedPack))
-        Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
-            .flashing("success" -> "Package Updated!")
-      })
-  }
-
-  def delete(id: String) = Action { implicit request =>
-    Packages.delete(Packages.uuid(id))
-    Redirect(routes.PackagesController.index).flashing("success" -> "Package Deleted!")
-  }
-
+  /**
+   * Packages implement their own copy method due to the
+   * task foreign key constraint.
+   * @param tid
+   * @param pid
+   * @return
+   */
   def copy(tid: String, pid: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
-    val filledForm = packageForm.fill(pack)
+    val filledForm = form.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
-    Ok(views.html.packages.newEntity(filledForm,statuses))
+    Ok(views.html.packages.newEntity(filledForm))
   }
-
 }

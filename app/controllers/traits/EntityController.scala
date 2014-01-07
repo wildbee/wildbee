@@ -17,7 +17,7 @@ trait EntityController[T <: Entity,
 
   val form: Form[Y]
   val table: Table[T] with CRUDOperations[T, Y] with EntityTable[T,Y]
-  val model: String
+  val modelName: String
 //  val controller: EntityController[T,Y]
   val currentMirror = runtimeMirror(Play.current.classloader)
   val packageName = "views.html."
@@ -29,10 +29,19 @@ trait EntityController[T <: Entity,
    * @return
    */
   private def getViewTemplate(view: String) = {
-    val template = packageName + model.toString.toLowerCase + "." + view
+    val template = packageName + modelName.toString.toLowerCase + "." + view
+    play.api.Logger.debug("template: " + template.toString)
     val module = currentMirror.reflectModule(currentMirror.staticModule(template))
+    play.api.Logger.debug("module: " + module.toString)
     val method = module.symbol.typeSignature.declaration(newTermName("apply")).asMethod
+    play.api.Logger.debug("method: " + method.toString)
     val instance = currentMirror.reflect(module.instance)
+
+
+
+    play.api.Logger.debug("instance: " + instance.toString)
+
+
     instance.reflectMethod(method)
   }
 

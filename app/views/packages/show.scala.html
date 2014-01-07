@@ -1,7 +1,4 @@
-@(pack: Package,
-	names: List[String]=List("id","name", "task","creator","assignee",
-		"cc list", "status", "os version","creation time", 
-		"last updated"))(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+@(pack: Package)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
  
 @main("Show Package") {
     @tags.flash()

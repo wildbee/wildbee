@@ -13,7 +13,7 @@ object UsersController extends EntityController[User, NewUser] {
 
 //  override val indexView: play.templates.BaseScalaTemplate = views.html.users.index
 val table = models.Users
-val model = "users"
+val modelName = "users"
 //val indexView: views.html.users.index.type = views.html.users.index
 //  val modelName: String = "users"
 
@@ -58,17 +58,17 @@ val model = "users"
 //      )
 //  }
 //
-//  def update(email: String) = Action { implicit request =>
-//      val user = Users.findByEmail(email)
-//
-//      userForm.bindFromRequest.fold(
-//        formWithErrors => BadRequest(views.html.users.edit(formWithErrors, user)),
-//        editUser => {
-//          Users.update(email, editUser)
-//          Redirect(routes.UsersController.show(user.email))
-//        }
-//      )
-//  }
+  def update(email: String) = Action { implicit request =>
+      val user = Users.findByEmail(email)
+
+      form.bindFromRequest.fold(
+        formWithErrors => BadRequest(views.html.users.edit(formWithErrors, user)),
+        editUser => {
+          Users.update(email, editUser)
+          Redirect(routes.UsersController.show(user.email))
+        }
+      )
+  }
 
 
 }

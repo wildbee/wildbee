@@ -6,7 +6,7 @@ import play.api.mvc.Action
 
 object TasksController extends EntityController[Task, NewTask] {
   val table = models.Tasks
-  val model = "tasks"
+  val modelName = "tasks"
   val controller = routes.TasksController
 
   val form = Form(
