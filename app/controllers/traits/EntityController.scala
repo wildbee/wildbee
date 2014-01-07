@@ -21,6 +21,7 @@ trait EntityController[T <: Entity,
 //  val controller: EntityController[T,Y]
   val currentMirror = runtimeMirror(Play.current.classloader)
   val packageName = "views.html."
+  //val indexView: views.html.users.index.type
 
   /**
    * Use reflection to instantiate the method for some needed view template.
@@ -55,11 +56,13 @@ trait EntityController[T <: Entity,
   def create = Action { implicit request =>
     form.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(getViewTemplate("newEntity").apply(formWithErrors,session).asInstanceOf[Html]),
+        BadRequest(getViewTemplate("newEntity").apply(formWithErrors,
+          session+("failure"->"invalid inputs")).asInstanceOf[Html]),
       newEntity => {
         table.insert(newInstance = newEntity) match {
           case Right(id) =>
-            Ok(getViewTemplate("show").apply(table.find(id), session, flash).asInstanceOf[Html])
+            Ok(getViewTemplate("show").apply(table.find(id), session,
+              flash.+("success"->"Created")).asInstanceOf[Html])
           case Left(id) =>
             BadRequest(getViewTemplate("newEntity").apply(form, session).asInstanceOf[Html])
         }
@@ -73,7 +76,9 @@ trait EntityController[T <: Entity,
   def delete(id: AnyRef) = Action { implicit request =>
     table.delete(id) match {
       case Some(violatedDeps) =>
-        BadRequest(getViewTemplate("show").apply(table.find(id), session, flash).asInstanceOf[Html])
+        BadRequest(getViewTemplate("show").apply(table.find(id), session,
+          flash+("failure"->
+            (s"Packages: ${violatedDeps} depend on this task."))).asInstanceOf[Html])
       case None =>
         Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
     }

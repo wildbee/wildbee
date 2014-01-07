@@ -14,6 +14,7 @@ object UsersController extends EntityController[User, NewUser] {
 //  override val indexView: play.templates.BaseScalaTemplate = views.html.users.index
 val table = models.Users
 val model = "users"
+//val indexView: views.html.users.index.type = views.html.users.index
 //  val modelName: String = "users"
 
 //  viewMap = Map[String,(Any) => Result](
