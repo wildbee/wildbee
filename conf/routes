@@ -57,3 +57,10 @@ POST    /status                     controllers.StatusesController.create
 POST    /status/:id                 controllers.StatusesController.update(id: String)
 POST    /status/:status/delete      controllers.StatusesController.delete(status: String)
 
+#Plugins
+GET     /plugins                  controllers.PluginsController.index
+GET     /plugin/new               controllers.PluginsController.newPlugin
+GET     /plugins/:plugin          controllers.PluginsController.show(plugin: String)
+GET     /plugin/:plugin/delete    controllers.PluginsController.delete(plugin: String)
+POST    /plugins                  controllers.PluginsController.create
+

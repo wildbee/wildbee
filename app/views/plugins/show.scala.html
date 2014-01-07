@@ -1,0 +1,10 @@
+@(plugin: Plugin)(implicit session: play.api.mvc.Session)
+    @main("Show Plugin") {
+        <h1>@plugin.name</h1>
+    }
+
+@helper.form(routes.PluginsController.delete(plugin.name)) {
+<div class="form-actions">
+    <button type="submit">Delete Plugin</button>
+</div>
+}

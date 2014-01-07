@@ -24,8 +24,6 @@ case class NewPackage(
   status: String = "None",
   osVersion: String) extends NewEntity
 
-case class NewObserver(name: String)
-
 /**
  * This is the main case class that we will map projections to.
  */

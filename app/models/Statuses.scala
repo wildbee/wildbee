@@ -3,8 +3,8 @@ package models
 import play.api.db.slick.Config.driver.simple._
 import java.util.UUID
 import scala.language.postfixOps
-
 import models.traits.CRUDOperations
+import helpers.ObserverHelper
 
 
 case class NewStatus(name: String) extends NewEntity
@@ -36,4 +36,5 @@ object Statuses extends Table[Status]("statuses")
   def mapToEntity(id: UUID = newId, p: NewStatus): Status = {
     Status(id,p.name)
   }
+
 }

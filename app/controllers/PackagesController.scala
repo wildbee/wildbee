@@ -27,7 +27,7 @@ object PackagesController extends Controller {
   val observerForm = Form(
     mapping(
       "observer" -> nonEmptyText
-    )(NewObserver.apply)(NewObserver.unapply))
+    )(NewPlugin.apply)(NewPlugin.unapply))
 
   def index = Action { implicit request =>
     Ok(views.html.packages.index(Packages.findAll, packageForm))
