@@ -30,7 +30,15 @@ object Plugins extends Table[Plugin]("plugins")
     NewPlugin("TEST" , "TESTPACK")
   }
 
+  override def afterInsert(id: UUID, newInstance: NewPlugin) = {
+    activate(List(find(id)))
+  }
+
   def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName
+  }
+
+  def activate(plugins: List[Plugin] = findAll) = {
+    plugins foreach ( p => Packages.addObserver(p.path, p.pack) )
   }
 }

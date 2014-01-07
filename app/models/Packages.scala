@@ -108,6 +108,6 @@ object Packages extends Table[Package]("packages")
    *  TODO: Decouple the adding of observers from the package edit screen and but maybe in the show screen
    *        Some skeleton code for this in comments: Refer 'register' */
   override def afterUpdate(item: Package) = {
-    notifyObservers()
+    notifyObservers(item.id)
   }
 }

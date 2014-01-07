@@ -6,6 +6,7 @@ import play.api.data._
 import play.api.data.Forms._
 import models.Plugins
 import models.NewPlugin
+import models.Packages
 import helpers.ObserverHelper
 
 object PluginsController extends Controller {
@@ -34,7 +35,9 @@ object PluginsController extends Controller {
   }
 
   def delete(plugin: String) = Action { implicit request =>
+    println("PLUGIN NAME IS: " + plugin)
     val uuid = Plugins.nameToId(plugin)
+    Packages.removeObserver(plugin)
     Plugins.delete(uuid)
     Redirect(routes.PluginsController.index)
   }
