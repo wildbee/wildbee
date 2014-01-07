@@ -17,8 +17,8 @@ trait Observable {
   def notifyObservers(id: UUID)() {
     observers foreach (o => if (o.isTracking(id)) o.update(this))
   }
-  def removeObserver(o: String)() {
-    observers = observers filter( _.name != o )
+  def removeObserver(path: String)() {
+    observers = observers filter( _.path != path)
   }
 
   def addObserver(o: String, id: UUID)() {

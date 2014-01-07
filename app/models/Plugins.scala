@@ -23,15 +23,30 @@ object Plugins extends Table[Plugin]("plugins")
   }
 
   def mapToNew(id: UUID): NewPlugin = {
-    NewPlugin("TEST" , "TESTPACK")
+    val plugin = find(id)
+    NewPlugin(plugin.path, plugin.pack.toString())
   }
 
   override def afterInsert(id: UUID, newInstance: NewPlugin) = {
     activate(find(id))
   }
 
+  override def afterUpdate(plugin: Plugin) = {
+    deactivate(plugin)
+    activate(plugin)
+  }
+
+  override def beforeDelete(id: UUID) {
+    deactivate(find(id))
+  }
+
   def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName
+  }
+
+  def deactivate(plugin: Plugin): Unit = deactivate(List(plugin))
+  def deactivate(plugins: List[Plugin] = findAll): Unit = {
+    plugins foreach ( p => Packages.removeObserver(p.path) )
   }
 
   def activate(plugin: Plugin): Unit = activate(List(plugin))

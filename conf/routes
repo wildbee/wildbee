@@ -40,10 +40,10 @@ POST    /task/:task/delete          controllers.TasksController.delete(task: Str
 
 #Workflows
 GET     /workflow/new               controllers.WorkflowController.newWorkflow
-GET     /workflow/:workflow/edit    controllers.WorkflowController.edit(workflow)
+GET     /workflow/:workflow/edit    controllers.WorkflowController.edit(workflow: String)
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create
-POST    /workflow/:workflow         controllers.WorkflowController.update(workflow)
+POST    /workflow/:workflow         controllers.WorkflowController.update(workflow: String)
 POST    /workflow/:workflow/delete  controllers.WorkflowController.delete(workflow: String)
 GET     /workflow/:workflow         controllers.WorkflowController.show(workflow: String)
 GET     /workflow/:workflow/copy    controllers.WorkflowController.copy(workflow: String)
@@ -61,6 +61,8 @@ POST    /status/:status/delete      controllers.StatusesController.delete(status
 GET     /plugins                  controllers.PluginsController.index
 GET     /plugin/new               controllers.PluginsController.newPlugin
 GET     /plugins/:plugin          controllers.PluginsController.show(plugin: String)
+GET     /plugin/:plugin/edit      controllers.PluginsController.edit(plugin: String)
 GET     /plugin/:plugin/delete    controllers.PluginsController.delete(plugin: String)
 POST    /plugins                  controllers.PluginsController.create
+POST    /plugin/:id               controllers.PluginsController.update(id: String)
 

@@ -3,6 +3,12 @@
         <h1>@plugin.name</h1>
     }
 
+@helper.form(routes.PluginsController.edit(plugin.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Edit Plugin</button>
+    </div>
+}
+
 @helper.form(routes.PluginsController.delete(plugin.name)) {
 <div class="form-actions">
     <button type="submit">Delete Plugin</button>

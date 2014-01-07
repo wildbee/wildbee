@@ -34,17 +34,36 @@ object PluginsController extends Controller {
       })
   }
 
+  def show(plugin: String) = Action { implicit request =>
+    Ok(views.html.plugins.show(Plugins.find(plugin)))
+  }
+
+  def edit(id: String) = Action { implicit request =>
+    val plugin = Plugins.mapToNew(Plugins.uuid(id))
+    val filledForm = pluginForm.fill(plugin)
+    Ok(views.html.plugins.edit(filledForm, id))
+  }
+  def update(id: String) = Action { implicit request =>
+    val oldPlugin = Plugins.find(id)
+      pluginForm.bindFromRequest.fold(
+        formWithErrors => BadRequest(views.html.plugins.edit(formWithErrors, id)),
+        updatedPlugin => {
+          Plugins.update(Plugins.mapToEntity(oldPlugin.id, updatedPlugin))
+          Redirect(routes.PluginsController.show(id))
+            .flashing("success" -> "Package Updated!")
+        }
+      )
+  }
+
+
   def delete(plugin: String) = Action { implicit request =>
     println("PLUGIN NAME IS: " + plugin)
     val uuid = Plugins.nameToId(plugin)
-    Packages.removeObserver(plugin)
     Plugins.delete(uuid)
     Redirect(routes.PluginsController.index)
   }
 
-  def show(plugin: String) = Action { implicit request =>
-    Ok(views.html.plugins.show(Plugins.find(plugin)))
-  }
+
 
   def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName
