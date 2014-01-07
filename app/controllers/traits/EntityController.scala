@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Entity, NewEntity}
+import models.{EntityTable, Entity, NewEntity}
 import play.api.db.slick.Config.driver.simple._
 import play.api._
 import play.api.mvc._
@@ -16,7 +16,7 @@ trait EntityController[T <: Entity,
   extends Controller {
 
   val form: Form[Y]
-  val table: Table[T] with CRUDOperations[T, Y]
+  val table: Table[T] with CRUDOperations[T, Y] with EntityTable[T,Y]
   val model: String
 //  val controller: EntityController[T,Y]
   val currentMirror = runtimeMirror(Play.current.classloader)
@@ -34,10 +34,6 @@ trait EntityController[T <: Entity,
     val method = module.symbol.typeSignature.declaration(newTermName("apply")).asMethod
     val instance = currentMirror.reflect(module.instance)
     instance.reflectMethod(method)
-  }
-
-  private def getReverseRouter() = {
-
   }
 
   def index = Action { implicit request =>
@@ -64,14 +60,29 @@ trait EntityController[T <: Entity,
             Ok(getViewTemplate("show").apply(table.find(id), session,
               flash.+("success"->"Created")).asInstanceOf[Html])
           case Left(id) =>
-            BadRequest(getViewTemplate("newEntity").apply(form, session).asInstanceOf[Html])
+            BadRequest(getViewTemplate("newEntity").apply(form, session,
+              flash.+("failure" -> "unable to create")).asInstanceOf[Html])
         }
       })
   }
 
-  def edit(id: AnyRef) = TODO
+  def edit(id: AnyRef) = Action { implicit request =>
+    val filledForm = form.fill(table.mapToNew(id))
+    Ok(getViewTemplate("edit").apply(filledForm,id, session).asInstanceOf[Html])
+  }
 
-  def update(id: AnyRef) = TODO
+  def update(id: AnyRef) = Action { implicit request =>
+    val oldEntity = table.find(id)
+    form.bindFromRequest.fold(
+      formWithErrors =>
+        BadRequest(getViewTemplate("edit").apply(formWithErrors,id,session).asInstanceOf[Html]),
+      updatedEntity => {
+        val entity = table.update(table.mapToEntity(oldEntity.id, updatedEntity))
+        Ok(getViewTemplate("show").apply(entity, session,
+          flash.+("success"->"updated")).asInstanceOf[Html])
+      }
+    )
+  }
 
   def delete(id: AnyRef) = Action { implicit request =>
     table.delete(id) match {
@@ -84,6 +95,6 @@ trait EntityController[T <: Entity,
     }
   }
 
-  def copy = TODO
+  def copy = TODO // TODO: Make this its own trait for cloneables
 
 }

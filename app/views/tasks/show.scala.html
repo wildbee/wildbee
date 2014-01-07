@@ -18,9 +18,15 @@
             <button type="submit">Delete Task</button>
        </div>
      }
+    <!-- TODO: Show workflow -->
+    @helper.form(routes.TasksController.edit(task.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Edit Task</button>
+    </div>
+    }
+    @helper.form(routes.TasksController.delete(task.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Delete Task</button>
+    </div>
+    }
 }
-@*
-<!-- TODO: Show workflow -->
-<!-- TODO: delete task -->
-<!-- TODO: update a task -->
-*@

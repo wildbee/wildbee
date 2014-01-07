@@ -93,7 +93,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * Same as insert above. Need to map your inputs to the correct
    * class of type T, then pass that into this method.
    */
-  def update(instance: T): Unit = {
+  def update(instance: T): T = {
     beforeUpdate(instance)
     DB.withSession {
     implicit session: Session =>
@@ -101,6 +101,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
         tableToQuery(this).where(_.id === instance.id)).update(instance)
     }
     afterUpdate(instance)
+    instance
   }
 
   /**
