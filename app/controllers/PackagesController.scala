@@ -17,17 +17,9 @@ object PackagesController extends Controller {
       "task" -> nonEmptyText,
       "creator" -> nonEmptyText,
       "assignee" -> nonEmptyText,
-      "observer" -> text,
       "ccList" -> text,
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
-
-
-
-  val observerForm = Form(
-    mapping(
-      "observer" -> nonEmptyText
-    )(NewPlugin.apply)(NewPlugin.unapply))
 
   def index = Action { implicit request =>
     Ok(views.html.packages.index(Packages.findAll, packageForm))
@@ -56,7 +48,7 @@ object PackagesController extends Controller {
   }
 
   def show(taskId: String, packId: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(taskId, packId), observerForm))
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packId)))
   }
 
   def edit(taskId: String, packId: String) = Action { implicit request =>

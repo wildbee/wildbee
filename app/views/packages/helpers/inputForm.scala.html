@@ -2,14 +2,12 @@
   formAction: Call = routes.PackagesController.create,
   statuses: Map[String,String] = Map())
 @import helpers.BootstrapViewHelper._
-@import helpers.ObserverHelper
 
 @helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
     @helper.inputText((packForm("name")))
     @helper.select(packForm("task"), helper.options(Tasks.mapIdToName))
     @helper.select(packForm("creator"), helper.options(Users.mapIdToName))
     @helper.select(packForm("assignee"), helper.options(Users.mapIdToName))
-    @helper.select(packForm("observer"), helper.options(ObserverHelper.mapIdToName))
     @helper.inputText((packForm("ccList")))
     @helper.inputText((packForm("osVersion")))
     @if(packForm.data.contains("task")) {

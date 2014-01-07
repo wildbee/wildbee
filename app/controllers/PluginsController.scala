@@ -12,8 +12,13 @@ object PluginsController extends Controller {
 
   val pluginForm = Form(
   mapping(
-    "name"   -> nonEmptyText
+    "name"   -> nonEmptyText,
+    "pack"   -> nonEmptyText
   )(NewPlugin.apply)(NewPlugin.unapply))
+
+  def newPlugin = Action { implicit request =>
+    Ok(views.html.plugins.newEntity(pluginForm))
+  }
 
   def index() = Action { implicit request =>
     Ok(views.html.plugins.index())
@@ -28,10 +33,6 @@ object PluginsController extends Controller {
       })
   }
 
-  def newPlugin = Action { implicit request =>
-    Ok(views.html.plugins.newEntity(pluginForm))
-  }
-
   def delete(plugin: String) = Action { implicit request =>
     val uuid = Plugins.nameToId(plugin)
     Plugins.delete(uuid)
@@ -41,6 +42,8 @@ object PluginsController extends Controller {
   def show(plugin: String) = Action { implicit request =>
     Ok(views.html.plugins.show(Plugins.find(plugin)))
   }
-  def findPlugins: Map[String, String] =
+
+  def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName
+  }
 }

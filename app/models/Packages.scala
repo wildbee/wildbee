@@ -19,7 +19,6 @@ case class NewPackage(
   task: String,
   creator: String,
   assignee: String,
-  observer: String = "None",
   ccList: String = "None",
   status: String = "None",
   osVersion: String) extends NewEntity
@@ -33,7 +32,6 @@ case class Package(
   task: UUID,
   creator: UUID,
   assignee: UUID,
-  observer: String,
   ccList: String = "None",
   status: UUID,
   osVersion: String,
@@ -55,7 +53,6 @@ object Packages extends Table[Package]("packages")
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
   def assignee = column[UUID]("assignee_id")
-  def observer = column[String]("observer")
   def ccList = column[String]("cc_list", O.Default("None"))
   def status = column[UUID]("status")
   def osVersion = column[String]("os_version")
@@ -66,10 +63,10 @@ object Packages extends Table[Package]("packages")
   /**
    * The default projection is mapped to the Package case class.
    */
-  def * = (id ~ name ~ task ~ creator ~ assignee ~ observer ~ ccList ~
+  def * = (id ~ name ~ task ~ creator ~ assignee ~ ccList ~
     status ~ osVersion ~ created ~ updated <> (Package, Package.unapply _))
 
-  def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~ observer ~
+  def mappedEntity = (name ~ task.toString ~ creator.toString ~ assignee.toString ~
     ccList ~ status.toString ~ osVersion <> (NewPackage, NewPackage.unapply _))
 
   /**
@@ -93,7 +90,7 @@ object Packages extends Table[Package]("packages")
    * @return
    */
   def mapToEntity(id: UUID = newId, p: NewPackage): Package =
-    Package(id, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee), p.observer,
+    Package(id, p.name, uuid(p.task), uuid(p.creator), uuid(p.assignee),
     p.ccList, Tasks.getStartingStatus(uuid(p.task)), p.osVersion,
     currentTimestamp, currentTimestamp)
 
@@ -102,7 +99,7 @@ object Packages extends Table[Package]("packages")
    */
   def mapToNew(id: UUID): NewPackage = {
     val p = find(id)
-    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString, p.observer,
+    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
       p.ccList, p.status.toString, p.osVersion)
   }
 
@@ -111,15 +108,6 @@ object Packages extends Table[Package]("packages")
    *  TODO: Decouple the adding of observers from the package edit screen and but maybe in the show screen
    *        Some skeleton code for this in comments: Refer 'register' */
   override def afterUpdate(item: Package) = {
-    clearObservers()
-    val observers = item.observer.split(",")
-    observers map ( observer => addObserver(observer) )
     notifyObservers()
-  }
-
-  override def afterInsert(id: UUID, item: NewPackage) = {
-    clearObservers()
-    val observers = item.observer.split(",")
-    observers map ( observer => addObserver(observer) )
   }
 }

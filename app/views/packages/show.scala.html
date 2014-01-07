@@ -1,5 +1,4 @@
 @(pack: Package,
-    observerForm: Form[NewPlugin],
 	names: List[String]=List("id","name", "task","creator","assignee",
 		"cc list", "status", "os version","creation time",
 		"last updated"))(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
@@ -14,7 +13,6 @@
         <ul>task : @Tasks.idToName(pack.task)</ul>
         <ul>creator : @Users.idToName(pack.creator)</ul>
         <ul>assignee : @Users.idToName(pack.assignee)</ul>
-        <ul>observer : @pack.observer</ul>
         <ul>status : @Statuses.idToName(pack.status)</ul>
         <ul>os version: @pack.osVersion</ul>
 	=================================================
@@ -35,32 +33,6 @@
             <button type="submit">Delete Package</button>
         </div>
     }
-    @*
-    @helper.form(routes.PackagesController.register(pack.id.toString)) {
-        <button type="submit">Add Test Observer</button>
-    }
-    *@
-
-    @*
-    @helper.form(routes.PackagesController.register(pack.id.toString)) {
-        @helper.select(
-            field = observerForm("observer"),
-            observers.map { observer =>
-                observer
-            }
-        )
-        <input type="submit" value="Add Observer" />
-        @*
-        Unsure how to get combobox value
-                <select class="form-control" id="workflow" name="workflow" >
-                    @observers.map { observer =>
-                            <option value=@observer>@observer</option>
-                    }
-                </select>
-        <button type="submit">Add Test Observer</button>
-    }
-        *@
-
 }
 
 

@@ -1,11 +1,13 @@
 @(pluginForm: Form[NewPlugin],
-  s: Map[String, String] = Plugins.findPlugins,
+  plugins: Map[String, String] = Plugins.findPlugins,
+  packs: Map[String, String] = Packages.mapIdToName,
   formAction: Call = routes.PluginsController.create)
 
 @import helpers.BootstrapViewHelper._
 
 @helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
-    @helper.select(pluginForm("name"), helper.options(s))
+    @helper.select(pluginForm("name"), helper.options(plugins))
+    @helper.select(pluginForm("pack"), helper.options(packs))
     <div class="col-sm-offset-3 col-sm-9">
         <button type="submit" class="btn btn-default">Register Plugin</button>
     </div>
