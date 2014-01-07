@@ -7,6 +7,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Path</th>
             </tr>
         </thead>
         <tbody>
@@ -14,6 +15,7 @@
             <tr>
                 <td>@plugin.id</td>
                 <td><a href="@routes.PluginsController.show(plugin.name)">@plugin.name</a></td>
+                <td>@plugin.path</td>
             </tr>
             }
         </tbody>

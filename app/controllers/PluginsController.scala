@@ -26,7 +26,6 @@ object PluginsController extends Controller {
         Plugins.insert(newInstance = plugin)
         Redirect(routes.PluginsController.index())
       })
-
   }
 
   def newPlugin = Action { implicit request =>

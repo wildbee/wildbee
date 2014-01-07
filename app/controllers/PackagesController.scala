@@ -23,7 +23,7 @@ object PackagesController extends Controller {
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
 
-  //val observerNames = ObserverHelper.getObserverNames => Only need if your going to uncomment stuff at the bottom of package show view
+
   val observerForm = Form(
     mapping(
       "observer" -> nonEmptyText
@@ -88,20 +88,5 @@ object PackagesController extends Controller {
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
     Ok(views.html.packages.newEntity(filledForm,statuses))
   }
-
-  /*
-  def register(id: String) = Action {implicit request =>
-    observerForm.bindFromRequest.fold(
-      formWithErrors =>Redirect(routes.PackagesController.show(Packages.find(id).task.toString, Packages.find(id).name)),
-      observer => {
-        println("Anything???")
-        val pack = Packages.find(id)
-        Packages.addObserver(Class.forName(observer.name).newInstance().asInstanceOf[Observer])
-
-        println(observer.name)
-        Redirect(routes.PackagesController.show(pack.task.toString, pack.name))
-      }
-    )
-  }*/
 
 }

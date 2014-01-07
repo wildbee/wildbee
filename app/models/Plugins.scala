@@ -6,19 +6,21 @@ import models.traits.CRUDOperations
 import helpers._
 
 case class NewPlugin(name: String) extends NewEntity
-case class Plugin(id: UUID, name: String) extends Entity
+case class Plugin(id: UUID, name: String, path: String) extends Entity
 
 //CRUDOperations is dependent on Entity Table?
 object Plugins extends Table[Plugin]("plugins")
   with CRUDOperations[Plugin,NewPlugin]
   with EntityTable[Plugin, NewPlugin] {
 
-  def * = id ~ name  <> (Plugin, Plugin.unapply _)
-  def autoId = id ~ name returning id
+  def path = column[String]("path")
+  def * = id ~ name ~ path  <> (Plugin, Plugin.unapply _)
+  def autoId = id ~ name ~ path returning id
 
   //mapToEntity required used by insert
+  //Here name is
   def mapToEntity(id: UUID = newId, o: NewPlugin ): Plugin = {
-    Plugin(id, o.name)
+    Plugin(id, o.name.split('.').last, o.name)
   }
 
   //mapToNew Required
@@ -26,7 +28,7 @@ object Plugins extends Table[Plugin]("plugins")
     NewPlugin("TEST")
   }
 
-  // Why can't we see observers from the inputForm view
-  def findPlugins: Map[String, String] =
+  def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName
+  }
 }
