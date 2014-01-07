@@ -8,10 +8,8 @@ import play.api.data._
 import play.api.data.Forms._
 
 object PackagesController extends EntityController[Package, NewPackage] {
-
   val modelName = "packages"
   val table = models.Packages
-  val controller = routes.PackagesController
 
   val form = Form(
     mapping(
@@ -23,13 +21,9 @@ object PackagesController extends EntityController[Package, NewPackage] {
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
-//  override def newEntity = Action { implicit request =>
-//    Ok(views.html.packages.newEntity(form))
-//  }
-
   /**
-   * Packages have their own show controller method because
-   * they rely on a foreign primary key (the task they belong to)
+   * Implements its own version of show because
+   * we rely on a foreign primary key (task)
    * @param tid
    * @param pid
    * @return
@@ -39,8 +33,7 @@ object PackagesController extends EntityController[Package, NewPackage] {
   }
 
   /**
-   * Packages have their own edit controller method because
-   * of the task id foreign key.
+   * Implements its own edit because of the task id foreign key.
    * @param tid
    * @param pid
    * @return
