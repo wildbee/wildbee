@@ -6,7 +6,6 @@ import play.api._
 import play.api.mvc._
 import play.api.data.Form
 import play.api.mvc.Action
-import play.api.mvc.Results.Redirect
 import play.api.templates.{Html}
 import reflect.runtime.universe._
 import models.traits.CRUDOperations
@@ -18,10 +17,10 @@ trait EntityController[T <: Entity,
   val form: Form[Y]
   val table: Table[T] with CRUDOperations[T, Y] with EntityTable[T,Y]
   val modelName: String
-//  val controller: EntityController[T,Y]
+
   val currentMirror = runtimeMirror(Play.current.classloader)
   val packageName = "views.html."
-  //val indexView: views.html.users.index.type
+
 
   /**
    * Use reflection to instantiate the method for some needed view template.
@@ -30,18 +29,9 @@ trait EntityController[T <: Entity,
    */
   private def getViewTemplate(view: String) = {
     val template = packageName + modelName.toString.toLowerCase + "." + view
-    play.api.Logger.debug("template: " + template.toString)
     val module = currentMirror.reflectModule(currentMirror.staticModule(template))
-    play.api.Logger.debug("module: " + module.toString)
     val method = module.symbol.typeSignature.declaration(newTermName("apply")).asMethod
-    play.api.Logger.debug("method: " + method.toString)
     val instance = currentMirror.reflect(module.instance)
-
-
-
-    play.api.Logger.debug("instance: " + instance.toString)
-
-
     instance.reflectMethod(method)
   }
 
