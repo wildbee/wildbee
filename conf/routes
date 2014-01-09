@@ -40,7 +40,7 @@ POST    /task/:task/delete          controllers.TasksController.delete(task: Str
 POST    /task/:task                 controllers.TasksController.update(task: String)
 
 #Workflows
-GET     /workflow/new               controllers.WorkflowController.newWorkflow
+GET     /workflow/new               controllers.WorkflowController.newEntity
 GET     /workflow/:workflow/edit    controllers.WorkflowController.edit(workflow)
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create

@@ -98,12 +98,11 @@ trait EntityController[T <: Entity,
       case Some(violatedDeps) =>
         BadRequest(getViewTemplate("show").apply(table.find(id), session,
           flash+("failure"->
-            (s"Packages: ${violatedDeps} depend on this task."))).asInstanceOf[Html])
+            (s"${violatedDeps} depend on this entity."))).asInstanceOf[Html])
       case None =>
         Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
     }
   }
 
   def copy = TODO // TODO: Make this its own trait for cloneables
-
 }
