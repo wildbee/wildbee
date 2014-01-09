@@ -24,25 +24,25 @@ object PackagesController extends EntityController[Package, NewPackage] {
   /**
    * Implements its own version of show because
    * we rely on a foreign primary key (task)
-   * @param tid
-   * @param pid
+   * @param taskId
+   * @param packageId
    * @return
    */
-  def show(tid: String, pid: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(tid, pid)))
+  def show(taskId: String, packageId: String) = Action { implicit request =>
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packageId)))
   }
 
   /**
    * Implements its own edit because of the task id foreign key.
-   * @param tid
-   * @param pid
+   * @param taskId
+   * @param packageId
    * @return
    */
-  def edit(tid: String, pid: String) = Action { implicit request =>
-    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
+  def edit(taskId: String, packageId: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(taskId, packageId).id)
     val filledForm = form.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
-    Ok(views.html.packages.edit(filledForm, pid, statuses))
+    Ok(views.html.packages.edit(filledForm, packageId, statuses))
   }
 
   /**
@@ -64,12 +64,12 @@ object PackagesController extends EntityController[Package, NewPackage] {
   /**
    * Packages implement their own copy method due to the
    * task foreign key constraint.
-   * @param tid
-   * @param pid
+   * @param taskId
+   * @param packageId
    * @return
    */
-  def copy(tid: String, pid: String) = Action { implicit request =>
-    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
+  def copy(taskId: String, packageId: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(taskId, packageId).id)
     val filledForm = form.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
     Ok(views.html.packages.newEntity(filledForm))
