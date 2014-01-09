@@ -46,6 +46,22 @@ object PackagesController extends EntityController[Package, NewPackage] {
   }
 
   /**
+   * Implements its own update due to the task id being foreign key.
+   * @param id
+   * @return
+   */
+  def update(id: String) = Action { implicit request =>
+    val oldPack = Packages.find(id)
+    form.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
+      updatedPack => {
+        Packages.update(Packages.mapToEntity(oldPack.id, updatedPack))
+        Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
+          .flashing("success" -> "Package Updated!")
+      })
+  }
+
+  /**
    * Packages implement their own copy method due to the
    * task foreign key constraint.
    * @param tid

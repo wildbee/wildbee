@@ -36,6 +36,8 @@ trait EntityController[T <: Entity,
   }
 
   def index = Action { implicit request =>
+    val all = table.findAll
+    val ses = session
     Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
   }
 
