@@ -27,7 +27,7 @@ trait EntityController[T <: Entity,
    * @param view "index"/"show"/"newEntity"/etc.
    * @return
    */
-  private def getViewTemplate(view: String) = {
+  protected def getViewTemplate(view: String) = {
     val template = packageName + modelName.toString.toLowerCase + "." + view
     val module = currentMirror.reflectModule(currentMirror.staticModule(template))
     val method = module.symbol.typeSignature.declaration(newTermName("apply")).asMethod
@@ -95,6 +95,4 @@ trait EntityController[T <: Entity,
         Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
     }
   }
-
-  def copy = TODO // TODO: Make this its own trait for cloneables
 }
