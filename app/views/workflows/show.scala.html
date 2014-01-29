@@ -8,7 +8,7 @@
   		Workflow ID: @workflow.id<br/>
   		<u>Workflow Mapping</u> <br>
   		@Transitions.getLogic(workflow.id).map { case (key, value) =>
-  			- @key -> @value.mkString(", ") <br/>
+  			- @Statuses.idToName(key) -> @value.map { status => @Statuses.idToName(status) }.mkString(", ")<br/>
   		}
   		================================================
        </p>

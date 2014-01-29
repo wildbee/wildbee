@@ -1,17 +1,15 @@
-@(task: Task,
-  users: List[User] = Users.findAll
-)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+@(task: Task)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
 
 @main("Show Tasks") {
 	 @tags.flash()
       <p>
         <h1>@task.name</h1>
   		================================================= <br/>
-  		Task Owner: @{Users.find(task.owner).name}</br>
-  		Task Creation Time: @task.created</br>
-  		Task Last Updated: @task.updated</br>
-  		Task ID: @task.id<br/>
-  		Task Owner ID: @task.owner</br>
+        ID: @task.id<br/>
+        Owner: @{Users.find(task.owner).name}</br>
+        Owner ID: @task.owner</br>
+  		Creation Time: @task.created</br>
+  		Last Updated: @task.updated</br>
   		=================================================
        </p>
        
@@ -20,9 +18,15 @@
             <button type="submit">Delete Task</button>
        </div>
      }
+    <!-- TODO: Show workflow -->
+    @helper.form(routes.TasksController.edit(task.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Edit Task</button>
+    </div>
+    }
+    @helper.form(routes.TasksController.delete(task.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Delete Task</button>
+    </div>
+    }
 }
-@*
-<!-- TODO: Show workflow -->
-<!-- TODO: delete task -->
-<!-- TODO: update a task -->
-*@

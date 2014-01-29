@@ -1,7 +1,8 @@
-@(statusForm: Form[NewStatus],id: String)(implicit session: play.api.mvc.Session)
+@(statusForm: Form[NewStatus],
+    id: String)(implicit session: play.api.mvc.Session)
 
 @main("Update a Status") {
-@helpers.inputForm(
-statusForm = statusForm,
-formAction = routes.StatusesController.update(id))
+    @helpers.inputForm(
+    statusForm = statusForm,
+    formAction = routes.StatusesController.update(id))
 }

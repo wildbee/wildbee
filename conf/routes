@@ -10,7 +10,7 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # Packages
 GET     /packages                   controllers.PackagesController.index
-GET     /package/new                controllers.PackagesController.newPackage
+GET     /package/new                controllers.PackagesController.newEntity
 POST    /package/:id                controllers.PackagesController.update(id: String)
 POST    /package                    controllers.PackagesController.create
 POST    /package/:id/delete         controllers.PackagesController.delete(id: String)
@@ -22,23 +22,25 @@ POST    /logout                     controllers.Application.logout
 # Users
 GET     /users                      controllers.UsersController.index
 POST    /user                       controllers.UsersController.create
-GET     /user/new                   controllers.UsersController.newUser
+GET     /user/new                   controllers.UsersController.newEntity
 POST    /user/:email                controllers.UsersController.update(email: String)
 GET     /user/:email/edit           controllers.UsersController.edit(email: String)
 GET     /user/:email                controllers.UsersController.show(email: String)
 
 # Tasks
 GET     /tasks                      controllers.TasksController.index
-GET     /task/new                   controllers.TasksController.newTask
+GET     /task/new                   controllers.TasksController.newEntity
 GET     /task/:task                 controllers.TasksController.show(task: String)
+GET     /task/:task/edit            controllers.TasksController.edit(task: String)
 GET     /task/:t/package/:p         controllers.PackagesController.show(t: String, p: String)
 GET     /task/:t/package/:p/edit    controllers.PackagesController.edit(t: String, p: String)
-GET     /task/:t/package/:p/copy   controllers.PackagesController.copy(t: String, p: String)
+GET     /task/:t/package/:p/copy    controllers.PackagesController.copy(t: String, p: String)
 POST    /task                       controllers.TasksController.create
 POST    /task/:task/delete          controllers.TasksController.delete(task: String)
+POST    /task/:task                 controllers.TasksController.update(task: String)
 
 #Workflows
-GET     /workflow/new               controllers.WorkflowController.newWorkflow
+GET     /workflow/new               controllers.WorkflowController.newEntity
 GET     /workflow/:workflow/edit    controllers.WorkflowController.edit(workflow)
 GET     /workflows                  controllers.WorkflowController.index
 POST    /workflow                   controllers.WorkflowController.create
@@ -49,8 +51,9 @@ GET     /workflow/:workflow/copy    controllers.WorkflowController.copy(workflow
 
 
 #Statuses
-GET     /status/new                 controllers.StatusesController.newStatus
+GET     /status/new                 controllers.StatusesController.newEntity
 GET     /status/:status             controllers.StatusesController.show(status: String)
+GET     /status/:status/edit        controllers.StatusesController.edit(status: String)
 GET     /statuses                   controllers.StatusesController.index
 POST    /status                     controllers.StatusesController.create
 POST    /status/:id                 controllers.StatusesController.update(id: String)

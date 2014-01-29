@@ -1,0 +1,8 @@
+@(form: Form[NewTask],
+	id: String)(implicit session: play.api.mvc.Session)
+
+@main("Update a Task") {
+	@helpers.inputForm(
+		taskForm = form,
+		formAction = routes.TasksController.update(id))
+}

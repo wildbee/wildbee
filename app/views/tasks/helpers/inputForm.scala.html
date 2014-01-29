@@ -1,21 +1,17 @@
-@(taskForm: Form[NewTask],
-	users: Map[String, String] = Users.mapIdToName,
-	workflows: Map[String, String] = Workflows.mapIdToName,
-    formAction: Call = routes.TasksController.create
+@(taskForm: Form[NewTask],formAction: Call = routes.TasksController.create
 	)(implicit session: play.api.mvc.Session)
 @import helpers.BootstrapViewHelper._
 @helper.form(action = formAction, 'class -> "form-horizontal", 'role -> "form") {
     @helper.inputText(taskForm("name"), 'class -> "form-control")
     @helper.select(
         taskForm("owner"),
-        helper.options(users))
+        helper.options(Users.mapIdToName))
     @helper.select(
     	taskForm("workflow"),
-    	helper.options(workflows))
-
+    	helper.options(Workflows.mapIdToName))
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-9">
-        <button type="submit" class="btn btn-default">Create Task</button>
+        <button type="submit" class="btn btn-default">Submit</button>
         </div>
     </div>
 }
