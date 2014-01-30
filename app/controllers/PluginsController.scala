@@ -6,7 +6,6 @@ import play.api.data._
 import play.api.data.Forms._
 import models.Plugins
 import models.NewPlugin
-import models.Packages
 import helpers.ObserverHelper
 
 object PluginsController extends Controller {
@@ -25,6 +24,7 @@ object PluginsController extends Controller {
     Ok(views.html.plugins.index())
   }
 
+  //For editing purposes
   def create() = Action { implicit request =>
     pluginForm.bindFromRequest.fold(
       formWithErrors => BadRequest(views.html.plugins.newEntity(formWithErrors)),
@@ -47,6 +47,7 @@ object PluginsController extends Controller {
     val filledForm = pluginForm.fill(plugin)
     Ok(views.html.plugins.edit(filledForm, id))
   }
+
   def update(id: String) = Action { implicit request =>
     Plugins.find(id) match {
       case Some(oldPlugin) =>
@@ -60,18 +61,7 @@ object PluginsController extends Controller {
         )
       case None =>  BadRequest(views.html.index(s"Error Finding Plugin $id"))
     }
-
   }
-
-
-  def delete(plugin: String) = Action { implicit request =>
-    println("PLUGIN NAME IS: " + plugin)
-    val uuid = Plugins.nameToId(plugin)
-    Plugins.delete(uuid)
-    Redirect(routes.PluginsController.index)
-  }
-
-
 
   def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName

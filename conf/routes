@@ -59,10 +59,8 @@ POST    /status/:status/delete      controllers.StatusesController.delete(status
 
 #Plugins
 GET     /plugins                  controllers.PluginsController.index
-GET     /plugin/new               controllers.PluginsController.newPlugin
 GET     /plugins/:plugin          controllers.PluginsController.show(plugin: String)
 GET     /plugin/:plugin/edit      controllers.PluginsController.edit(plugin: String)
-GET     /plugin/:plugin/delete    controllers.PluginsController.delete(plugin: String)
 POST    /plugins                  controllers.PluginsController.create
 POST    /plugin/:id               controllers.PluginsController.update(id: String)
 

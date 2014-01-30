@@ -130,6 +130,14 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
     deleteValidator(identifier) match {
       case Some(error) => Some(error)
       case None => identifier match {
+        case  Some(id:UUID) => del(id)
+        case  Some(str :String) => {
+          if (isUUID(str)) del(uuid(str))
+          else findByName(str) match {
+            case Some(obj) => del(obj.id)
+            case None => None
+          }
+        }
         case id : UUID =>  del(id)
         case str : String => {
           if (isUUID(str)) del(uuid(str))
