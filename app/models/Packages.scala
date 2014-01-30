@@ -8,9 +8,7 @@ import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
-import models.traits.CRUDOperations
-import models.traits.Observable
-import models.traits.Observer
+import models.traits.{CRUDOperations, Observable, ObserverCommands}
 
 
 /** This class is for creating new packages from string inputs: */
@@ -48,7 +46,9 @@ object Packages extends Table[Package]("packages")
   with EntityTable[Package, NewPackage]
   with TimekeepingTable[Package]
   with MapsIdsToNames[Package]
-  with Observable {
+  with Observable
+  with ObserverCommands
+  {
 
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
@@ -81,6 +81,7 @@ object Packages extends Table[Package]("packages")
       (Tasks.find(task), Packages.find(pack)) match
       {
         case (Some(t), Some(p)) => Query(this).where(_.name === p.name).where(_.task === t.id).first
+        case _ => throw new IllegalArgumentException
       }
   }
 
@@ -103,11 +104,16 @@ object Packages extends Table[Package]("packages")
       case Some(p) =>
         NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
           p.ccList, p.status.toString, p.osVersion)
+      case None => throw new IllegalArgumentException
     }
 
   }
 
   override def afterUpdate(item: Package) = {
-    notifyObservers(item.id)
+    notifyObservers(item.id, Dummy)
+  }
+
+  override def afterDelete(id: UUID){
+    notifyObservers(id, Delete)
   }
 }

@@ -46,6 +46,7 @@ object Workflows extends Table[Workflow]("workflows")
         val transitions = Transitions.transitionMap(id)
         val statuses = (transitions.keys map (_.toString) ).toList
         NewWorkflow(w.name, statuses)
+      case None => throw new NoSuchElementException
     }
   }
 

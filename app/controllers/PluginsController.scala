@@ -66,4 +66,5 @@ object PluginsController extends Controller {
   def findPlugins: Map[String, String] = {
     ObserverHelper.mapIdToName
   }
+
 }

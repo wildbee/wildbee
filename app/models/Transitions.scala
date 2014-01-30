@@ -68,7 +68,7 @@ object Transitions extends Table[Transition]("transitions") {
       val workflow = Tasks.find(task) match {
         case Some(obj) => obj.workflow
       }
-      val currentStatus = Packages.find(pack)match {
+      val currentStatus = Packages.find(pack) match {
         case Some(obj) => obj.status
       }
       val nextStateLogic = getLogic(workflow)

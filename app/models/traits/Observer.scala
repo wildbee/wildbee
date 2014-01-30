@@ -16,9 +16,10 @@ trait Observer {
   var tracking: List[UUID] = List.empty[UUID]
   def track(id: UUID): Unit = tracking ::= id
   def track(ids: List[UUID]): Unit = ids foreach( track(_) )
+  def untrack(id: UUID): Unit = tracking = tracking filterNot (_ == id)
   def isTracking(id: UUID) = tracking.contains(id)
 
   val name: String = this.getClass.getSimpleName
   val path: String = this.getClass.getName
-	def update(s: Observable): Unit
+	def update(s: Observable, id: UUID, command: ObserverCommand): Unit
 }

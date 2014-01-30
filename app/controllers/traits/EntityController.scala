@@ -109,17 +109,6 @@ trait EntityController[T <: Entity,
           })
       case None =>  BadRequest(views.html.index(s"Error finding id: $id"))
     }
-    /*
-    val oldEntity = table.find(id)
-    form.bindFromRequest.fold(
-      formWithErrors =>
-        BadRequest(getViewTemplate("edit").apply(formWithErrors,id,session).asInstanceOf[Html]),
-      updatedEntity => {
-        val entity = table.update(table.mapToEntity(oldEntity.id, updatedEntity))
-        Ok(getViewTemplate("show").apply(entity, session,
-          flash.+("success"->"updated")).asInstanceOf[Html])
-      }
-    )*/
   }
 
   def delete(id: AnyRef) = Action { implicit request =>
