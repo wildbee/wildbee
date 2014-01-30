@@ -14,7 +14,9 @@
         @if(statuses.isEmpty) {
             <input type="hidden" name="status" value="None">
         } else {
-            @helper.select(packForm("status"),helper.options(statuses))
+            @helper.select(
+                packForm("status"),
+                helper.options(Transitions.allowedStatuses(packForm.data("task"),packForm.data("name"))))
         }
     } else {
         <input type="hidden" name="status" value="None">

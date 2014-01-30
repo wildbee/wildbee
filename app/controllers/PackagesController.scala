@@ -9,9 +9,11 @@ import play.api.data.Forms._
 import helpers.ObserverHelper
 import models.traits.Observer
 
-object PackagesController extends Controller {
+object PackagesController extends EntityController[Package, NewPackage] {
+  val modelName = "packages"
+  val table = models.Packages
 
-  val packageForm = Form(
+  val form = Form(
     mapping(
       "name" -> nonEmptyText,
       "task" -> nonEmptyText,
@@ -21,10 +23,19 @@ object PackagesController extends Controller {
       "status"-> text,
       "osVersion" -> nonEmptyText)(NewPackage.apply)(NewPackage.unapply))
 
-  def index = Action { implicit request =>
-    Ok(views.html.packages.index(Packages.findAll, packageForm))
+  /**
+   * Implements its own version of show because
+   * we rely on a foreign primary key (task)
+   * @param taskId
+   * @param packageId
+   * @return
+   */
+  def show(taskId: String, packageId: String) = Action { implicit request =>
+    Ok(views.html.packages.show(Packages.findByTask(taskId, packageId)))
   }
 
+
+  /*
   def newPackage = Action { implicit request =>
     Ok(views.html.packages.newEntity(packageForm))
   }
@@ -57,15 +68,31 @@ object PackagesController extends Controller {
 
   def edit(taskId: String, packId: String) = Action { implicit request =>
     val pack = Packages.mapToNew(Packages.findByTask(taskId, packId).id)
-    val filledForm = packageForm.fill(pack)
+    val filledForm = packageForm.fill(pack)*/
+
+  /**
+   * Implements its own edit because of the task id foreign key.
+   * @param taskId
+   * @param packageId
+   * @return
+   */
+  def edit(taskId: String, packageId: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(taskId, packageId).id)
+    val filledForm = form.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
-    Ok(views.html.packages.edit(filledForm, packId, statuses))
+    Ok(views.html.packages.edit(filledForm, packageId, statuses))
   }
+
+  /**
+   * Implements its own update due to the task id being foreign key.
+   * @param id
+   * @return
+   */
 
   def update(id: String) = Action { implicit request =>
     Packages.find(id) match {
       case Some(oldPack) =>
-        packageForm.bindFromRequest.fold(
+        form.bindFromRequest.fold(
           formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
           updatedPack => {
             Packages.update(Packages.mapToEntity(oldPack.id, updatedPack))
@@ -76,16 +103,17 @@ object PackagesController extends Controller {
     }
   }
 
-  def delete(id: String) = Action { implicit request =>
-    Packages.delete(Packages.uuid(id))
-    Redirect(routes.PackagesController.index).flashing("success" -> "Package Deleted!")
-  }
-
-  def copy(tid: String, pid: String) = Action { implicit request =>
-    val pack = Packages.mapToNew(Packages.findByTask(tid, pid).id)
-    val filledForm = packageForm.fill(pack)
+  /**
+   * Packages implement their own copy method due to the
+   * task foreign key constraint.
+   * @param taskId
+   * @param packageId
+   * @return
+   */
+  def copy(taskId: String, packageId: String) = Action { implicit request =>
+    val pack = Packages.mapToNew(Packages.findByTask(taskId, packageId).id)
+    val filledForm = form.fill(pack)
     val statuses = Transitions.allowedStatuses(pack.task,pack.name)
-    Ok(views.html.packages.newEntity(filledForm,statuses))
+    Ok(views.html.packages.newEntity(filledForm))
   }
-
 }

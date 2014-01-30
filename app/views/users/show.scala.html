@@ -1,4 +1,18 @@
-@(user: User)(implicit session: play.api.mvc.Session)
+@(user: User)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
 @main("User") {
-    <p>@user.id - @user.name - @user.email</p>
+    @tags.flash()
+    <p>
+    <h1>@user.name</h1>
+    ================================================= <br/>
+    Id : @user.id<br>
+    Name : @user.name<br>
+    Email : @user.email<br>
+    =================================================
+    </p>
+
+    @helper.form(routes.PackagesController.delete(user.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Delete User</button>
+    </div>
+    }
 }

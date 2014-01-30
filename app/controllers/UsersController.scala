@@ -4,49 +4,42 @@ import play.api._
 import play.api.mvc._
 
 import models._
-
 import play.api.data._
 import play.api.data.Forms._
+import play.mvc.Result
+import play.api.http.Writeable
 
-object UsersController extends Controller {
+object UsersController extends EntityController[User, NewUser] {
+val table = models.Users
+val modelName = "users"
 
-  val userForm = Form(
+val form = Form(
     mapping(
       "name" -> nonEmptyText,
       "email" -> email)(NewUser.apply)(NewUser.unapply))
 
-  def index() = Action { implicit request =>
-    Ok(views.html.users.index())
+  /**
+   * Implements its own version of show because we find users by
+   * email.
+   * @param id
+   * @return
+   */
+  override def show(id: AnyRef) = Action { implicit request =>
+    id match {
+      case id: String => Ok(views.html.users.show(Users.findByEmail(id)))
+      case _ => NotFound
+    }
   }
 
-  def show(email: String) = Action { implicit request =>
-    Ok(views.html.users.show(Users.findByEmail(email)))
-  }
-
-  def newUser() = Action { implicit request =>
-    Ok(views.html.users.newEntity(userForm))
-  }
-
-  def edit(email: String) = Action { implicit request =>
-    val user = Users.findByEmail(email)
-    val filledForm = userForm.fill(NewUser(user.name, user.email))
-    Ok(views.html.users.edit(filledForm, user))
-  }
-
-  def create = Action { implicit request =>
-      userForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.users.newEntity(formWithErrors)),
-        newUser => {
-          val email = Users.insert(newUser.name, newUser.email)
-          Redirect(routes.UsersController.show(email))
-        }
-      )
-  }
-
+  /**
+   * Implements its own version of update because we find users
+   * by email.
+   * @param email
+   * @return
+   */
   def update(email: String) = Action { implicit request =>
       val user = Users.findByEmail(email)
-
-      userForm.bindFromRequest.fold(
+      form.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.users.edit(formWithErrors, user)),
         editUser => {
           Users.update(email, editUser)
@@ -54,6 +47,4 @@ object UsersController extends Controller {
         }
       )
   }
-
-
 }

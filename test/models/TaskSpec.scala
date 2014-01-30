@@ -47,7 +47,7 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
       val tasks = for (i <- 0 until 10) yield taskFactory.generate()
       tasks map (t => Tasks delete (t.id))
       Tasks.findAll.size === 0
-      Tasks delete tasks(intBetween(0, 10)).name//must throwA[java.util.NoSuchElementException] ??
+      Tasks delete tasks(intBetween(0, 10)).name must throwA[java.util.NoSuchElementException]
     }
 
     "not allow you to delete a task if a package depends on it" in new WithApplication(fakeAppGen) {

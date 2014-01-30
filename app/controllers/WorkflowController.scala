@@ -8,28 +8,33 @@ import play.api.data.Forms._
 import helpers.Config
 import java.util.UUID
 
-object WorkflowController extends Controller {
+object WorkflowController extends EntityController[Workflow,NewWorkflow] {
+  val table = models.Workflows
+  val modelName = "workflows"
 
-  val workForm = Form(
+  val form = Form(
     mapping(
       "name"   -> nonEmptyText,
       "status" -> list(text))(NewWorkflow.apply)(NewWorkflow.unapply))
 
+  /*
   def newWorkflow = Action { implicit request =>
     Ok(views.html.workflows.newEntity(workForm))
   }
 
   def index = Action { implicit request =>
     Ok(views.html.workflows.index())
-  }
+  }*/
 
+  /*
   def show(name: String) = Action { implicit request =>
     Workflows.find(name) match {
       case Some(workflow) => Ok(views.html.workflows.show(workflow))
       case None =>  BadRequest(views.html.index(s"Error Finding Workflow $name"))
     }
-  }
+  }*/
 
+  /*
   def create() = Action { implicit request =>
       workForm.bindFromRequest.fold(
         errors => BadRequest(views.html.index("Error Creating Workflow :: " + errors)),
@@ -46,7 +51,7 @@ object WorkflowController extends Controller {
 
         }
     )
-  }
+  }*/
 
 //  def delete(name: String) = Action { implicit request => {
 //      Workflows.delete(name)
@@ -58,6 +63,7 @@ object WorkflowController extends Controller {
    * a method that just does the validation. Then we can start creating generalized validators that
    * work with all CRUDeable entity models.
    */
+  /*
   def delete(name: String) = Action { implicit request =>
      Workflows.delete(name) match {
        case Some(violatedDeps) =>
@@ -95,16 +101,15 @@ object WorkflowController extends Controller {
     }
 
 
-  }
+  }*/
 
   def copy(wid: String) = Action { implicit request =>
     Workflows.find(wid) match {
       case Some(workflow) =>
         val pack = Workflows.mapToNew(workflow)
-        val filledForm = workForm.fill(pack)
+        val filledForm = form.fill(pack)
         Ok(views.html.workflows.newEntity(filledForm))
       case None => BadRequest(views.html.index(s"Error Finding Workflow $wid"))
     }
-
   }
 }

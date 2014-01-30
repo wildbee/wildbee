@@ -19,7 +19,7 @@
                         <li><a href="@{routes.UsersController.show(user.email)}">@user.name</a></li>
                         }
                         <li class="divider"></li>
-                        <li><a href="@routes.UsersController.newUser">Create User</a></li>
+                        <li><a href="@routes.UsersController.newEntity">Create User</a></li>
                         <li><a href="@routes.UsersController.index">View Users</a></li>
                     </ul>
                 </li>
@@ -30,7 +30,7 @@
                         <li><a href="@{routes.TasksController.show(task.name)}">@task.name</a></li>
                         }
                         <li class="divider"></li>
-                        <li><a href="@routes.TasksController.newTask">Create Task</a></li>
+                        <li><a href="@routes.TasksController.newEntity">Create Task</a></li>
                         <li><a href="@routes.TasksController.index">View Tasks</a></li>
                     </ul>
                 </li>
@@ -41,7 +41,7 @@
                             <li><a href="@{routes.PackagesController.show(pack.task.toString,pack.name)}">@pack.name</a></li>
                         }
                         <li class="divider"></li>
-                        <li><a href="@routes.PackagesController.newPackage">Create Package</a></li>
+                        <li><a href="@routes.PackagesController.newEntity">Create Package</a></li>
                         <li><a href="@routes.PackagesController.index">Show Packages</a></li>
                     </ul>
                 </li>
@@ -52,7 +52,7 @@
                     	<li><a href="@{routes.WorkflowController.show(workflow.name)}">@workflow.name</a></li>
                     	}
                     	<li class="divider"></li>
-                        <li><a href="@routes.WorkflowController.newWorkflow">Create Workflow</a></li>
+                        <li><a href="@routes.WorkflowController.newEntity">Create Workflow</a></li>
                         <li><a href="@routes.WorkflowController.index">View Workflows</a></li>
                     </ul>
                 </li>
