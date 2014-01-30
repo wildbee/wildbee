@@ -113,7 +113,17 @@ object Packages extends Table[Package]("packages")
     notifyObservers(item.id, Dummy)
   }
 
+  //TODO: Extend to acommodate multiple plugins
   override def afterDelete(id: UUID){
     notifyObservers(id, Delete)
+    val plugins = Plugins.findAll
+
+    plugins foreach { plugin => plugin.pack match {
+      case Some(packId) => if(packId == id){
+        val updatedPlugin = NewPlugin(plugin.name, None)
+        Plugins.update(Plugins.mapToEntity(plugin.id, updatedPlugin))
+      }
+      case None =>
+    }}
   }
 }

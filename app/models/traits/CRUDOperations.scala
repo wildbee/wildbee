@@ -89,7 +89,6 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    */
   def update(instance: T): T = {
     beforeUpdate(instance)
-    println("UPDATING INSTANCE")
     DB.withSession {
     implicit session: Session =>
       tableQueryToUpdateInvoker(
