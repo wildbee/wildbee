@@ -19,9 +19,12 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
   /**
    * Return the UUID of the entity with this name in this table.
    */
-  def nameToId(name: String): UUID = DB.withSession {
+  def nameToId(name: String): Option[UUID] = DB.withSession {
     implicit session: Session =>
-      Query(this).where(_.name === name).first.id
+      Query(this).where(_.name === name).firstOption match {
+        case Some(entity) => Some(entity.id)
+        case None => None
+      }
   }
 
   /**
@@ -60,7 +63,13 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
   /**
    * Find an entity by name rather then by UUID.
    */
-  protected def findByName(name: String): Option[T] = findById(nameToId(name))
+  protected def findByName(name: String): Option[T] ={
+    nameToId(name) match {
+      case Some(id) => findById(id)
+      case None     => None
+    }
+
+  }
 
   /**
    * Helper that finds the UUID for some entity given its
