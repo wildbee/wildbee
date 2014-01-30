@@ -71,7 +71,10 @@ trait ModelGenerator extends {
     def generate(uuid: UUID = uuidFactory.generate,
         name: String = randString, email: String = (randString + "@" + randString)) = {
       val userId = Users.insert(User(uuid, name, email))
-      Users find userId
+      Users.find(userId) match {
+        case Some(user) => user
+        case None => throw new IllegalArgumentException
+      }
     }
   }
 
@@ -85,7 +88,10 @@ trait ModelGenerator extends {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString) = {
       val statusId = Statuses.insert(Status(uuid, name))
-      Statuses find statusId
+      Statuses.find(statusId) match {
+        case Some(status) => status
+        case None => throw new IllegalArgumentException
+      }
     }
   }
 
@@ -103,7 +109,10 @@ trait ModelGenerator extends {
     def generate() = generate(uuid = uuidFactory.generate)
     def generate(uuid: UUID = uuidFactory.generate, name: String = randString, statusId: UUID = statusFactory.generate.id) = {
       val workflowId =  Workflows.insert(Workflow(uuid, name, statusId))
-      Workflows find workflowId
+      Workflows.find(workflowId) match {
+        case Some(workflow) => workflow
+        case None => throw new IllegalArgumentException
+      }
     }
   }
 
@@ -129,7 +138,10 @@ trait ModelGenerator extends {
       userId: UUID = userFactory.generate.id, workflowId: UUID = workflowFactory.generate.id,
       currentTime: Timestamp = Tasks.currentTimestamp): Task = {
       val taskId = Tasks.insert(Task(uuid, name, userId, currentTime, workflowId, currentTime))
-      Tasks.find(taskId)
+      Tasks.find(taskId) match {
+        case Some(task) => task
+        case None => throw new IllegalArgumentException
+      }
     }
   }
 
@@ -159,7 +171,10 @@ trait ModelGenerator extends {
       asigneeId: UUID = userFactory.generate.id, ccList: String = randString, statusId: UUID = statusFactory.generate.id,
       osVersion: String = randString, currentTime: Timestamp = Packages.currentTimestamp): Package = {
       val packageId = Packages.insert(Package(uuid, name, taskId, creatorId, asigneeId, ccList, statusId, osVersion, currentTime, currentTime))
-      Packages.find(packageId)
+      Packages.find(packageId) match {
+        case Some(pkg) => pkg
+        case None => throw new IllegalArgumentException
+      }
     }
     //TODO: Make this return a named function
     def modifyModel(pack: Package): (String, String, String, String, String, String, String) => NewPackage = {
