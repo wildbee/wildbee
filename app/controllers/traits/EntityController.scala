@@ -123,12 +123,12 @@ trait EntityController[T <: Entity,
   }
 
   def delete(id: AnyRef) = Action { implicit request =>
-    table.delete(id) match {
-      case Some(violatedDeps) =>
-        BadRequest(getViewTemplate("show").apply(table.find(id), session,
+    (table.delete(id), table.find(id)) match {
+      case (Some(violatedDeps), Some(entity)) =>
+        BadRequest(getViewTemplate("show").apply(entity, session,
           flash+("failure"->
             (s"${violatedDeps} depend on this entity."))).asInstanceOf[Html])
-      case None =>
+      case _ =>
         Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
     }
   }

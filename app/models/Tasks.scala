@@ -51,12 +51,14 @@ object Tasks extends Table[Task]("tasks")
 
   override def deleteValidator(id: AnyRef): Option[String] = DB.withSession {
     implicit session: Session =>
-    val dependentPackages = Packages.findAll filter (_.task == findUUID(id))
-    if (!dependentPackages.isEmpty)
-      Some(dependentPackages map (_.name) mkString("[",",","]"))
-    else{
-      None
-    }
+      val dependentPackages = Packages.findAll filter {
+        findUUID(id) match { case Some(task) => _.task == task }
+      }
+      if (!dependentPackages.isEmpty)
+        Some(dependentPackages map (_.name) mkString("[",",","]"))
+      else{
+        None
+      }
   }
 
   /**
