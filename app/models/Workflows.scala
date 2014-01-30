@@ -41,10 +41,12 @@ object Workflows extends Table[Workflow]("workflows")
    * @return
    */
   def mapToNew(id: UUID): NewWorkflow = {
-    val w = find(id)
-    val transitions = Transitions.transitionMap(id)
-    val statuses = (transitions.keys map (_.toString) ).toList
-    NewWorkflow(w.name, statuses)
+    find(id) match {
+      case Some(w) =>
+        val transitions = Transitions.transitionMap(id)
+        val statuses = (transitions.keys map (_.toString) ).toList
+        NewWorkflow(w.name, statuses)
+    }
   }
 
   /** create transitions after inserting a new workflow */

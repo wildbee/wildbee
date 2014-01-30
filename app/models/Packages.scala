@@ -78,9 +78,10 @@ object Packages extends Table[Package]("packages")
    */
   def findByTask(task: String, pack: String): Package = DB.withSession {
     implicit session: Session =>
-      val t = Tasks.find(task)
-      val p = Packages.find(pack)
-      Query(this).where(_.name === p.name).where(_.task === t.id).first
+      (Tasks.find(task), Packages.find(pack)) match
+      {
+        case (Some(t), Some(p)) => Query(this).where(_.name === p.name).where(_.task === t.id).first
+      }
   }
 
   /**
@@ -98,9 +99,12 @@ object Packages extends Table[Package]("packages")
    * Implements the Queriable trait's mapToNew method.
    */
   def mapToNew(id: UUID): NewPackage = {
-    val p = find(id)
-    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
-      p.ccList, p.status.toString, p.osVersion)
+    find(id) match {
+      case Some(p) =>
+        NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
+          p.ccList, p.status.toString, p.osVersion)
+    }
+
   }
 
   override def afterUpdate(item: Package) = {

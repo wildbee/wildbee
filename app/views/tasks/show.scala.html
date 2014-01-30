@@ -7,7 +7,11 @@
       <p>
         <h1>@task.name</h1>
   		================================================= <br/>
-  		Task Owner: @{Users.find(task.owner).name}</br>
+  		Task Owner: @{Users.find(task.owner) match {
+            case Some(obj) => obj.name
+            case None => ""
+            }
+        }</br>
   		Task Creation Time: @task.created</br>
   		Task Last Updated: @task.updated</br>
   		Task ID: @task.id<br/>

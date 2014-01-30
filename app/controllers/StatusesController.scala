@@ -31,8 +31,11 @@ object StatusesController extends Controller {
       })
   }
 
-  def show(status: String) = Action { implicit request =>
-    Ok(views.html.statuses.show(Statuses.find(status)))
+  def show(name: String) = Action { implicit request =>
+    Statuses.find(name) match {
+      case Some(status) =>  Ok(views.html.statuses.show(status))
+      case None =>  BadRequest(views.html.index(s"Error finding status $name"))
+    }
   }
 
   def edit(id: String) = Action { implicit request =>
@@ -42,13 +45,16 @@ object StatusesController extends Controller {
   }
 
   def update(id: String) = Action { implicit request =>
-    val oldStatus = Statuses.find(id)
-    StatusForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
-      updatedStatus => {
-        Statuses.update(Statuses.mapToEntity(oldStatus.id, updatedStatus))
-        Redirect(routes.StatusesController.show(oldStatus.id.toString))
-      })
+    Statuses.find(id) match {
+      case Some(oldStatus) =>
+        StatusForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.statuses.edit(formWithErrors, oldStatus.id.toString)),
+          updatedStatus => {
+            Statuses.update(Statuses.mapToEntity(oldStatus.id, updatedStatus))
+            Redirect(routes.StatusesController.show(oldStatus.id.toString))
+          })
+      case None =>  BadRequest(views.html.index(s"Error finding status $id"))
+    }
   }
 
   def delete(status: String) = Action { implicit request =>

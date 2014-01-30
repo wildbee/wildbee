@@ -20,8 +20,16 @@
             @tasks.map { task =>
             <tr>
                 <td>@task.name</td>
-                <td>@{Users.find(task.owner).name}</td>
-                <td>@{Workflows.find(task.workflow).name}</td>
+                <td>@{Users.find(task.owner) match {
+                    case Some(obj) => obj.name
+                    case None => ""
+                    }
+                }</td>
+                <td>@{Workflows.find(task.workflow) match {
+                    case Some(obj) => obj.name
+                    case None => ""
+                    }
+                 }</td>
                 <td>@task.created</td>
                 <td>@task.updated</td>
             </tr>

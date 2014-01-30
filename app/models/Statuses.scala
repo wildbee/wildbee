@@ -23,8 +23,9 @@ object Statuses extends Table[Status]("statuses")
    * @return
    */
   def mapToNew(id: UUID): NewStatus = {
-    val s = find(id)
-    NewStatus(s.name)
+    find(id) match {
+      case Some(s) => NewStatus(s.name)
+    }
   }
 
   /**

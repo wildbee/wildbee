@@ -34,8 +34,12 @@ object PluginsController extends Controller {
       })
   }
 
-  def show(plugin: String) = Action { implicit request =>
-    Ok(views.html.plugins.show(Plugins.find(plugin)))
+  def show(name: String) = Action { implicit request =>
+    Plugins.find(name) match {
+      case Some(plugin) => Ok(views.html.plugins.show(plugin))
+      case None =>  BadRequest(views.html.index(s"Error Finding Plugin $name"))
+    }
+
   }
 
   def edit(id: String) = Action { implicit request =>
@@ -44,15 +48,19 @@ object PluginsController extends Controller {
     Ok(views.html.plugins.edit(filledForm, id))
   }
   def update(id: String) = Action { implicit request =>
-    val oldPlugin = Plugins.find(id)
-      pluginForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.plugins.edit(formWithErrors, id)),
-        updatedPlugin => {
-          Plugins.update(Plugins.mapToEntity(oldPlugin.id, updatedPlugin))
-          Redirect(routes.PluginsController.show(id))
-            .flashing("success" -> "Package Updated!")
-        }
-      )
+    Plugins.find(id) match {
+      case Some(oldPlugin) =>
+        pluginForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.plugins.edit(formWithErrors, id)),
+          updatedPlugin => {
+            Plugins.update(Plugins.mapToEntity(oldPlugin.id, updatedPlugin))
+            Redirect(routes.PluginsController.show(id))
+              .flashing("success" -> "Package Updated!")
+          }
+        )
+      case None =>  BadRequest(views.html.index(s"Error Finding Plugin $id"))
+    }
+
   }
 
 

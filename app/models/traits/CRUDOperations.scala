@@ -40,7 +40,7 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * @param identifier
    * @return
    */
-  def find(identifier: AnyRef): T = identifier match {
+  def find(identifier: AnyRef): Option[T] = identifier match {
     case id: UUID => findById(identifier)
     case str: String => {
       if (isUUID(str)) findById(identifier)
@@ -133,7 +133,10 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
         case id : UUID =>  del(id)
         case str : String => {
           if (isUUID(str)) del(uuid(str))
-          else del(findByName(str).id)
+          else findByName(str) match {
+            case Some(obj) => del(obj.id)
+            case None => None
+          }
         }
       }
     }

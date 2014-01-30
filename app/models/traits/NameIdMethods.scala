@@ -27,20 +27,26 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
   /**
    * Returns the name of the entity given by this UUID/String id.
    */
-  def idToName(id: AnyRef): String = id match {
-    case id: String => findById(uuid(id)).name
-    case id: UUID => findById(id).name
-    case _ => "Unknown"
+  def idToName(id: AnyRef): String = {
+    val entity = id match {
+      case x: String => findById(uuid(x))
+      case x: UUID => findById(x)
+    }
+
+    entity match {
+      case None => "Unknown"
+      case Some(obj) => obj.name
+    }
   }
 
   /**
    * Find entity by its id.
    */
-  protected def findById(id: AnyRef): T = {
-    def get(id: UUID): T = DB.withSession {
+  protected def findById(id: AnyRef): Option[T] = {
+    def get(id: UUID): Option[T] = DB.withSession {
       beforeGet(id)
       val item = { implicit session: Session =>
-        Query(this).where(_.id === id).first
+        Query(this).where(_.id === id).firstOption
       }
       afterGet(id)
       item // return value
@@ -54,7 +60,7 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
   /**
    * Find an entity by name rather then by UUID.
    */
-  protected def findByName(name: String): T = findById(nameToId(name))
+  protected def findByName(name: String): Option[T] = findById(nameToId(name))
 
   /**
    * Helper that finds the UUID for some entity given its
@@ -67,7 +73,10 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
     case id: UUID => Some(id)
     case str: String => {
       if (isUUID(str)) Some(uuid(str))
-      else Some(findByName(str).id)
+      else findByName(str) match {
+        case None => None
+        case Some(obj) => Some(obj.id)
+      }
     }
   }
 }

@@ -43,8 +43,10 @@ object Tasks extends Table[Task]("tasks")
    * @return
    */
   def mapToNew(id: UUID): NewTask = {
-    val t = find(id)
-    NewTask(t.name, t.owner.toString, t.workflow.toString)
+    find(id) match {
+      case Some(t) => NewTask(t.name, t.owner.toString, t.workflow.toString)
+    }
+
   }
 
   def delete(task: String): Option[String] = DB.withSession {
@@ -64,7 +66,11 @@ object Tasks extends Table[Task]("tasks")
    * @return
    */
   def getStartingStatus(id: UUID): UUID = {
-    val workflow = Tasks.find(id).workflow
-    Workflows.find(workflow).startStatus
+    val workflow = Tasks.find(id) match {
+      case Some(obj) => obj.workflow
+    }
+    Workflows.find(workflow) match {
+      case Some(obj) => obj.startStatus
+    }
   }
 }

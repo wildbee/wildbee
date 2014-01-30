@@ -24,7 +24,10 @@ object WorkflowController extends Controller {
   }
 
   def show(name: String) = Action { implicit request =>
-    Ok(views.html.workflows.show(Workflows.find(name)))
+    Workflows.find(name) match {
+      case Some(workflow) => Ok(views.html.workflows.show(workflow))
+      case None =>  BadRequest(views.html.index(s"Error Finding Workflow $name"))
+    }
   }
 
   def create() = Action { implicit request =>
@@ -68,25 +71,40 @@ object WorkflowController extends Controller {
   }
 
   def edit(workflow: String) = Action { implicit request =>
-    val id = Workflows.find(workflow).id
-    val form = workForm.fill(Workflows.mapToNew(id))
-    Ok(views.html.workflows.edit(form, id.toString))
+    val id = Workflows.find(workflow) match {
+      case Some(workflow) => workflow.id
+      case None => None
+    }
+    id match {
+      case None => BadRequest(views.html.index(s"Error Finding Workflow $workflow"))
+      case _ =>
+        val form = workForm.fill(Workflows.mapToNew(id))
+        Ok(views.html.workflows.edit(form, id.toString))
+    }
   }
 
   def update(workflow: String) = Action { implicit request =>
-    val old = Workflows.find(workflow)
-    workForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.workflows.edit(formWithErrors, old.id.toString)),
-    updatedWorkflow => {
-      Workflows.update(old.id, updatedWorkflow)
-      Redirect(routes.WorkflowController.show(updatedWorkflow.name))
-    })
+    Workflows.find(workflow) match {
+      case Some(old) =>
+        workForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.workflows.edit(formWithErrors, old.id.toString)),
+          updatedWorkflow => {
+            Workflows.update(old.id, updatedWorkflow)
+            Redirect(routes.WorkflowController.show(updatedWorkflow.name))
+          })
+    }
+
 
   }
 
   def copy(wid: String) = Action { implicit request =>
-    val pack = Workflows.mapToNew(Workflows.find(wid).id)
-    val filledForm = workForm.fill(pack)
-    Ok(views.html.workflows.newEntity(filledForm))
+    Workflows.find(wid) match {
+      case Some(workflow) =>
+        val pack = Workflows.mapToNew(workflow)
+        val filledForm = workForm.fill(pack)
+        Ok(views.html.workflows.newEntity(filledForm))
+      case None => BadRequest(views.html.index(s"Error Finding Workflow $wid"))
+    }
+
   }
 }

@@ -23,12 +23,16 @@ object Plugins extends Table[Plugin]("plugins")
   }
 
   def mapToNew(id: UUID): NewPlugin = {
-    val plugin = find(id)
-    NewPlugin(plugin.path, Some(plugin.pack.toString()))
+    find(id) match {
+      case Some(plugin) => NewPlugin(plugin.path, Some(plugin.pack.toString()))
+    }
   }
 
   override def afterInsert(id: UUID, newInstance: NewPlugin) = {
-    activate(find(id))
+    find(id) match {
+      case Some(plugin) => activate(plugin)
+      case None =>
+    }
   }
 
   override def afterUpdate(plugin: Plugin) = {
@@ -37,7 +41,10 @@ object Plugins extends Table[Plugin]("plugins")
   }
 
   override def beforeDelete(id: UUID) {
-    deactivate(find(id))
+    find(id) match {
+      case Some(plugin) => deactivate(plugin)
+      case None =>
+    }
   }
 
   def findPlugins: Map[String, String] = {
@@ -46,6 +53,8 @@ object Plugins extends Table[Plugin]("plugins")
 
   def initializeNewPlugins() = {
     val plugins = ObserverHelper.mapIdToName map { case (path, name) => NewPlugin(path, None) }
+    val pluginNames =  plugins map (p => p.name.split('.').last)
+    pluginNames foreach (name=> println(find(name)))
     plugins map ( plugin => insert(newInstance = plugin) )
   }
 

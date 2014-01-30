@@ -48,8 +48,9 @@ object Users extends Table[User]("users")
    * @return
    */
   def mapToNew(id: UUID): NewUser = {
-    val u = find(id)
-    NewUser(u.name, u.email)
+    find(id) match {
+      case Some(u) =>  NewUser(u.name, u.email)
+    }
   }
 
  def insertWithId(u: NewUser, id: UUID): UUID = {

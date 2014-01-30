@@ -20,8 +20,11 @@ object TasksController extends Controller {
     Ok(views.html.tasks.index())
   }
 
-  def show(task: String) = Action { implicit request =>
-    Ok(views.html.tasks.show(Tasks.find(task)))
+  def show(name: String) = Action { implicit request =>
+    Tasks.find(name) match {
+      case Some(task) =>  Ok(views.html.tasks.show(task))
+      case None =>  BadRequest(views.html.index(s"Error finding task $name"))
+    }
   }
 
   def newTask = Action { implicit request =>

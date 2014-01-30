@@ -65,8 +65,12 @@ object Transitions extends Table[Transition]("transitions") {
    */
   def allowedStatuses(task: AnyRef, pack: AnyRef): Map[String, String] = DB.withSession {
     implicit session: Session =>
-      val workflow = Tasks.find(task).workflow
-      val currentStatus = Packages.find(pack).status
+      val workflow = Tasks.find(task) match {
+        case Some(obj) => obj.workflow
+      }
+      val currentStatus = Packages.find(pack)match {
+        case Some(obj) => obj.status
+      }
       val nextStateLogic = getLogic(workflow)
       val nextStates = nextStateLogic(currentStatus)
       nextStates.map(state =>(state.toString, Statuses.idToName(state))).toMap

@@ -35,9 +35,13 @@ object PackagesController extends Controller {
       pack => {
         Packages.insert(newInstance = pack) match {
           case Right(id) => {
-            val newPack = Packages.find(id)
-            Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
-              .flashing("success" -> "Package Created!")
+            Packages.find(id) match {
+              case Some(newPack) =>
+                Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
+                .flashing("success" -> "Package Created!")
+              case None =>  BadRequest(views.html.index(s"Error Finding Package $id"))
+            }
+
           }
           case Left(error) => {
             BadRequest(views.html.packages.newEntity(packageForm))
@@ -59,14 +63,17 @@ object PackagesController extends Controller {
   }
 
   def update(id: String) = Action { implicit request =>
-    val oldPack = Packages.find(id)
-    packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
-      updatedPack => {
-        Packages.update(Packages.mapToEntity(oldPack.id, updatedPack))
-        Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
-            .flashing("success" -> "Package Updated!")
-      })
+    Packages.find(id) match {
+      case Some(oldPack) =>
+        packageForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.packages.edit(formWithErrors, oldPack.id.toString)),
+          updatedPack => {
+            Packages.update(Packages.mapToEntity(oldPack.id, updatedPack))
+            Redirect(routes.PackagesController.show(oldPack.task.toString, oldPack.name))
+              .flashing("success" -> "Package Updated!")
+          })
+      case None =>  BadRequest(views.html.index(s"Error Finding Package $id"))
+    }
   }
 
   def delete(id: String) = Action { implicit request =>
