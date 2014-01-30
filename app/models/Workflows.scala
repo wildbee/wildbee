@@ -67,13 +67,16 @@ object Workflows extends Table[Workflow]("workflows")
 
   /** custom delete validator */
   override def deleteValidator(item: AnyRef): Option[String] = {
-    val uid = findUUID(item)
-    val dependentTasks = Tasks.findAll filter( _.workflow == uid)
-    if(!dependentTasks.isEmpty)
-      Some(dependentTasks map (_.name) mkString("[",",","]"))
-    else {
-      Transitions.delete(uid)
-      None
+    findUUID(item) match {
+      case Some(uid) =>
+        val dependentTasks = Tasks.findAll filter( _.workflow == uid)
+        if(!dependentTasks.isEmpty)
+          Some(dependentTasks map (_.name) mkString("[",",","]"))
+        else {
+          Transitions.delete(uid)
+          None
+        }
+      case None => None
     }
   }
 }

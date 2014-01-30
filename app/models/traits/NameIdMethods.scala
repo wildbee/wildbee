@@ -62,11 +62,12 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
    * @param item
    * @return
    */
-  def findUUID(item: AnyRef): UUID = item match {
-    case id: UUID => id
+  def findUUID(item: AnyRef): Option[UUID] = item match {
+    case None => None
+    case id: UUID => Some(id)
     case str: String => {
-      if (isUUID(str)) uuid(str)
-      else findByName(str).id
+      if (isUUID(str)) Some(uuid(str))
+      else Some(findByName(str).id)
     }
   }
 }

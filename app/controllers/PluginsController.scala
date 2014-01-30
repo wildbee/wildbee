@@ -14,7 +14,7 @@ object PluginsController extends Controller {
   val pluginForm = Form(
   mapping(
     "name"   -> nonEmptyText,
-    "pack"   -> nonEmptyText
+    "pack"   -> optional(text)
   )(NewPlugin.apply)(NewPlugin.unapply))
 
   def newPlugin = Action { implicit request =>
