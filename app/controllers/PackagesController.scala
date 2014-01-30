@@ -34,42 +34,6 @@ object PackagesController extends EntityController[Package, NewPackage] {
     Ok(views.html.packages.show(Packages.findByTask(taskId, packageId)))
   }
 
-
-  /*
-  def newPackage = Action { implicit request =>
-    Ok(views.html.packages.newEntity(packageForm))
-  }
-
-  def create = Action { implicit request =>
-    packageForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.packages.newEntity(formWithErrors)),
-      pack => {
-        Packages.insert(newInstance = pack) match {
-          case Right(id) => {
-            Packages.find(id) match {
-              case Some(newPack) =>
-                Redirect(routes.PackagesController.show(newPack.task.toString, newPack.name))
-                .flashing("success" -> "Package Created!")
-              case None =>  BadRequest(views.html.index(s"Error Finding Package $id"))
-            }
-
-          }
-          case Left(error) => {
-            BadRequest(views.html.packages.newEntity(packageForm))
-              .flashing("failure" -> error)
-          }
-        }
-      })
-  }
-
-  def show(taskId: String, packId: String) = Action { implicit request =>
-    Ok(views.html.packages.show(Packages.findByTask(taskId, packId)))
-  }
-
-  def edit(taskId: String, packId: String) = Action { implicit request =>
-    val pack = Packages.mapToNew(Packages.findByTask(taskId, packId).id)
-    val filledForm = packageForm.fill(pack)*/
-
   /**
    * Implements its own edit because of the task id foreign key.
    * @param taskId
