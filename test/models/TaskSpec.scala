@@ -60,14 +60,6 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
       }
       Tasks.findAll.size === 1
     }
-    /**
-     * I want this to work, right now data is receiving an iterator
-     * "This is for testing" in new WithApplication(fakeAppGen){
-     * val data: Vector[UUID] =
-     * for { u:UUID <- uuidFactory } yield (u: UUID)
-     * println("DATA ::: " + data)
-     * println(data.size)
-     * }
-     */
+
   }
 }
