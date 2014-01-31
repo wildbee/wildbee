@@ -9,7 +9,9 @@ import java.util.UUID
 import scala.util.Random.nextInt
 import scala.collection.Iterator
 
-import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
+import models.traits.{ObserverCommand, Observer, Observable}
+;
 
 /**
  * Examples to get better idea of why map is needed
@@ -57,6 +59,52 @@ trait ModelGenerator extends {
   /** Random uuid generator */
   object uuidFactory extends Generator[UUID, UUID] {
     def generate = Config.pkGenerator.newKey
+  }
+
+  /**
+   * Observer Generator
+   *  ========================
+   *  Options
+   *  name: Specify a name for your observser
+   *  update: Specify an update function for your observer
+   *          Default function is a printMe function that just print out that our obsverer has observerd something
+   */
+  private val maxObservers = 5
+  private var numObservers = 0
+  object observerFactory extends Generator[Observer, Observer] {
+
+    /** Default Observer update function */
+    private def printMe(name: String): (Observable,  UUID, ObserverCommand) => Unit = {
+      def update(s: Observable, id: UUID, command: ObserverCommand): Unit = {
+        println(s"I $name have observed a change in the '$s'")
+      }
+      update
+    }
+    private val defaultFunc = printMe(randString)
+
+    /** Generate an observer
+     *  Doing this to avoid macros?
+     *  A better solution is required.
+     */
+    private def genObserver(name: String, f: (Observable,  UUID, ObserverCommand) => Unit,
+            num: Int): Observer = num match {
+      case 1 => TestObserver1(name, f)
+      case 2 => TestObserver2(name, f)
+      case 3 => TestObserver3(name, f)
+      case 4 => TestObserver4(name, f)
+      case 5 => TestObserver5(name, f)
+      case _ => throw new IllegalArgumentException("Past your observer limit")
+    }
+
+    def generate(): Observer = generate(name = randString)
+    def generate( name: String = randString,
+      update: Option[(Observable,  UUID, ObserverCommand) => Unit] = None) = {
+      numObservers += 1
+      update match {
+       case None => genObserver(name, printMe(name), numObservers)
+       case Some(f) => genObserver(name, f, numObservers)
+      }
+    }
   }
 
   /**
@@ -185,6 +233,30 @@ trait ModelGenerator extends {
             NewPackage(name, task, creator, assignee, ccList, status ,osVersion)
       }
       modifyModelD
+    }
+  }
+
+  /**
+   * Plugin Generator
+   *  Default Usage Side Effects
+   *  1. Generates a packages
+   *  2. Generates a Observer
+   *  ========================
+   *  Options
+   *  uuid: Specify a UUID for your new plugin
+   *  name: Specify a name for your new plugin
+   *  path: Specify a path to your observer
+   *  packId: Specify what package to track
+   */
+  object pluginFactory extends Generator[Plugin, NewPlugin] {
+    def generate(): Plugin = generate(uuid = uuidFactory.generate)
+    def generate( uuid: UUID = uuidFactory.generate, name: String = randString,
+                  path: String = observerFactory.generate.path, packId:UUID = packageFactory.generate.id): Plugin = {
+      val pluginId = Plugins.insert(Plugin(uuid, name, path, Some(packId)))
+      Plugins.find(pluginId) match {
+        case Some(plugin) => plugin
+        case None => throw new IllegalArgumentException
+      }
     }
   }
 }

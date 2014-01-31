@@ -48,7 +48,7 @@ object Plugins extends Table[Plugin]("plugins")
   }
 
   def findPlugins: Map[String, String] = {
-    ObserverHelper.mapIdToName
+    ObserverHelper.mapIdToName()
   }
 
   /** Initilize New Plugins
@@ -57,7 +57,7 @@ object Plugins extends Table[Plugin]("plugins")
    */
   def initializeNewPlugins() = {
     val getRealName = (n: String) => n.split('.').last
-    val plugins = ObserverHelper.mapIdToName map { case (path, name) => NewPlugin(path, None) }
+    val plugins = ObserverHelper.mapIdToName() map { case (path, name) => NewPlugin(path, None) }
     val pluginNames =  plugins map (p => p.name.split('.').last)
     plugins map { plugin => find(getRealName(plugin.name)) match {
       case None => insert(newInstance = plugin)
