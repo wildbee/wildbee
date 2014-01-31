@@ -5,7 +5,7 @@ import play.api._
 
 trait TestUtilities {
 
-  val fakeAppGen = FakeApplication(additionalConfiguration = Map(
+  def fakeAppGen = FakeApplication(additionalConfiguration = Map(
     "db.default.url" -> "jdbc:postgresql://localhost/wildbeehivetest"),
     withGlobal = Some(new GlobalSettings() {
       override def onStart(app: Application) { /** Don't run global settings */ }
