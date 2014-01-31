@@ -26,7 +26,7 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
       new WithApplication(fakeAppGen) {
         val data =
           for {
-            i <- 0 until 10
+            i <- 1 to 10
             u = uuidFactory.generate
             t = taskFactory.generate(uuid = u)
           } yield (u, t)
@@ -39,12 +39,12 @@ class TaskSpec extends Specification with TestUtilities with BeforeExample with 
       }
 
     "be able to add Tasks without an ID" in new WithApplication(fakeAppGen) {
-      val tasks = for (i <- 0 until 10) yield taskFactory.generate
+      val tasks = for (i <- 1 to 10) yield taskFactory.generate
       Tasks.findAll.size === 10
     }
 
     "be able to delete Tasks" in new WithApplication(fakeAppGen) {
-      val tasks = for (i <- 0 until 10) yield taskFactory.generate()
+      val tasks = for (i <- 1 to 10) yield taskFactory.generate()
       tasks map (t => Tasks delete (t.id))
       Tasks.findAll.size === 0
       Tasks delete tasks(intBetween(0, 10)).name must throwA[java.util.NoSuchElementException]

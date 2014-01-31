@@ -25,7 +25,7 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
     new WithApplication(fakeAppGen) {
       val data =
         for {
-          i <- 0 until 10
+          i <- 1 to 10
           u = uuidFactory.generate
           w = packageFactory.generate(uuid = u)
         } yield (u, t)
@@ -38,12 +38,12 @@ class PackageSpec extends Specification with TestUtilities with BeforeExample wi
     }
 
     "be able to add packages without an ID" in new WithApplication(fakeAppGen) {
-      val packages = for (i <- 0 until 10) yield packageFactory.generate
+      val packages = for (i <- 1 to 10) yield packageFactory.generate
       Packages.findAll.size === 10
     }
 
     "be able to delete packages" in new WithApplication(fakeAppGen){
-      val packages = for (i <- 0 until 10) yield packageFactory.generate
+      val packages = for (i <- 1 to 10) yield packageFactory.generate
       packages map (p => Packages delete (p.id))
       Packages.findAll.size === 0
     }

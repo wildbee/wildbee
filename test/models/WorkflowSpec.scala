@@ -27,7 +27,7 @@ class WorkflowSpec extends Specification with TestUtilities with BeforeExample w
     new WithApplication(fakeAppGen) {
       val data =
         for {
-          i <- 0 until 10
+          i <- 1 to 10
           u = uuidFactory.generate
           w = workflowFactory.generate(uuid = u)
         } yield (u, t)
@@ -39,12 +39,12 @@ class WorkflowSpec extends Specification with TestUtilities with BeforeExample w
       workflowFactory.generate(uuid = uuids(intBetween(0, 10))) must throwA[PSQLException]
     }
     "be able to add workflows without an ID" in new WithApplication(fakeAppGen) {
-      val workflows = for (i <- 0 until 10) yield workflowFactory.generate
+      val workflows = for (i <- 1 to 10) yield workflowFactory.generate
       Workflows.findAll.size === 10
     }
 
     "be able to delete workflows" in new WithApplication(fakeAppGen){
-      val workflows = for (i <- 0 until 10) yield workflowFactory.generate
+      val workflows = for (i <- 1 to 10) yield workflowFactory.generate
       val uuids = workflows map ( _.id )
       workflows map (w => Workflows delete (w.id))
       Workflows.findAll.size === 0
