@@ -28,6 +28,7 @@ GET     /user/new                   controllers.UsersController.newEntity
 POST    /user/:email                controllers.UsersController.update(email: String)
 GET     /user/:email/edit           controllers.UsersController.edit(email: String)
 GET     /user/:email                controllers.UsersController.show(email: String)
+POST    /user/:email/delete         controllers.UsersController.delete(email: String)
 
 # Tasks
 GET     /tasks                      controllers.TasksController.index
