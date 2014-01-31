@@ -39,23 +39,13 @@ abstract class Generator[Model, NewModel] extends Iterator[Model] {
   }*/
 }
 
-trait ModelGenerator extends {
-  var names: Set[String] = Set()
-  def randString: String = {
-    val name = randomAlphanumeric(intBetween(1, 10))
-    if (names.contains(name)) randString
-    else { names += name; name }
-  }
+trait ModelGenerator extends RandomUtilities {
 
   /** Clear out information retained by the ModelGenerator */
   def resetModelGenerator() {
-    names = Set()
+    resetRandomUtilities()
     numObservers = 0
   }
-
-  /** Give a random integer between lo inclusive and hi exclusive*/
-  def intBetween(lo: Int, hi: Int) =
-    lo + nextInt().abs % (hi - lo)
 
   /** Random uuid generator */
   object uuidFactory extends Generator[UUID, UUID] {
@@ -121,7 +111,7 @@ trait ModelGenerator extends {
    *  email: Specify a email address for your new user
    */
   object userFactory extends Generator[User, NewUser] {
-    def generate() = generate(email = (randString + "@" + randString))
+    def generate() = generate(email = randEmail)
     def generate(uuid: UUID = uuidFactory.generate,
         name: String = randString, email: String = (randString + "@" + randString)) = {
       val userId = Users.insert(User(uuid, name, email))
