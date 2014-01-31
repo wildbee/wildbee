@@ -9,6 +9,7 @@ import play.api.mvc.Action
 import play.api.templates.{Html}
 import reflect.runtime.universe._
 import models.traits.CRUDOperations
+import play.api.i18n.Messages
 
 trait EntityController[T <: Entity,
   Y <: NewEntity]
@@ -116,7 +117,8 @@ trait EntityController[T <: Entity,
       case (Some(violatedDeps), Some(entity)) =>
         BadRequest(getViewTemplate("show").apply(entity, session,
           flash+("failure"->
-            (s"${violatedDeps} depend on this entity."))).asInstanceOf[Html])
+            (String.format(Messages("error.dependency"), violatedDeps)))).asInstanceOf[Html])
+            //(s"${violatedDeps} depend on this entity."))).asInstanceOf[Html])
       case _ =>
         Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
     }

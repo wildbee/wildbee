@@ -21,7 +21,7 @@ class UserIntegrationSpec extends Specification with BeforeExample
     clearDB()
   }
 
-  "User" should {
+  "User page" should {
 
     "be able to create a user from the user form" in new WithBrowser {
       running(fakeAppGen) {
@@ -49,7 +49,6 @@ class UserIntegrationSpec extends Specification with BeforeExample
         Users.findAll.size === numUsers
       }
     }
-
 
   }
 }
