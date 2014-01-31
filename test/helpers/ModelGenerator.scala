@@ -50,6 +50,7 @@ trait ModelGenerator extends {
   /** Clear out information retained by the ModelGenerator */
   def resetModelGenerator() {
     names = Set()
+    numObservers = 0
   }
 
   /** Give a random integer between lo inclusive and hi exclusive*/
@@ -69,8 +70,7 @@ trait ModelGenerator extends {
    *  update: Specify an update function for your observer
    *          Default function is a printMe function that just print out that our obsverer has observerd something
    */
-  private val maxObservers = 5
-  private var numObservers = 0
+  var numObservers = 0
   object observerFactory extends Generator[Observer, Observer] {
 
     /** Default Observer update function */
@@ -93,7 +93,13 @@ trait ModelGenerator extends {
       case 3 => TestObserver3(name, f)
       case 4 => TestObserver4(name, f)
       case 5 => TestObserver5(name, f)
-      case _ => throw new IllegalArgumentException("Past your observer limit")
+      case 6 => TestObserver6(name, f)
+      case 7 => TestObserver7(name, f)
+      case 8 => TestObserver8(name, f)
+      case 9 => TestObserver9(name, f)
+      case 10 => TestObserver10(name, f)
+      case 11 => TestObserver11(name, f)
+      case x => throw new IllegalArgumentException(s"Past your observer limit $x")
     }
 
     def generate(): Observer = generate(name = randString)

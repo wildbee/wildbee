@@ -56,3 +56,53 @@ case class TestObserver5(
     updateFunc(s, id, command)
   }
 }
+
+case class TestObserver6(
+  override val name: String,
+  val updateFunc: (Observable,  UUID, ObserverCommand) => Unit) extends Observer {
+
+  def update(s: Observable, id: UUID, command: ObserverCommand){
+    updateFunc(s, id, command)
+  }
+}
+case class TestObserver7(
+  override val name: String,
+  val updateFunc: (Observable,  UUID, ObserverCommand) => Unit) extends Observer {
+
+  def update(s: Observable, id: UUID, command: ObserverCommand){
+    updateFunc(s, id, command)
+  }
+}
+case class TestObserver8(
+  override val name: String,
+  val updateFunc: (Observable,  UUID, ObserverCommand) => Unit) extends Observer {
+
+  def update(s: Observable, id: UUID, command: ObserverCommand){
+    updateFunc(s, id, command)
+  }
+}
+case class TestObserver9(
+  override val name: String,
+  val updateFunc: (Observable,  UUID, ObserverCommand) => Unit) extends Observer {
+
+  def update(s: Observable, id: UUID, command: ObserverCommand){
+    updateFunc(s, id, command)
+  }
+}
+case class TestObserver10(
+  override val name: String,
+  val updateFunc: (Observable,  UUID, ObserverCommand) => Unit) extends Observer {
+
+  def update(s: Observable, id: UUID, command: ObserverCommand){
+    updateFunc(s, id, command)
+  }
+}
+
+case class TestObserver11(
+  override val name: String,
+  val updateFunc: (Observable,  UUID, ObserverCommand) => Unit) extends Observer {
+
+  def update(s: Observable, id: UUID, command: ObserverCommand){
+    updateFunc(s, id, command)
+  }
+}
