@@ -22,8 +22,13 @@ trait RandomUtilities {
   }
 
   /** Give a random integer between lo inclusive and hi exclusive*/
-  def intBetween(lo: Int, hi: Int) ={
+  def intBetween(lo: Int, hi: Int) = {
     lo + nextInt().abs % (hi - lo)
+  }
+
+  /** Give a random integer between lo inclusive and hi inclusive*/
+  def intInclusive(lo: Int, hi: Int) = {
+    lo + nextInt().abs % (hi+1 - lo)
   }
 
 }

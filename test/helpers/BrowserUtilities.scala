@@ -20,4 +20,8 @@ trait BrowserUtilities extends  RandomUtilities {
     browser.$("#deleteUser").click()
   }
 
+  def removeTask(browser: TestBrowser, port: Int, task: String){
+    browser.goTo(s"http://localhost:$port/task/${task}")
+    browser.$("#deleteTask").click()
+  }
 }
