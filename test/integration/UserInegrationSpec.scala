@@ -26,7 +26,6 @@ class UserIntegrationSpec extends Specification with BeforeExample
     "be able to create a user from the user form" in new WithBrowser {
       running(fakeAppGen) {
         addUser(browser, port)
-
         Users.findAll.size === 1
       }
     }

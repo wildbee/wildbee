@@ -13,7 +13,7 @@ object StatusesController extends EntityController[Status, NewStatus] {
 
   val form = Form(
     mapping(
-      "name" -> nonEmptyText
+      "statusName" -> nonEmptyText
   )(NewStatus.apply)(NewStatus.unapply))
 
 }

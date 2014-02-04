@@ -20,7 +20,7 @@ class TaskIntegrationSpec extends Specification with BeforeExample
   }
 
   "Task page" should {
-    "no allow you to delete a task if something depends on it" in new WithBrowser {
+    "not allow you to delete a task if something depends on it" in new WithBrowser {
       running(fakeAppGen) {
         val task = taskFactory.generate(name="Test")
         val packages = packageFactory.generate(taskId=task.id)
