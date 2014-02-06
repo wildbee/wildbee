@@ -21,6 +21,7 @@ class PluginSpec extends Specification with TestUtilities with BeforeExample wit
   /** These tests are contrained by the  test observer limit*/
   "Plugin model" should {
     "be able to add new plugins" in new WithApplication(fakeAppGen) {
+      val origSize = Plugins.findAll.size
       val data =
         for {
           i <- 1 to 10
@@ -29,19 +30,21 @@ class PluginSpec extends Specification with TestUtilities with BeforeExample wit
         } yield (u, p)
       val uuids = data.map(_._1)
       val plugins = data.map(_._2)
-      Plugins.findAll.size === 10
+      Plugins.findAll.size === (origSize + 10)
       pluginFactory.generate(uuid = uuids(intBetween(0, 10))) must throwA[PSQLException]
     }
 
     "be able to add plugins without an ID" in new WithApplication(fakeAppGen) {
+      val origSize = Plugins.findAll.size
       val plugins = for (i <- 1 to 10) yield pluginFactory.generate
-      Plugins.findAll.size === 10
+      Plugins.findAll.size === ( origSize + 10 )
     }
 
-    "be able to delete plugins" in new WithApplication(fakeAppGen){
+    "be able to delete plugins" in new WithApplication(fakeAppGen) {
+      val origSize = Plugins.findAll.size
       val plugins = for (i <- 1 to 10) yield pluginFactory.generate
       plugins map (p => Plugins delete (p.id))
-      Plugins.findAll.size === 0
+      Plugins.findAll.size === origSize
     }
   }
 }

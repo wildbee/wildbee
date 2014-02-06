@@ -2,6 +2,8 @@ package helpers
 
 import org.apache.commons.lang3.RandomStringUtils._
 import scala.util.Random._
+import models.traits.{ObserverCommand, Observable}
+import java.util.UUID
 
 trait RandomUtilities {
 
@@ -31,4 +33,10 @@ trait RandomUtilities {
     lo + nextInt().abs % (hi+1 - lo)
   }
 
+  def printMe(name: String): (Observable,  UUID, ObserverCommand) => Unit = {
+    def update(s: Observable, id: UUID, command: ObserverCommand): Unit = {
+      println(s"I $name have observed a change in the '$s'")
+    }
+    update
+  }
 }

@@ -27,7 +27,7 @@ class WorkflowIntegrationSpec extends Specification with BeforeExample
         Workflows.findAll.size === 1
       }
     }
-    
+
     "not allow you to delete a workflow if something depends on it" in new WithBrowser {
       running(fakeAppGen) {
         val workflow = workflowFactory.generate(name="TEST")

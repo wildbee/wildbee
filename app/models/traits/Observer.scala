@@ -19,7 +19,22 @@ trait Observer {
   def untrack(id: UUID): Unit = tracking = tracking filterNot (_ == id)
   def isTracking(id: UUID) = tracking.contains(id)
 
-  val name: String = this.getClass.getSimpleName
+  var name: String = this.getClass.getSimpleName
   val path: String = this.getClass.getName
-	def update(s: Observable, id: UUID, command: ObserverCommand): Unit
+  def setName(nick: String):Observer =  {
+    name = nick
+    this
+  }
+
+  var updateFunc =
+    (o: Observable, u: UUID, c: ObserverCommand) => println(s"My name is $name")
+  def setUpdateFunction( f: (Observable, UUID, ObserverCommand) => Unit): Observer = {
+    updateFunc = f
+    this
+  }
+
+  def update(s: Observable, id: UUID, command: ObserverCommand): Unit =  {
+    updateFunc(s, id, command)
+  }
+
 }

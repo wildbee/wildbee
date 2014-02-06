@@ -55,9 +55,9 @@ object Plugins extends Table[Plugin]("plugins")
    *  If new plugins have been added, then put them into the database.
    *  Ensure not to re-add plugins.
    */
-  def initializeNewPlugins() = {
+  def initializeNewPlugins(include: String = "observers") = {
     val getRealName = (n: String) => n.split('.').last
-    val plugins = ObserverHelper.mapIdToName() map { case (path, name) => NewPlugin(path, None) }
+    val plugins =  ObserverHelper.mapIdToName(include) map { case (path, name) => NewPlugin(path, None) }
     val pluginNames =  plugins map (p => p.name.split('.').last)
     plugins map { plugin => find(getRealName(plugin.name)) match {
       case None => insert(newInstance = plugin)

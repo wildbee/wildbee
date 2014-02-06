@@ -38,6 +38,7 @@ class WorkflowSpec extends Specification with TestUtilities with BeforeExample w
       Workflows.findAll.size === 10
       workflowFactory.generate(uuid = uuids(intBetween(0, 10))) must throwA[PSQLException]
     }
+
     "be able to add workflows without an ID" in new WithApplication(fakeAppGen) {
       val workflows = for (i <- 1 to 10) yield workflowFactory.generate
       Workflows.findAll.size === 10

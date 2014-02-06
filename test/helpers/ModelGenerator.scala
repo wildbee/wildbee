@@ -2,15 +2,25 @@ package helpers
 
 import models._
 
-import java.util.Date
 import java.sql.Timestamp
 import java.util.UUID
 
-import scala.util.Random.nextInt
 import scala.collection.Iterator
 
-import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import models.traits.{ObserverCommand, Observer, Observable}
+import models.NewPackage
+import scala.Some
+import models.NewWorkflow
+import models.NewUser
+import models.NewTask
+import models.User
+import models.Plugin
+import models.NewPlugin
+import models.Status
+import models.Task
+import models.Workflow
+import models.NewStatus
+import models.Package
 ;
 
 /**
@@ -78,17 +88,17 @@ trait ModelGenerator extends RandomUtilities {
      */
     private def genObserver(name: String, f: (Observable,  UUID, ObserverCommand) => Unit,
             num: Int): Observer = num match {
-      case 1 => TestObserver1(name, f)
-      case 2 => TestObserver2(name, f)
-      case 3 => TestObserver3(name, f)
-      case 4 => TestObserver4(name, f)
-      case 5 => TestObserver5(name, f)
-      case 6 => TestObserver6(name, f)
-      case 7 => TestObserver7(name, f)
-      case 8 => TestObserver8(name, f)
-      case 9 => TestObserver9(name, f)
-      case 10 => TestObserver10(name, f)
-      case 11 => TestObserver11(name, f)
+      case 1 => TestObserver1().setName(name).setUpdateFunction(f)
+      case 2 => TestObserver2().setName(name).setUpdateFunction(f)
+      case 3 => TestObserver3().setName(name).setUpdateFunction(f)
+      case 4 => TestObserver4().setName(name).setUpdateFunction(f)
+      case 5 => TestObserver5().setName(name).setUpdateFunction(f)
+      case 6 => TestObserver6().setName(name).setUpdateFunction(f)
+      case 7 => TestObserver7().setName(name).setUpdateFunction(f)
+      case 8 => TestObserver8().setName(name).setUpdateFunction(f)
+      case 9 => TestObserver9().setName(name).setUpdateFunction(f)
+      case 10 => TestObserver10().setName(name).setUpdateFunction(f)
+      case 11 => TestObserver11().setName(name).setUpdateFunction(f)
       case x => throw new IllegalArgumentException(s"Past your observer limit $x")
     }
 
