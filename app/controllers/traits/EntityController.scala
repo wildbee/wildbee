@@ -76,21 +76,6 @@ trait EntityController[T <: Entity,
           }
         }
       })
-    /*
-    form.bindFromRequest.fold(
-      formWithErrors =>
-        BadRequest(getViewTemplate("newEntity").apply(formWithErrors,
-          session+("failure"->"invalid inputs")).asInstanceOf[Html]),
-      newEntity => {
-        table.insert(newInstance = newEntity) match {
-          case Right(id) =>
-            Ok(getViewTemplate("show").apply(table.find(id), session,
-              flash.+("success"->"Created")).asInstanceOf[Html])
-          case Left(id) =>
-            BadRequest(getViewTemplate("newEntity").apply(form, session,
-              flash.+("failure" -> "unable to create")).asInstanceOf[Html])
-        }
-      })*/
   }
 
   def edit(id: AnyRef) = Action { implicit request =>

@@ -10,7 +10,10 @@ case class Bugzilla() extends Observer  {
   override def update(s: Observable, id: UUID, command: ObserverCommand){
     command match {
       case New    => println(s"I $name have observed a change in the '$s', and received command $command")
-      case Delete => this.untrack(id)
+      case Delete => {
+        println(s"I $name have observed a change in the '$s', and received command $command")
+        this.untrack(id)
+      }
       case Edit   => println(s"I $name have observed a change in the '$s', and received command $command")
       case _      => println(s"I $name have observed a change in the '$s', and received command $command")
     }
