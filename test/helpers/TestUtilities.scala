@@ -2,10 +2,6 @@ package helpers
 import play.api.test.FakeApplication
 import models._
 import play.api._
-import java.io.File
-import org.clapper.classutil.ClassFinder
-import models.traits.{ObserverCommand, Observable, Observer}
-import java.util.UUID
 
 trait TestUtilities {
 
@@ -22,13 +18,22 @@ trait TestUtilities {
     })
   )
 
-  def clearDB() { //Order Matters
+  /**
+   * Clear your current databse
+   * NOTE: ORDER MATTERS
+   */
+  def clearDB() {
     Packages.deleteAll
     Workflows.deleteAll
     Statuses.deleteAll
     Tasks.deleteAll
     Users.deleteAll
     Plugins.deleteAll
+  }
+
+  def restart(){
+    Play.stop()
+    Play.start(fakeAppGen)
   }
 
 }
