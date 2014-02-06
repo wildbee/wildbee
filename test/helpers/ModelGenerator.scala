@@ -7,7 +7,7 @@ import java.util.UUID
 
 import scala.collection.Iterator
 
-import models.traits.{ObserverCommand, Observer, Observable}
+import models.traits.{Observer, Observable}
 import models.NewPackage
 import scala.Some
 import models.NewWorkflow
@@ -21,6 +21,7 @@ import models.Task
 import models.Workflow
 import models.NewStatus
 import models.Package
+import observers.commands.ObserverCommand
 ;
 
 /**

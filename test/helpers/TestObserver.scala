@@ -1,6 +1,6 @@
 package helpers
 
-import models.traits.{ObserverCommand, Observable, Observer}
+import models.traits.{Observable, Observer}
 import java.util.UUID
 
 /** Test Observer

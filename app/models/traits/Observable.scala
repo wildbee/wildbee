@@ -2,6 +2,7 @@ package models.traits
 
 import models.Entity
 import java.util.UUID
+import observers.commands.ObserverCommand
 
 /** Observable Description
  *  Anything that you want to allow an Observer to observe

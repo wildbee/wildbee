@@ -4,11 +4,12 @@ import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import scala.slick.session.Session
-import java.sql.Timestamp
-import java.util.Date
 import java.util.UUID
-import helpers._
-import models.traits.{CRUDOperations, Observable, ObserverCommands}
+import models.traits._
+import observers.commands.ObserverCommands
+import ObserverCommands._
+import scala.Some
+
 
 
 /** This class is for creating new packages from string inputs: */
@@ -47,7 +48,6 @@ object Packages extends Table[Package]("packages")
   with TimekeepingTable[Package]
   with MapsIdsToNames[Package]
   with Observable
-  with ObserverCommands
   {
 
   def task = column[UUID]("task_id")
@@ -110,7 +110,7 @@ object Packages extends Table[Package]("packages")
   }
 
   override def afterUpdate(item: Package) = {
-    notifyObservers(item.id, Dummy)
+    notifyObservers(item.id, Edit)
   }
 
   //TODO: Extend to acommodate multiple plugins

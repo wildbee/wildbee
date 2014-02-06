@@ -2,6 +2,7 @@ package models.traits
 
 import models.Entity
 import java.util.UUID
+import observers.commands.ObserverCommand
 
 /** Observer Description
  *  """Tracking"""

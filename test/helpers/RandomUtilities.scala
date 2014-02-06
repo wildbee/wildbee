@@ -2,8 +2,9 @@ package helpers
 
 import org.apache.commons.lang3.RandomStringUtils._
 import scala.util.Random._
-import models.traits.{ObserverCommand, Observable}
+import models.traits.{Observable}
 import java.util.UUID
+import observers.commands.ObserverCommand
 
 trait RandomUtilities {
 
