@@ -10,6 +10,7 @@ import scala.language.postfixOps
 import models.traits.CRUDOperations
 import play.api.db.slick.DB
 import play.api.Play.current
+import models.traits.Observable
 
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
@@ -40,10 +41,13 @@ object Workflows extends Table[Workflow]("workflows")
    * @return
    */
   def mapToNew(id: UUID): NewWorkflow = {
-    val w = find(id)
-    val transitions = Transitions.transitionMap(id)
-    val statuses = (transitions.keys map (_.toString) ).toList
-    NewWorkflow(w.name, statuses)
+    find(id) match {
+      case Some(w) =>
+        val transitions = Transitions.transitionMap(id)
+        val statuses = (transitions.keys map (_.toString) ).toList
+        NewWorkflow(w.name, statuses)
+      case None => throw new NoSuchElementException
+    }
   }
 
   /** create transitions after inserting a new workflow */
@@ -66,13 +70,16 @@ object Workflows extends Table[Workflow]("workflows")
 
   /** custom delete validator */
   override def deleteValidator(item: AnyRef): Option[String] = {
-    val uid = findUUID(item)
-    val dependentTasks = Tasks.findAll filter( _.workflow == uid)
-    if(!dependentTasks.isEmpty)
-      Some(dependentTasks map (_.name) mkString("[",",","]"))
-    else {
-      Transitions.delete(uid)
-      None
+    findUUID(item) match {
+      case Some(uid) =>
+        val dependentTasks = Tasks.findAll filter( _.workflow == uid)
+        if(!dependentTasks.isEmpty)
+          Some(dependentTasks map (_.name) mkString("[",",","]"))
+        else {
+          Transitions.delete(uid)
+          None
+        }
+      case None => None
     }
   }
 }

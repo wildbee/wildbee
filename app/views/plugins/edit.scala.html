@@ -1,0 +1,8 @@
+@(pluginForm: Form[NewPlugin],
+	id: String)(implicit session: play.api.mvc.Session)
+
+@main("Update a Package") {
+	@helpers.inputForm(
+		pluginForm = pluginForm,
+		formAction = routes.PluginsController.update(id))
+}

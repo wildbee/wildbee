@@ -14,19 +14,19 @@
        </p>
     @helper.form(routes.WorkflowController.edit(workflow.id.toString)) {
     <div class="form-actions">
-        <button type="submit">Edit Workflow</button>
+        <button type="submit" id="editWorkflow">Edit Workflow</button>
     </div>
     }
 
     @helper.form(routes.WorkflowController.copy(workflow.id.toString)) {
     <div class="form-actions">
-        <button type="submit">Clone Workflow</button>
+        <button type="submit" id="cloneWorkflow">Clone Workflow</button>
     </div>
     }
 
      @helper.form(routes.WorkflowController.delete(workflow.name)) {
         <div class="form-actions">
-            <button type="submit">Delete Workflow</button>
+            <button type="submit" id="deleteWorkflow">Delete Workflow</button>
        </div>
      }
 }

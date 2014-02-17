@@ -4,15 +4,15 @@ import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 import scala.slick.session.Session
-import java.sql.Timestamp
-import java.util.Date
 import java.util.UUID
-import helpers._
-import models.traits.CRUDOperations
+import models.traits._
+import observers.commands.ObserverCommands
+import ObserverCommands._
+import scala.Some
 
-/*
- * This class is for creating new packages from string inputs:
- */
+
+
+/** This class is for creating new packages from string inputs: */
 case class NewPackage(
   name: String,
   task: String,
@@ -41,11 +41,14 @@ case class Package(
  * The Packages table will be of type Table[Package] so that
  * we can map our projections to the Package case class.
  */
+
 object Packages extends Table[Package]("packages")
   with CRUDOperations[Package,NewPackage]
   with EntityTable[Package, NewPackage]
   with TimekeepingTable[Package]
-  with MapsIdsToNames[Package]{
+  with MapsIdsToNames[Package]
+  with Observable
+  {
 
   def task = column[UUID]("task_id")
   def creator = column[UUID]("creator_id")
@@ -75,9 +78,11 @@ object Packages extends Table[Package]("packages")
    */
   def findByTask(task: String, pack: String): Package = DB.withSession {
     implicit session: Session =>
-      val t = Tasks.find(task)
-      val p = Packages.find(pack)
-      Query(this).where(_.name === p.name).where(_.task === t.id).first
+      (Tasks.find(task), Packages.find(pack)) match
+      {
+        case (Some(t), Some(p)) => Query(this).where(_.name === p.name).where(_.task === t.id).first
+        case _ => throw new IllegalArgumentException
+      }
   }
 
   /**
@@ -95,8 +100,30 @@ object Packages extends Table[Package]("packages")
    * Implements the Queriable trait's mapToNew method.
    */
   def mapToNew(id: UUID): NewPackage = {
-    val p = find(id)
-    NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
-      p.ccList, p.status.toString, p.osVersion)
+    find(id) match {
+      case Some(p) =>
+        NewPackage(p.name, p.task.toString, p.creator.toString, p.assignee.toString,
+          p.ccList, p.status.toString, p.osVersion)
+      case None => throw new IllegalArgumentException
+    }
+
+  }
+
+  override def afterUpdate(item: Package) = {
+    notifyObservers(item.id, Edit)
+  }
+
+  //TODO: Extend to acommodate multiple plugins
+  override def afterDelete(id: UUID){
+    notifyObservers(id, Delete)
+    val plugins = Plugins.findAll
+
+    plugins foreach { plugin => plugin.pack match {
+      case Some(packId) => if(packId == id){
+        val updatedPlugin = NewPlugin(plugin.name, None)
+        Plugins.update(Plugins.mapToEntity(plugin.id, updatedPlugin))
+      }
+      case None =>
+    }}
   }
 }

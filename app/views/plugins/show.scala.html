@@ -1,0 +1,11 @@
+@(plugin: Plugin)(implicit session: play.api.mvc.Session, flash: play.api.mvc.Flash)
+    @main("Show Plugin") {
+        <h1>@plugin.name</h1>
+    }
+
+@helper.form(routes.PluginsController.edit(plugin.id.toString)) {
+    <div class="form-actions">
+        <button type="submit">Edit Plugin</button>
+    </div>
+
+}

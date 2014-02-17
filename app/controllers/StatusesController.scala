@@ -1,7 +1,5 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
 import models._
 
 import play.api.data._
@@ -13,6 +11,7 @@ object StatusesController extends EntityController[Status, NewStatus] {
 
   val form = Form(
     mapping(
-      "name" -> nonEmptyText
-    )(NewStatus.apply)(NewStatus.unapply))
+      "statusName" -> nonEmptyText
+  )(NewStatus.apply)(NewStatus.unapply))
+
 }

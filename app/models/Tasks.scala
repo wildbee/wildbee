@@ -7,6 +7,7 @@ import scala.language.postfixOps
 import models.traits.CRUDOperations
 import play.api.db.slick.DB
 import play.api.Play.current
+import models.traits.Observable
 
 
 case class NewTask(name: String, owner: String, workflow: String) extends NewEntity
@@ -42,18 +43,22 @@ object Tasks extends Table[Task]("tasks")
    * @return
    */
   def mapToNew(id: UUID): NewTask = {
-    val t = find(id)
-    NewTask(t.name, t.owner.toString, t.workflow.toString)
+    find(id) match {
+      case Some(t) => NewTask(t.name, t.owner.toString, t.workflow.toString)
+    }
+
   }
 
   override def deleteValidator(id: AnyRef): Option[String] = DB.withSession {
     implicit session: Session =>
-    val dependentPackages = Packages.findAll filter (_.task == findUUID(id))
-    if (!dependentPackages.isEmpty)
-      Some(dependentPackages map (_.name) mkString("[",",","]"))
-    else{
-      None
-    }
+      val dependentPackages = Packages.findAll filter {
+        findUUID(id) match { case Some(task) => _.task == task }
+      }
+      if (!dependentPackages.isEmpty)
+        Some(dependentPackages map (_.name) mkString("[",",","]"))
+      else{
+        None
+      }
   }
 
   /**
@@ -62,7 +67,11 @@ object Tasks extends Table[Task]("tasks")
    * @return
    */
   def getStartingStatus(id: UUID): UUID = {
-    val workflow = Tasks.find(id).workflow
-    Workflows.find(workflow).startStatus
+    val workflow = Tasks.find(id) match {
+      case Some(obj) => obj.workflow
+    }
+    Workflows.find(workflow) match {
+      case Some(obj) => obj.startStatus
+    }
   }
 }

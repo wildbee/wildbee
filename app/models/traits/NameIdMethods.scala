@@ -19,28 +19,37 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
   /**
    * Return the UUID of the entity with this name in this table.
    */
-  def nameToId(name: String): UUID = DB.withSession {
+  def nameToId(name: String): Option[UUID] = DB.withSession {
     implicit session: Session =>
-      Query(this).where(_.name === name).first.id
+      Query(this).where(_.name === name).firstOption match {
+        case Some(entity) => Some(entity.id)
+        case None => None
+      }
   }
 
   /**
    * Returns the name of the entity given by this UUID/String id.
    */
-  def idToName(id: AnyRef): String = id match {
-    case id: String => findById(uuid(id)).name
-    case id: UUID => findById(id).name
-    case _ => "Unknown"
+  def idToName(id: AnyRef): String = {
+    val entity = id match {
+      case x: String => findById(uuid(x))
+      case x: UUID => findById(x)
+    }
+
+    entity match {
+      case None => "Unknown"
+      case Some(obj) => obj.name
+    }
   }
 
   /**
    * Find entity by its id.
    */
-  protected def findById(id: AnyRef): T = {
-    def get(id: UUID): T = DB.withSession {
+  protected def findById(id: AnyRef): Option[T] = {
+    def get(id: UUID): Option[T] = DB.withSession {
       beforeGet(id)
       val item = { implicit session: Session =>
-        Query(this).where(_.id === id).first
+        Query(this).where(_.id === id).firstOption
       }
       afterGet(id)
       item // return value
@@ -54,7 +63,13 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
   /**
    * Find an entity by name rather then by UUID.
    */
-  protected def findByName(name: String): T = findById(nameToId(name))
+  protected def findByName(name: String): Option[T] ={
+    nameToId(name) match {
+      case Some(id) => findById(id)
+      case None     => None
+    }
+
+  }
 
   /**
    * Helper that finds the UUID for some entity given its
@@ -62,14 +77,16 @@ trait NameIdMethods[T <: Entity, Y <: NewEntity]
    * @param item
    * @return
    */
-  def findUUID(item: AnyRef): UUID = item match {
-    case item: String => {
-      if (vidP(item)) {
-        uuid(item)
-      } else {
-        findByName(item).id
+  def findUUID(item: AnyRef): Option[UUID] = item match {
+    case None => None
+    case Some(x: AnyRef) => findUUID(x)
+    case id: UUID => Some(id)
+    case str: String => {
+      if (isUUID(str)) Some(uuid(str))
+      else findByName(str) match {
+        case None => None
+        case Some(obj) => Some(obj.id)
       }
     }
-    case item: UUID => item
   }
 }

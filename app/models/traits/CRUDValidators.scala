@@ -1,9 +1,9 @@
 package models.traits
 
-import models.Entity;
+import models.Entity
 import models.NewEntity
 import java.util.UUID
-;
+
 
 
 /**

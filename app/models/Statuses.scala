@@ -4,6 +4,8 @@ import play.api.db.slick.Config.driver.simple._
 import java.util.UUID
 import scala.language.postfixOps
 import models.traits.CRUDOperations
+import helpers.ObserverHelper
+
 
 case class NewStatus(name: String) extends NewEntity
 case class Status(id: UUID, name: String) extends Entity
@@ -11,7 +13,7 @@ object Statuses extends Table[Status]("statuses")
   with CRUDOperations[Status, NewStatus]
   with EntityTable[Status, NewStatus]
   with UniquelyNamedTable[Status, NewStatus]
-  with MapsIdsToNames[Status]{
+  with MapsIdsToNames[Status] {
 
   def * = id ~ name  <> (Status, Status.unapply _)
 
@@ -21,8 +23,9 @@ object Statuses extends Table[Status]("statuses")
    * @return
    */
   def mapToNew(id: UUID): NewStatus = {
-    val s = find(id)
-    NewStatus(s.name)
+    find(id) match {
+      case Some(s) => NewStatus(s.name)
+    }
   }
 
   /**
@@ -34,4 +37,5 @@ object Statuses extends Table[Status]("statuses")
   def mapToEntity(id: UUID = newId, p: NewStatus): Status = {
     Status(id,p.name)
   }
+
 }

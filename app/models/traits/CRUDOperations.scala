@@ -40,14 +40,11 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * @param identifier
    * @return
    */
-  def find(identifier: AnyRef): T = identifier match {
-    case identifier: UUID => findById(identifier)
-    case identifier: String => {
-      if (vidP(identifier)) {
-        findById(identifier)
-      } else {
-        findByName(identifier)
-      }
+  def find(identifier: AnyRef): Option[T] = identifier match {
+    case id: UUID => findById(identifier)
+    case str: String => {
+      if (isUUID(str)) findById(identifier)
+      else findByName(str)
     }
   }
 
@@ -57,14 +54,13 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * @return The UUID of the instance.
    */
   def insert(instance: T): UUID = {
-      beforeInsert(instance)
-      DB.withSession {
-        implicit session: Session =>
-          returnID.insert(instance)
-      }
-      afterInsert(instance)
-      instance.id
+    beforeInsert(instance)
+    DB.withSession { implicit session: Session =>
+      returnID.insert(instance)
     }
+    afterInsert(instance)
+    instance.id
+  }
 
   /**
    * Insert a new entity into the db table created from the values
@@ -76,10 +72,8 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    */
   def insert(id: UUID = newId, newInstance: Y): Either[String,UUID] = {
     play.api.Logger.debug("id: " + id.toString)
-
     insertValidator(newInstance) match {
-      case Some(error) =>
-        Left(error)
+      case Some(error) =>  Left(error)
       case None => {
         beforeInsert(id, newInstance)
         insert(mapToEntity(id,newInstance))
@@ -118,12 +112,8 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
     }
 
     updateValidator(id, newInstance) match {
-      case Some(error) =>
-         Some(error)
-      case None => {
-        upd(id, newInstance)
-        None
-      }
+      case Some(error) =>  Some(error)
+      case None => upd(id, newInstance); None
     }
   }
 
@@ -131,31 +121,33 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * Delete an entity from its table.
    */
   def delete(identifier: AnyRef): Option[String] = {
-    def del(id: UUID): Option[String] = DB.withSession {
+    def del(id: UUID): Option[String] = DB.withSession { implicit session: Session =>
         beforeDelete(id)
-        implicit session: Session =>
-        queryToDeleteInvoker(
-          tableToQuery(this).where(_.id === id)).delete
+        queryToDeleteInvoker(tableToQuery(this).where(_.id === id)).delete
         afterDelete(id)
         None
     }
 
     deleteValidator(identifier) match {
-      case Some(error) =>
-        Some(error)
-      case None =>
-        identifier match {
-          case eid : UUID => {
-            del(eid)
-          }
-          case eid : String => {
-            if (vidP(eid)) {
-              del(uuid(eid))
-            } else {
-              del(findByName(eid).id)
-            }
+      case Some(error) => Some(error)
+      case None => identifier match {
+        case  Some(id:UUID) => del(id)
+        case  Some(str :String) => {
+          if (isUUID(str)) del(uuid(str))
+          else findByName(str) match {
+            case Some(obj) => del(obj.id)
+            case None => None
           }
         }
+        case id : UUID =>  del(id)
+        case str : String => {
+          if (isUUID(str)) del(uuid(str))
+          else findByName(str) match {
+            case Some(obj) => del(obj.id)
+            case None => None
+          }
+        }
+      }
     }
   }
 
@@ -163,20 +155,15 @@ trait CRUDOperations[T <: Entity, Y <: NewEntity]
    * Helper method to delete all the rows in a table
    */
   def deleteAll: Option[String] = {
-    def del = DB.withSession {
+    def del = DB.withSession { implicit session: Session =>
       beforeDeleteAll
-      implicit session: Session =>
-          tableToQuery(this).delete
+      tableToQuery(this).delete
       afterDeleteAll
     }
 
     deleteAllValidator match {
-      case Some(error) =>
-        Some(error)
-      case None => {
-        del
-        None
-      }
+      case Some(error) => Some(error)
+      case None => del; None
     }
   }
 }

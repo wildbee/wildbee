@@ -1,0 +1,8 @@
+@(t: Form[NewPlugin])(implicit session: play.api.mvc.Session)
+
+@import helper._
+@main("Plugin Form") {
+    <h2>Remember a Plugin</h2>
+    @plugins.helpers.inputForm(controllers.PluginsController.form)
+}
+

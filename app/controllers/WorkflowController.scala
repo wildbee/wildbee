@@ -18,8 +18,12 @@ object WorkflowController extends EntityController[Workflow,NewWorkflow] {
       "status" -> list(text))(NewWorkflow.apply)(NewWorkflow.unapply))
 
   def copy(wid: String) = Action { implicit request =>
-    val pack = Workflows.mapToNew(Workflows.find(wid).id)
-    val filledForm = form.fill(pack)
-    Ok(views.html.workflows.newEntity(filledForm))
+    Workflows.find(wid) match {
+      case Some(workflow) =>
+        val pack = Workflows.mapToNew(workflow)
+        val filledForm = form.fill(pack)
+        Ok(views.html.workflows.newEntity(filledForm))
+      case None => BadRequest(views.html.index(s"Error Finding Workflow $wid"))
+    }
   }
 }

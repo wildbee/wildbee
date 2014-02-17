@@ -20,7 +20,8 @@ case class User(id: UUID, name: String, email: String) extends Entity
 object Users extends Table[User]("users")
   with CRUDOperations[User, NewUser]
   with EntityTable[User, NewUser]
-  with MapsIdsToNames[User]{
+  with MapsIdsToNames[User] {
+
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)
   def * = id ~ name ~ email <>(User, User.unapply _)
@@ -47,8 +48,9 @@ object Users extends Table[User]("users")
    * @return
    */
   def mapToNew(id: UUID): NewUser = {
-    val u = find(id)
-    NewUser(u.name, u.email)
+    find(id) match {
+      case Some(u) =>  NewUser(u.name, u.email)
+    }
   }
 
  def insertWithId(u: NewUser, id: UUID): UUID = {

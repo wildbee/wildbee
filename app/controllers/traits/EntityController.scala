@@ -9,6 +9,7 @@ import play.api.mvc.Action
 import play.api.templates.{Html}
 import reflect.runtime.universe._
 import models.traits.CRUDOperations
+import play.api.i18n.Messages
 
 trait EntityController[T <: Entity,
   Y <: NewEntity]
@@ -42,7 +43,10 @@ trait EntityController[T <: Entity,
   }
 
   def show(id: AnyRef) = Action { implicit request =>
-    Ok(getViewTemplate("show").apply(table.find(id), session, flash).asInstanceOf[Html])
+    table.find(id) match {
+      case Some(obj) => Ok(getViewTemplate("show").apply(obj, session, flash).asInstanceOf[Html])
+      case None =>  BadRequest(views.html.index(s"Error finding id: $id"))
+    }
   }
 
   def newEntity = Action { implicit request =>
@@ -57,12 +61,19 @@ trait EntityController[T <: Entity,
           session+("failure"->"invalid inputs")).asInstanceOf[Html]),
       newEntity => {
         table.insert(newInstance = newEntity) match {
-          case Right(id) =>
-            Ok(getViewTemplate("show").apply(table.find(id), session,
-              flash.+("success"->"Created")).asInstanceOf[Html])
-          case Left(id) =>
+          case Right(id) => {
+            table.find(id) match {
+              case Some(newObj) =>
+                Ok(getViewTemplate("show").apply(newObj, session,
+                  flash.+("success"->"Created")).asInstanceOf[Html])
+              case None =>  BadRequest(views.html.index(s"Error Finding X $id"))
+            }
+
+          }
+          case Left(error) => {
             BadRequest(getViewTemplate("newEntity").apply(form, session,
               flash.+("failure" -> "unable to create")).asInstanceOf[Html])
+          }
         }
       })
   }
@@ -73,25 +84,27 @@ trait EntityController[T <: Entity,
   }
 
   def update(id: AnyRef) = Action { implicit request =>
-    val oldEntity = table.find(id)
-    form.bindFromRequest.fold(
-      formWithErrors =>
-        BadRequest(getViewTemplate("edit").apply(formWithErrors,id,session).asInstanceOf[Html]),
-      updatedEntity => {
-        val entity = table.update(table.mapToEntity(oldEntity.id, updatedEntity))
-        Ok(getViewTemplate("show").apply(entity, session,
-          flash.+("success"->"updated")).asInstanceOf[Html])
-      }
-    )
+    table.find(id) match {
+      case Some(oldEntity) =>
+        form.bindFromRequest.fold(
+          formWithErrors => BadRequest(getViewTemplate("edit").apply(formWithErrors,id,session).asInstanceOf[Html]),
+          updatedEntity => {
+            val entity = table.update(table.mapToEntity(oldEntity.id, updatedEntity))
+            Ok(getViewTemplate("show").apply(entity, session,
+              flash.+("success"->"updated")).asInstanceOf[Html])
+          })
+      case None =>  BadRequest(views.html.index(s"Error finding id: $id"))
+    }
   }
 
   def delete(id: AnyRef) = Action { implicit request =>
-    table.delete(id) match {
-      case Some(violatedDeps) =>
-        BadRequest(getViewTemplate("show").apply(table.find(id), session,
+    (table.delete(id), table.find(id)) match {
+      case (Some(violatedDeps), Some(entity)) =>
+        BadRequest(getViewTemplate("show").apply(entity, session,
           flash+("failure"->
-            (s"${violatedDeps} depend on this entity."))).asInstanceOf[Html])
-      case None =>
+            (String.format(Messages("error.dependency"), violatedDeps)))).asInstanceOf[Html])
+            //(s"${violatedDeps} depend on this entity."))).asInstanceOf[Html])
+      case _ =>
         Ok(getViewTemplate("index").apply(table.findAll,session).asInstanceOf[Html])
     }
   }

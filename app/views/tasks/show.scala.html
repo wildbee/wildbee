@@ -6,10 +6,15 @@
         <h1>@task.name</h1>
   		================================================= <br/>
         ID: @task.id<br/>
-        Owner: @{Users.find(task.owner).name}</br>
-        Owner ID: @task.owner</br>
-  		Creation Time: @task.created</br>
-  		Last Updated: @task.updated</br>
+  		Task Owner: @{Users.find(task.owner) match {
+            case Some(obj) => obj.name
+            case None => ""
+            }
+        }</br>
+  		Task Creation Time: @task.created</br>
+  		Task Last Updated: @task.updated</br>
+  		Task ID: @task.id<br/>
+  		Task Owner ID: @task.owner</br>
   		=================================================
        </p>
        
@@ -26,7 +31,7 @@
     }
     @helper.form(routes.TasksController.delete(task.id.toString)) {
     <div class="form-actions">
-        <button type="submit">Delete Task</button>
+        <button type="submit" id="deleteTask">Delete Task</button>
     </div>
     }
 }
