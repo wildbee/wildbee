@@ -18,9 +18,7 @@ case class User(id: UUID, name: String, email: String) extends Entity
  * with the 'user' table already created in the database by default
  */
 object Users extends Table[User]("users")
-  with CRUDOperations[User, NewUser]
-  with EntityTable[User, NewUser]
-  with MapsIdsToNames[User] {
+  with EntityTable[User, NewUser] {
 
   def email = column[String]("email")
   def uniqueEmail = index("idx_email", email, unique = true)

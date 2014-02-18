@@ -10,10 +10,8 @@ import helpers.ObserverHelper
 case class NewStatus(name: String) extends NewEntity
 case class Status(id: UUID, name: String) extends Entity
 object Statuses extends Table[Status]("statuses")
-  with CRUDOperations[Status, NewStatus]
   with EntityTable[Status, NewStatus]
-  with UniquelyNamedTable[Status, NewStatus]
-  with MapsIdsToNames[Status] {
+  with UniquelyNamedTable[Status, NewStatus] {
 
   def * = id ~ name  <> (Status, Status.unapply _)
 

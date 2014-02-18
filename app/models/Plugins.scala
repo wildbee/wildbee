@@ -9,7 +9,6 @@ case class NewPlugin(name: String, pack: Option[String]) extends NewEntity
 case class Plugin(id: UUID, name: String, path: String, pack: Option[UUID]) extends Entity
 
 object Plugins extends Table[Plugin]("plugins")
-  with CRUDOperations[Plugin,NewPlugin]
   with EntityTable[Plugin, NewPlugin] {
 
   def path = column[String]("path")

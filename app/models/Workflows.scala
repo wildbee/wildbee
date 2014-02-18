@@ -15,10 +15,8 @@ import models.traits.Observable
 case class NewWorkflow(name: String, status: List[String]) extends NewEntity
 case class Workflow(id: UUID, name: String, startStatus: UUID) extends Entity
 object Workflows extends Table[Workflow]("workflows")
-  with CRUDOperations[Workflow,NewWorkflow]
   with EntityTable[Workflow, NewWorkflow]
-  with UniquelyNamedTable[Workflow,NewWorkflow]
-  with MapsIdsToNames[Workflow]{
+  with UniquelyNamedTable[Workflow,NewWorkflow] {
 
   def startStatus = column[UUID]("start_status")
 

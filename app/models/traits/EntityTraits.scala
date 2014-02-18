@@ -8,6 +8,7 @@ import java.sql.Timestamp
 import java.util.Date
 import java.util.UUID
 import helpers._
+import models.traits.CRUDOperations
 
 /**
  * Table object traits
@@ -17,7 +18,11 @@ import helpers._
  * Main trait for any entity model table.
  * @tparam T
  */
-trait EntityTable[T <: Entity, Y <: NewEntity] extends Table[T] {
+trait EntityTable[T <: Entity, Y <: NewEntity]
+  extends Table[T]
+  with MapsIdsToNames[T]
+  with CRUDOperations[T,Y] {
+
   def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
 

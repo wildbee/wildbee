@@ -8,8 +8,7 @@ import java.util.UUID
 import scala.language.reflectiveCalls
 import models.{EntityTable, NewEntity, Entity}
 
-trait NameIdMethods[T <: Entity, Y <: NewEntity]
-  extends CRUDLifecycles[T, Y] {
+trait NameIdMethods[T <: Entity, Y <: NewEntity] {
 
   /**
    * This trait is used by entity models with Tables of type T with EntityTable trait of type T.

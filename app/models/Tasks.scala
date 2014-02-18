@@ -15,11 +15,9 @@ case class Task(id: UUID, name: String, owner: UUID,
   created: Timestamp, workflow: UUID, updated: Timestamp) extends Entity with Timekeeping
 
 object Tasks extends Table[Task]("tasks")
-  with CRUDOperations[Task,NewTask]
   with EntityTable[Task, NewTask]
   with TimekeepingTable[Task]
-  with UniquelyNamedTable[Task,NewTask]
-  with MapsIdsToNames[Task]{
+  with UniquelyNamedTable[Task,NewTask] {
 
   def owner = column[UUID]("owner_id")
   def ownerFk = foreignKey("owner_fk", owner, Users)(_.id)

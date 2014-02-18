@@ -18,6 +18,7 @@ import models.{EntityTable, NewEntity, Entity}
  */
 trait CRUDOperations[T <: Entity, Y <: NewEntity]
   extends NameIdMethods[T,Y]
+  with CRUDLifecycles[T,Y]
   with CRUDValidators[T,Y]{
 
   /**
